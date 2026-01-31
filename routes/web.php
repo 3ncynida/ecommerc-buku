@@ -16,6 +16,8 @@ Route::prefix('admin')->group(function () {
     Route::resource('items', ItemController::class);
 });
 
+Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.process');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/add-to-cart/{id}', [CartController::class, 'add'])->name('cart.add');
