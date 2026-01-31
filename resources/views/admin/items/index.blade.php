@@ -58,6 +58,7 @@
             <th>No</th>
             <th>Gambar</th>
             <th>Nama</th>
+            <th>Author</th>
             <th>Harga</th>
             <th>Aksi</th>
         </tr>
@@ -74,6 +75,7 @@
                     @endif
                 </td>
                 <td>{{ $item->name }}</td>
+                <td>{{ $item->author->name }}</td>
                 <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                 <td>
                     <a href="{{ route('items.edit', $item->id) }}">Edit</a>

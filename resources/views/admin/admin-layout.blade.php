@@ -21,7 +21,7 @@
             <a href="{{ route('authors.index') }}" class="block py-2.5 px-4 rounded transition hover:bg-indigo-800">
                 <i class="fa-solid fa-pen-nib mr-2"></i> Penulis
             </a>
-            <a href="#" class="block py-2.5 px-4 rounded transition hover:bg-indigo-800">
+            <a href="{{ route('items.index') }}" class="block py-2.5 px-4 rounded transition hover:bg-indigo-800">
                 <i class="fa-solid fa-book mr-2"></i> Data Buku
             </a>
         </nav>

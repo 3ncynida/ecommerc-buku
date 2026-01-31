@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Author;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -24,8 +25,9 @@ class ItemController extends Controller
 
     public function create()
     {
+        $author = Author::all();
         $categories = Category::all();
-        return view('admin.items.create', compact('categories'));
+        return view('admin.items.create', compact('categories', 'author'));
     }
 
 
@@ -36,6 +38,9 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'author_id' => 'required|exists:authors,id',
+            'stok' => 'required|numeric',
+            'description' => 'max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -49,6 +54,9 @@ class ItemController extends Controller
             'name' => $request->name,
             'price' => $request->price,
             'category_id' => $request->category_id,
+            'description' => $request->description,
+            'stok' => $request->stok,
+            'author_id' => $request->author_id,
             'image' => $imagePath,
         ]);
 
@@ -70,6 +78,9 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'author_id' => 'required|exists:authors,id',
+            'stok' => 'required|numeric',
+            'description' => 'max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -84,10 +95,24 @@ class ItemController extends Controller
         $item->update([
             'name' => $request->name,
             'price' => $request->price,
+            'description' => $request->description,
+            'stok' => $request->stok,
+            'author_id' => $request->author_id,
             'category_id' => $request->category_id,
             'image' => $item->image,
         ]);
 
         return redirect()->route('items.index')->with('success', 'Item berhasil diupdate');
+    }
+
+    public function show(Item $item)
+    {
+        // Ambil buku lain dengan kategori yang sama sebagai rekomendasi
+        $relatedBooks = Item::where('category_id', $item->category_id)
+            ->where('id', '!=', $item->id)
+            ->take(4)
+            ->get();
+
+        return view('admin.items.show', compact('item', 'relatedBooks'));
     }
 }

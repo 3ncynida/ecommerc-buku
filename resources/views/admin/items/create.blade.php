@@ -41,33 +41,70 @@
 <body>
 
     <div class="card">
-        <h3>Tambah Item</h3>
+        <h3>Tambah Buku</h3>
+
+        @if ($errors->any())
+            <div style="background:#ffe6e6; padding:10px; border-radius:6px; margin-bottom:15px;">
+                <ul style="margin:0; padding-left:20px; color:#b00020;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <form action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <label>Nama Item</label>
-            <input type="text" name="name" required>
+            @if ($errors->any())
+                <div style="background:#ffe6e6; padding:10px; border-radius:6px; margin-bottom:15px;">
+                    <ul style="margin:0; padding-left:20px; color:#b00020;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <label>Nama Buku</label>
+            <input type="text" name="name" value="{{ old('name') }}" required>
+
+            <label>Author</label>
+            <select name="author_id" required>
+                <option value="">-- Pilih Author --</option>
+                @foreach ($author as $author)
+                    <option value="{{ $author->id }}" {{ old('author_id') == $author->id ? 'selected' : '' }}>
+                        {{ $author->name }}
+                    </option>
+                @endforeach
+            </select>
 
             <label>Harga</label>
-            <input type="number" name="price" required>
+            <input type="number" name="price" value="{{ old('price') }}" required>
+
+            <label>Stok</label>
+            <input type="number" name="stok" value="{{ old('stok') }}" required>
 
             <label>Kategori</label>
             <select name="category_id" required>
                 <option value="">-- Pilih Kategori --</option>
                 @foreach ($categories as $category)
-                    <option value="{{ $category->id }}">
+                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                         {{ $category->name }}
                     </option>
                 @endforeach
             </select>
 
+            <label>Deskripsi</label>
+            <textarea name="description" rows="4"
+                style="width:100%; margin-top:5px;">{{ old('description') }}</textarea>
 
             <label>Gambar</label>
             <input type="file" name="image">
 
             <button type="submit">Simpan</button>
         </form>
+
     </div>
 
 </body>

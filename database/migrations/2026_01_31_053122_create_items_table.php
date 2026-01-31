@@ -19,6 +19,9 @@ return new class extends Migration {
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('name');
+            $table->string('slug')->unique(); // Tambahkan ini
+            $table->text('description')->nullable();
+            $table->integer('Stok');
             $table->decimal('price', 15, 2);
             $table->string('image')->nullable();
             $table->timestamps();
