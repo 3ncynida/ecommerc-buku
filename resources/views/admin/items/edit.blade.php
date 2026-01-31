@@ -49,6 +49,17 @@
     <div class="card">
         <h3>Edit Item</h3>
 
+        @if ($errors->any())
+            <div style="background:#ffe6e6; padding:10px; border-radius:6px; margin-bottom:15px;">
+                <ul style="margin:0; padding-left:20px; color:#b00020;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+
         <form action="{{ route('items.update', $item->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -56,8 +67,20 @@
             <label>Nama Item</label>
             <input type="text" name="name" value="{{ $item->name }}" required>
 
+            <label>Author</label>
+            <select name="author_id" required>
+                @foreach ($author as $author)
+                    <option value="{{ $author->id }}" {{ $item->author_id == $author->id ? 'selected' : '' }}>
+                        {{ $author->name }}
+                    </option>
+                @endforeach
+            </select>
+
             <label>Harga</label>
             <input type="number" name="price" value="{{ $item->price }}" required>
+
+            <label>Stok</label>
+            <input type="number" name="stok" value="{{ old('stok') }}" required>
 
             <label>Gambar</label>
             <input type="file" name="image">

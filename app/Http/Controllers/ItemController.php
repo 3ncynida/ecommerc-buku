@@ -66,9 +66,10 @@ class ItemController extends Controller
     // tampilkan form edit
     public function edit(Item $item)
     {
+        $author = author::all();
         $categories = Category::all();
 
-        return view('admin.items.edit', compact('item', 'categories'));
+        return view('admin.items.edit', compact('item', 'categories', 'author'));
     }
 
     // update item + ganti gambar

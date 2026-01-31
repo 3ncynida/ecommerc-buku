@@ -15,7 +15,7 @@
                 
                 <div class="md:w-1/3 p-8 bg-gray-50 flex justify-center">
                     <img src="{{ asset('storage/' . $item->image) }}" 
-                         alt="{{ $item->title }}" 
+                         alt="{{ $item->name }}" 
                          class="w-full max-w-sm rounded-xl shadow-2xl transform hover:scale-105 transition duration-500">
                 </div>
 
@@ -24,7 +24,7 @@
                         <span class="text-indigo-600 font-semibold uppercase tracking-wider text-sm">
                             {{ $item->category->name ?? 'Kategori Umum' }}
                         </span>
-                        <h1 class="text-4xl font-extrabold text-gray-900 mt-2">{{ $item->title }}</h1>
+                        <h1 class="text-4xl font-extrabold text-gray-900 mt-2">{{ $item->name }}</h1>
                         <p class="text-xl text-gray-500 mt-1">oleh <span class="font-medium text-gray-800">{{ $item->author->name ?? 'Penulis' }}</span></p>
                     </div>
 
@@ -63,7 +63,7 @@
                 @foreach($relatedBooks as $related)
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                     <img src="{{ asset('storage/' . $related->image) }}" class="rounded-lg mb-4 h-48 w-full object-cover">
-                    <h4 class="font-bold text-gray-900 truncate">{{ $related->title }}</h4>
+                    <h4 class="font-bold text-gray-900 truncate">{{ $related->name }}</h4>
                     <p class="text-indigo-600 font-bold mt-2">Rp {{ number_format($related->price, 0, ',', '.') }}</p>
                     <a href="{{ route('book.show', $related->slug) }}" class="block text-center mt-4 text-sm font-semibold text-gray-500 hover:text-indigo-600">Detail →</a>
                 </div>
