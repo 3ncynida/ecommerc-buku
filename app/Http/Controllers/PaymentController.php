@@ -29,44 +29,79 @@ class PaymentController extends Controller
     // 1. Membuat Transaksi
     public function createTransaction(Request $request)
     {
-        $item = \App\Models\Item::findOrFail($request->item_id);
-        $orderId = 'ORD-' . time(); // ID unik untuk Midtrans & Tabel Order
+        $cart = session()->get('cart', []);
+        // Jika cart kosong, jangan lanjut
+        if (empty($cart))
+            return response()->json(['error' => 'Keranjang kosong'], 400);
 
-        // --- 1. SIMPAN KE TABEL ORDERS ---
+        $orderId = 'LBRS-' . time();
+        $totalAmount = 0;
+        $itemDetails = [];
+
+        // Loop keranjang untuk hitung total dan buat detail item untuk Midtrans
+        foreach ($cart as $id => $details) {
+            $totalAmount += $details['price'] * $details['quantity'];
+            $itemDetails[] = [
+                'id' => $id,
+                'price' => (int) $details['price'],
+                'quantity' => $details['quantity'],
+                'name' => $details['name'],
+            ];
+        }
+
+        $firstItemKey = array_key_first($cart);
+        $itemId = $firstItemKey;  // Use the key directly (already the item ID)
+
+        // 1. Simpan ke Tabel Orders
         $order = \App\Models\Order::create([
             'order_number' => $orderId,
-            'item_id' => $item->id,
-            'quantity' => 1,
-            'total_price' => $item->price,
+            'total_price' => $totalAmount,
             'item_status' => 'pending',
             'payment_status' => 'pending',
+            'item_id' => $itemId,
+            // tambahkan field lain seperti user_id atau alamat jika perlu
         ]);
 
         $params = [
             'transaction_details' => [
                 'order_id' => $orderId,
-                'gross_amount' => (int) $item->price,
+                'gross_amount' => (int) $totalAmount,
             ],
+            'item_details' => $itemDetails,
             'customer_details' => [
-                'first_name' => 'User Ganteng',
-                'email' => 'user@example.com',
+                'first_name' => $request->name, // Ambil dari input form checkout
+                'email' => $request->email,
             ],
         ];
 
         try {
+            // Validasi request data
+            $validated = $request->validate([
+                'name' => 'required|string',
+                'email' => 'required|email',
+            ]);
+
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
-            // --- 3. SIMPAN KE TABEL PAYMENTS ---
+            // 2. Simpan ke Tabel Payments
             \App\Models\Payment::create([
                 'order_id' => $orderId,
-                'amount' => $item->price,
+                'amount' => $totalAmount,
                 'status' => 'pending',
                 'snap_token' => $snapToken,
             ]);
 
+            // Opsional: Kosongkan keranjang di sini atau setelah sukses di frontend
+            session()->forget('cart');
+
             return response()->json(['snap_token' => $snapToken]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            // Ini akan mengirimkan pesan error asli ke browser agar bisa kita baca
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
         }
     }
 
@@ -121,47 +156,7 @@ class PaymentController extends Controller
 
     public function checkout(Request $request)
     {
-        // 1. Ambil data item dari database hasil seeder
-        $item = \App\Models\Item::findOrFail($request->item_id);
-
-        // 2. Buat Order ID unik
-        $orderId = 'TRX-' . mt_rand(1000, 9999);
-
-        // 3. Siapkan Parameter Midtrans
-        $params = [
-            'transaction_details' => [
-                'order_id' => $orderId,
-                'gross_amount' => (int) $item->price, // Harga dari database
-            ],
-            'item_details' => [
-                [
-                    'id' => $item->id,
-                    'price' => (int) $item->price,
-                    'quantity' => 1,
-                    'name' => $item->name,
-                ]
-            ],
-            'customer_details' => [
-                'first_name' => 'Pembeli Tes',
-                'email' => 'pembeli@test.com',
-            ],
-        ];
-
-        try {
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-
-            // 4. Simpan ke tabel payments (yang kita buat sebelumnya)
-            $payment = \App\Models\Payment::create([
-                'order_id' => $orderId,
-                'amount' => $item->price,
-                'status' => 'pending',
-                'snap_token' => $snapToken,
-                'raw_response' => json_encode($params) // simpan request awal
-            ]);
-
-            return response()->json(['snap_token' => $snapToken]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        // Alias untuk createTransaction (untuk backward compatibility)
+        return $this->createTransaction($request);
     }
 }

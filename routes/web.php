@@ -48,4 +48,13 @@ Route::get('/book/{item:slug}', [ItemController::class, 'show'])->name('book.sho
 Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
 Route::get('/test', [AdminOrderController::class, 'index'])->name('admin.index');
 
+// Rute untuk Midtrans
+Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
+
+// Opsional: Rute setelah pembayaran selesai
+Route::get('/payment/success', function() {
+    return view('payment.success'); // Buat view ini nanti
+})->name('payment.success');
+
 require __DIR__.'/auth.php';
