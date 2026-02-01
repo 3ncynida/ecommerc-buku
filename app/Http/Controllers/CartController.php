@@ -62,7 +62,7 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Keranjang masih kosong!');
 
         $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
-        return view('cart.checkout', compact('cart', 'total'));
+        return view('customer.cart.checkout', compact('cart', 'total'));
     }
 
     public function processCheckout(Request $request)
@@ -88,7 +88,7 @@ class CartController extends Controller
         $message .= "Alamat: " . $request->address;
 
         // 2. Encode Pesanan ke URL WhatsApp
-        $whatsappNumber = "628123456789"; // Ganti dengan nomor WA Anda (gunakan kode negara 62)
+        $whatsappNumber = "6289509350484"; // Ganti dengan nomor WA Anda (gunakan kode negara 62)
         $url = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($message);
 
         // 3. Kosongkan Keranjang setelah pesan

@@ -8,12 +8,31 @@ use App\Http\Controllers\WelcomePage;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AuthorController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProfileController;
 
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () { return view('admin.admin-layout'); })->name('admin.dashboard');
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', fn () => 'Halo Admin');
+});
+
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/customer', fn () => 'Halo Customer');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
@@ -27,4 +46,6 @@ Route::get('/', [WelcomePage::class,'index'])->name('home');
 Route::get('/book/{item:slug}', [ItemController::class, 'show'])->name('book.show');
 
 Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
-Route::get('/admin', [AdminOrderController::class, 'index'])->name('admin.index');
+Route::get('/test', [AdminOrderController::class, 'index'])->name('admin.index');
+
+require __DIR__.'/auth.php';
