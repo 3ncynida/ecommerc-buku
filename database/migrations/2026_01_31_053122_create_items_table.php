@@ -19,6 +19,11 @@ return new class extends Migration {
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('name');
+            $table->string('publisher')->nullable();
+            $table->year('publication_year')->nullable();
+            $table->string('isbn')->nullable();
+            $table->integer('pages')->nullable();
+            $table->string('language')->nullable();
             $table->string('slug')->unique(); // Tambahkan ini
             $table->text('description')->nullable();
             $table->integer('Stok');

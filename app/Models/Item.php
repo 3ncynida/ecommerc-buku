@@ -10,6 +10,11 @@ class Item extends Model
     protected $fillable = [
     'name',
     'slug',
+    'publisher',
+    'publication_year',
+    'isbn',
+    'pages',
+    'language',
     'category_id', 
     'author_id', 
     'price', 

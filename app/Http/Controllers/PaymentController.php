@@ -27,83 +27,74 @@ class PaymentController extends Controller
     }
 
     // 1. Membuat Transaksi
-    public function createTransaction(Request $request)
-    {
-        $cart = session()->get('cart', []);
-        // Jika cart kosong, jangan lanjut
-        if (empty($cart))
-            return response()->json(['error' => 'Keranjang kosong'], 400);
+public function createTransaction(Request $request)
+{
+    // 1. Validasi dulu sebelum proses apapun
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email',
+    ]);
 
-        $orderId = 'LBRS-' . time();
-        $totalAmount = 0;
-        $itemDetails = [];
+    $cart = session()->get('cart', []);
+    if (empty($cart)) {
+        return response()->json(['error' => 'Keranjang kosong'], 400);
+    }
 
-        // Loop keranjang untuk hitung total dan buat detail item untuk Midtrans
-        foreach ($cart as $id => $details) {
-            $totalAmount += $details['price'] * $details['quantity'];
-            $itemDetails[] = [
-                'id' => $id,
-                'price' => (int) $details['price'],
-                'quantity' => $details['quantity'],
-                'name' => $details['name'],
-            ];
-        }
+    $orderId = 'LBRS-' . time();
+    $totalAmount = 0;
+    $itemDetails = [];
 
-        $firstItemKey = array_key_first($cart);
-        $itemId = $firstItemKey;  // Use the key directly (already the item ID)
-
-        // 1. Simpan ke Tabel Orders
-        $order = \App\Models\Order::create([
-            'order_number' => $orderId,
-            'total_price' => $totalAmount,
-            'item_status' => 'pending',
-            'payment_status' => 'pending',
-            'item_id' => $itemId,
-            // tambahkan field lain seperti user_id atau alamat jika perlu
-        ]);
-
-        $params = [
-            'transaction_details' => [
-                'order_id' => $orderId,
-                'gross_amount' => (int) $totalAmount,
-            ],
-            'item_details' => $itemDetails,
-            'customer_details' => [
-                'first_name' => $request->name, // Ambil dari input form checkout
-                'email' => $request->email,
-            ],
+    foreach ($cart as $id => $details) {
+        $totalAmount += $details['price'] * $details['quantity'];
+        $itemDetails[] = [
+            'id' => $id,
+            'price' => (int) $details['price'],
+            'quantity' => $details['quantity'],
+            'name' => $details['name'],
         ];
+    }
 
-        try {
-            // Validasi request data
-            $validated = $request->validate([
-                'name' => 'required|string',
-                'email' => 'required|email',
+    try {
+        // 2. Simpan Order (Gunakan Transaction agar aman)
+        \DB::transaction(function () use ($orderId, $totalAmount, $cart, $request, $itemDetails, &$snapToken) {
+            $itemId = array_key_first($cart);
+
+            Order::create([
+                'order_number' => $orderId,
+                'total_price' => $totalAmount,
+                'payment_status' => 'pending',
+                'item_id' => $itemId,
             ]);
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $orderId,
+                    'gross_amount' => (int) $totalAmount,
+                ],
+                'item_details' => $itemDetails,
+                'customer_details' => [
+                    'first_name' => $request->name,
+                    'email' => $request->email,
+                ],
+            ];
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
-            // 2. Simpan ke Tabel Payments
             \App\Models\Payment::create([
                 'order_id' => $orderId,
                 'amount' => $totalAmount,
                 'status' => 'pending',
                 'snap_token' => $snapToken,
             ]);
+        });
 
-            // Opsional: Kosongkan keranjang di sini atau setelah sukses di frontend
-            session()->forget('cart');
+        // JANGAN hapus cart di sini. Hapus di JavaScript onSuccess.
+        return response()->json(['snap_token' => $snapToken]);
 
-            return response()->json(['snap_token' => $snapToken]);
-        } catch (\Exception $e) {
-            // Ini akan mengirimkan pesan error asli ke browser agar bisa kita baca
-            return response()->json([
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 
     // 2. Webhook / Notification Handler
     public function webhook(Request $request)

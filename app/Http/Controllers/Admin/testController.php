@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Item;
+use App\Models\Author;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class testController extends Controller
 {
     public function index()
     {
         $categories = Category::latest()->get();
-        return view('admin.categories.index', compact('categories'));
-    }
+        $authors = Author::latest()->get();
+        $items = Item::latest()->get();
 
-    public function create()
-    {
-        return view('admin.categories.create');
+        return view('admin.test.index', compact('categories', 'authors', 'items'));
     }
 
     public function store(Request $request)

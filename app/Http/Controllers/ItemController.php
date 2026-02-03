@@ -41,6 +41,11 @@ class ItemController extends Controller
             'author_id' => 'required|exists:authors,id',
             'stok' => 'required|numeric',
             'description' => 'max:255',
+            'publisher' => 'nullable|string|max:255',
+            'publication_year' => 'nullable|numeric|min:1000|max:2999',
+            'isbn' => 'nullable|string|max:20',
+            'pages' => 'nullable|numeric|min:1',
+            'language' => 'nullable|string|max:50',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -57,16 +62,21 @@ class ItemController extends Controller
             'description' => $request->description,
             'stok' => $request->stok,
             'author_id' => $request->author_id,
+            'publisher' => $request->publisher,
+            'publication_year' => $request->publication_year,
+            'isbn' => $request->isbn,
+            'pages' => $request->pages,
+            'language' => $request->language,
             'image' => $imagePath,
         ]);
 
-        return redirect()->back()->with('success', 'Item berhasil ditambahkan');
+        return redirect()->route('items.index')->with('success', 'Item berhasil ditambahkan');
     }
 
     // tampilkan form edit
     public function edit(Item $item)
     {
-        $author = author::all();
+        $author = Author::all();
         $categories = Category::all();
 
         return view('admin.items.edit', compact('item', 'categories', 'author'));
@@ -82,6 +92,11 @@ class ItemController extends Controller
             'author_id' => 'required|exists:authors,id',
             'stok' => 'required|numeric',
             'description' => 'max:255',
+            'publisher' => 'nullable|string|max:255',
+            'publication_year' => 'nullable|numeric|min:1000|max:2999',
+            'isbn' => 'nullable|string|max:20',
+            'pages' => 'nullable|numeric|min:1',
+            'language' => 'nullable|string|max:50',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -100,6 +115,11 @@ class ItemController extends Controller
             'stok' => $request->stok,
             'author_id' => $request->author_id,
             'category_id' => $request->category_id,
+            'publisher' => $request->publisher,
+            'publication_year' => $request->publication_year,
+            'isbn' => $request->isbn,
+            'pages' => $request->pages,
+            'language' => $request->language,
             'image' => $item->image,
         ]);
 
