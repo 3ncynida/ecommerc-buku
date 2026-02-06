@@ -57,43 +57,19 @@ class CartController extends Controller
 
     public function checkout()
     {
+        $user = auth()->user();
+
+        // Ambil alamat utama user
+        $address = $user->addresses()->where('is_default', true)->first();
+
+        // Atau ambil semua alamat untuk pilihan
+        $allAddresses = $user->addresses;
+        
         $cart = session()->get('cart', []);
         if (empty($cart))
             return redirect()->route('cart.index')->with('error', 'Keranjang masih kosong!');
 
         $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
         return view('customer.cart.checkout', compact('cart', 'total'));
-    }
-
-    public function processCheckout(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'phone' => 'required',
-            'address' => 'required',
-        ]);
-
-        $cart = session()->get('cart');
-        $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
-
-        // 1. Susun Pesanan dalam Teks
-        $message = "Halo Admin Libris, saya ingin memesan:\n\n";
-        foreach ($cart as $details) {
-            $message .= "- " . $details['name'] . " (" . $details['quantity'] . "x)\n";
-        }
-        $message .= "\n*Total: Rp " . number_format($total, 0, ',', '.') . "*\n\n";
-        $message .= "*Data Pengiriman:*\n";
-        $message .= "Nama: " . $request->name . "\n";
-        $message .= "No. HP: " . $request->phone . "\n";
-        $message .= "Alamat: " . $request->address;
-
-        // 2. Encode Pesanan ke URL WhatsApp
-        $whatsappNumber = "6289509350484"; // Ganti dengan nomor WA Anda (gunakan kode negara 62)
-        $url = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($message);
-
-        // 3. Kosongkan Keranjang setelah pesan
-        session()->forget('cart');
-
-        return redirect()->away($url);
     }
 }

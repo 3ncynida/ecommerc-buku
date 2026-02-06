@@ -50,4 +50,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function addresses()
+    {
+        // Seorang user bisa punya banyak alamat
+        return $this->hasMany(Address::class);
+    }
+
+    // Helper untuk mendapatkan alamat utama dengan cepat
+    public function defaultAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
+    }
 }

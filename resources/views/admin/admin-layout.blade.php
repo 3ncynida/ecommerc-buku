@@ -14,9 +14,9 @@
         <div class="p-6 text-2xl font-bold border-b border-indigo-800">Libris Admin</div>
 <nav class="mt-6 px-4 space-y-2">
 
-    <a href="{{ route('dashboard') }}"
+    <a href="{{ route('admin.dashboard.index') }}"
        class="block py-2.5 px-4 rounded transition
-       {{ request()->routeIs('dashboard') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+       {{ request()->routeIs('admin.dashboard.index') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
         <i class="fa-solid fa-gauge mr-2"></i> Dashboard
     </a>
 

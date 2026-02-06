@@ -11,7 +11,7 @@ class ItemSeeder extends Seeder
 {
     public function run(): void
     {
-        $author = Author::where("name", "Tere Liye")->first();
+        $author = Author::where("name", "Odading")->first();
         $category = Category::where('name', 'Manga')->first();
 
         Item::firstOrCreate([

@@ -15,8 +15,8 @@
         <div class="text-2xl font-bold text-indigo-600">Libris.</div>
 
         <div class="hidden md:flex space-x-8 font-medium">
-            <a href="#" class="hover:text-indigo-600 transition">Beranda</a>
-            <a href="#" class="hover:text-indigo-600 transition">Kategori</a>
+            <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
+            <a href="{{ route('category.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
             <a href="#" class="hover:text-indigo-600 transition">Terlaris</a>
             <a href="#" class="hover:text-indigo-600 transition">Promo</a>
         </div>

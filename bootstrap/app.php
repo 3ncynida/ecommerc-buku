@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
         $middleware->validateCsrfTokens(except: [
-            'api/payment/webhook', // Tambahkan prefix api/
+            '/api/midtrans-callback' // Sesuaikan path-nya
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

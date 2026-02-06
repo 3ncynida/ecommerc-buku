@@ -11,7 +11,7 @@ class AuthorSeeder extends Seeder
     public function run(): void
     {
         $authors = [
-            'Tere Liye',
+            'Odading',
             'Andrea Hirata',
             'Pramoedya Ananta Toer',
         ];

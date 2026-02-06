@@ -12,7 +12,7 @@ class AdminOrderController extends Controller
         // Mengambil data order beserta data itemnya (Eager Loading)
         $orders = Order::with('item')->latest()->get();
         
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.dashboard.index', compact('orders'));
     }
 
     public function updateStatus(Request $request, $id)

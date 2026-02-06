@@ -11,6 +11,7 @@
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}
                 </div>
+                <p class="p-6 text-gray-900">{{ Auth::user()->role }}</p>
             </div>
         </div>
     </div>
