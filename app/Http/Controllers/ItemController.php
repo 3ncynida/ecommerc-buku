@@ -78,6 +78,7 @@ class ItemController extends Controller
     {
         $author = Author::all();
         $categories = Category::all();
+        
 
         return view('admin.items.edit', compact('item', 'categories', 'author'));
     }

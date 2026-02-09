@@ -10,12 +10,13 @@ use App\Models\Category;
 class CustomerController extends Controller
 {
     // app/Http/Controllers/BookController.php
-    public function index()
+    public function home()
     {
         // Mengambil buku beserta data author-nya sekaligus agar ringan
         $featuredBooks = Item::with('author')->latest()->get();
+        $categories = Category::all()->take(4);
 
-        return view('welcome', compact('featuredBooks'));
+        return view('welcome', compact('featuredBooks', 'categories'));
     }
 
     public function show(Item $item)
@@ -41,6 +42,13 @@ class CustomerController extends Controller
             ->get();
 
         return view('customer.categories.index', compact('categories'));
+    }
+
+    public function categoryList()
+    {
+        $categories = Category::withCount('items')->get();
+
+        return view('customer.categories.list', compact('categories'));
     }
 
     public function categoryShow(Request $request, $id)

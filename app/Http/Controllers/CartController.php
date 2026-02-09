@@ -59,12 +59,17 @@ class CartController extends Controller
     {
         $user = auth()->user();
 
+        // Pastikan user sudah login
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu');
+        }
+
         // Ambil alamat utama user
         $address = $user->addresses()->where('is_default', true)->first();
 
         // Atau ambil semua alamat untuk pilihan
         $allAddresses = $user->addresses;
-        
+
         $cart = session()->get('cart', []);
         if (empty($cart))
             return redirect()->route('cart.index')->with('error', 'Keranjang masih kosong!');

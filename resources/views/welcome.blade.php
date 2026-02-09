@@ -48,10 +48,16 @@
                 </a>
             @endguest
 
+            {{-- Logika Autentikasi --}}
             @auth
-                <span class="text-gray-600 text-sm">
-                    {{ auth()->user()->name }}
-                </span>
+                {{-- Tombol Profile untuk semua user yang login --}}
+                <a href="/profile" class="flex items-center space-x-2 group">
+                    <div
+                        class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition">
+                        <i class="fa-solid fa-user text-indigo-600 group-hover:text-white transition"></i>
+                    </div>
+                    <span class="hidden lg:block text-sm font-semibold text-gray-700">{{ auth()->user()->name }}</span>
+                </a>
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -94,18 +100,20 @@
                 <h2 class="text-3xl font-bold">Kategori Populer</h2>
                 <p class="text-gray-500">Cari buku berdasarkan minat Anda</p>
             </div>
-            <a href="#" class="text-indigo-600 font-semibold hover:underline">Lihat Semua</a>
+            <a href="{{ route('category.list') }}" class="text-indigo-600 font-semibold hover:underline">Lihat Semua</a>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            @foreach(['Fiksi', 'Pengembangan Diri', 'Bisnis', 'Anak-anak'] as $cat)
+            @foreach($categories as $cat)
+            <a href="/category/{{ $cat->id }}">
                 <div
                     class="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group text-center">
                     <div
                         class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-600 transition">
                         <i class="fa-solid fa-book-open text-indigo-600 group-hover:text-white transition text-xl"></i>
                     </div>
-                    <h3 class="font-bold text-lg">{{ $cat }}</h3>
+                    <h3 class="font-bold text-lg">{{ $cat->name }}</h3>
                 </div>
+            </a>
             @endforeach
         </div>
     </section>
@@ -130,25 +138,25 @@
                             @endif
 
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent 
-                           opacity-0 group-hover:opacity-100 transition-all duration-300
-                           flex items-center justify-center gap-4">
+                                   opacity-0 group-hover:opacity-100 transition-all duration-300
+                                   flex items-center justify-center gap-4">
 
                                 <form action="{{ route('cart.add', $book->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                   text-gray-800 shadow-xl
-                                   hover:bg-indigo-600 hover:text-white
-                                   hover:scale-110 active:scale-95
-                                   transition-all duration-300">
+                                           text-gray-800 shadow-xl
+                                           hover:bg-indigo-600 hover:text-white
+                                           hover:scale-110 active:scale-95
+                                           transition-all duration-300">
                                         <i class="fa-solid fa-cart-plus text-lg"></i>
                                     </button>
                                 </form>
 
                                 <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                               text-gray-800 shadow-xl
-                               hover:bg-indigo-600 hover:text-white
-                               hover:scale-110 active:scale-95
-                               transition-all duration-300">
+                                       text-gray-800 shadow-xl
+                                       hover:bg-indigo-600 hover:text-white
+                                       hover:scale-110 active:scale-95
+                                       transition-all duration-300">
                                     <i class="fa-solid fa-eye text-lg"></i>
                                 </a>
                             </div>

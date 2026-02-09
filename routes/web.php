@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\AuthorController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProfileController;
 
+Route::get('/', [CustomerController::class, 'home'])->name('home');
+
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
     Route::resource('categories', CategoryController::class);
@@ -21,8 +23,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', fn() => 'Halo Admin');
 });
-
-Route::resource('/test', testController::class);
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer', fn() => 'Halo Customer');
@@ -40,9 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/address/{address}', [ProfileController::class, 'destroyAddress'])->name('address.destroy');
 });
 
-Route::get('/', [CustomerController::class, 'index'])->name('home');
-
 Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
+Route::get('/categories', [CustomerController::class, 'categoryList'])->name('category.list');
 Route::get('/category/{id}', [CustomerController::class, 'categoryShow'])->name('category.show');
 Route::get('/book/{item:slug}', [CustomerController::class, 'show'])->name('book.show');
 Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
@@ -74,5 +73,7 @@ Route::get('/payment/check/{orderId}', [PaymentController::class, 'checkStatus']
 Route::get('/payment/success', function () {
     return view('payment.success'); // Buat view ini nanti
 })->name('payment.success');
+
+Route::resource('/test', testController::class);
 
 require __DIR__ . '/auth.php';

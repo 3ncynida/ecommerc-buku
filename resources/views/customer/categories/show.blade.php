@@ -81,7 +81,7 @@
                 </div>
 
                 {{-- Link ke halaman detail buku --}}
-                <a href="{{ route('book.show', $book->id) }}" class="absolute inset-0 z-0"></a>
+               <a href="/book/{{ $book->slug }}" class="absolute inset-0 z-0"></a>
             </div>
             @empty
             <div class="col-span-full py-20 text-center">

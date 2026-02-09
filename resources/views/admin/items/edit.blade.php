@@ -79,7 +79,7 @@
 
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Jumlah Stok</label>
-                    <input type="number" name="stok" value="{{ old('stok', $item->stok) }}" 
+                    <input type="number" name="stok" value="{{ old('Stok', $item->Stok) }}" 
                         class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                         required>
                 </div>
