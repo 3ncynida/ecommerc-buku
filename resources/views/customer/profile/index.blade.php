@@ -1,173 +1,194 @@
 @extends('customer.layouts.app')
 
 @section('content')
-<div class="bg-gray-50 min-h-screen py-12">
-    <div class="max-w-4xl mx-auto px-6">
-        
-        {{-- Alert Success --}}
-        @if(session('success'))
-            <div class="mb-8 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl flex items-center gap-3 shadow-sm animate-fade-in-down">
-                <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                <span class="text-sm font-bold">{{ session('success') }}</span>
-            </div>
-        @endif
+    <div class="bg-gray-50 min-h-screen py-12">
+        <div class="max-w-4xl mx-auto px-6">
 
-        <div class="space-y-8">
-            {{-- Section: Informasi Akun --}}
-            <section class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner">
-                        <i class="fa-solid fa-user-astronaut text-xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-black text-gray-900 leading-none">Informasi Akun</h2>
-                        <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider font-bold">Detail Profil Personal</p>
-                    </div>
+            {{-- Alert Success --}}
+            @if(session('success'))
+                <div
+                    class="mb-8 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl flex items-center gap-3 shadow-sm animate-fade-in-down">
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    <span class="text-sm font-bold">{{ session('success') }}</span>
                 </div>
+            @endif
 
-                <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">
-                    @csrf
-                    @method('PATCH')
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-black uppercase text-gray-400 ml-1">Nama Lengkap</label>
-                            <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}" 
-                                class="w-full px-5 py-4 bg-gray-50 border {{ $errors->has('name') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-indigo-500 rounded-2xl outline-none transition-all text-sm font-bold text-gray-700">
-                            @error('name') <p class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p> @enderror
+            <div class="space-y-8">
+                {{-- Section: Informasi Akun --}}
+                <section
+                    class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div
+                            class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner">
+                            <i class="fa-solid fa-user-astronaut text-xl"></i>
                         </div>
-
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-black uppercase text-gray-400 ml-1">Alamat Email</label>
-                            <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}" 
-                                class="w-full px-5 py-4 bg-gray-50 border {{ $errors->has('email') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-indigo-500 rounded-2xl outline-none transition-all text-sm font-bold text-gray-700">
-                            @error('email') <p class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end pt-2">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-100 active:scale-95">
-                            Simpan Perubahan
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            {{-- Section: Keamanan --}}
-            <section class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 shadow-inner">
-                        <i class="fa-solid fa-shield-halved text-xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-black text-gray-900 leading-none">Keamanan</h2>
-                        <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider font-bold">Kelola Password Anda</p>
-                    </div>
-                </div>
-
-                <form action="{{ route('password.update') }}" method="POST" class="space-y-6">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="space-y-2">
-                            <input type="password" name="current_password" placeholder="Password Saat Ini" 
-                                class="w-full px-5 py-4 bg-gray-50 border {{ $errors->updatePassword->has('current_password') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-rose-500 rounded-2xl outline-none text-sm font-bold">
-                            @error('current_password', 'updatePassword') <p class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="space-y-2">
-                            <input type="password" name="password" placeholder="Password Baru" 
-                                class="w-full px-5 py-4 bg-gray-50 border {{ $errors->updatePassword->has('password') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-rose-500 rounded-2xl outline-none text-sm font-bold">
-                            @error('password', 'updatePassword') <p class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p> @enderror
-                        </div>
-
                         <div>
-                            <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" 
-                                class="w-full px-5 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-rose-500 rounded-2xl outline-none text-sm font-bold">
+                            <h2 class="text-xl font-black text-gray-900 leading-none">Informasi Akun</h2>
+                            <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider font-bold">Detail Profil Personal
+                            </p>
                         </div>
                     </div>
 
-                    <div class="flex justify-end pt-2">
-                        <button type="submit" class="bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">
-                            Ganti Password
+                    <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">
+                        @csrf
+                        @method('PATCH')
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-black uppercase text-gray-400 ml-1">Nama Lengkap</label>
+                                <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}"
+                                    class="w-full px-5 py-4 bg-gray-50 border {{ $errors->has('name') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-indigo-500 rounded-2xl outline-none transition-all text-sm font-bold text-gray-700">
+                                @error('name') <p class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-black uppercase text-gray-400 ml-1">Alamat Email</label>
+                                <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}"
+                                    class="w-full px-5 py-4 bg-gray-50 border {{ $errors->has('email') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-indigo-500 rounded-2xl outline-none transition-all text-sm font-bold text-gray-700">
+                                @error('email') <p class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button type="submit"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-100 active:scale-95">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                {{-- Section: Keamanan --}}
+                <section
+                    class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div
+                            class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 shadow-inner">
+                            <i class="fa-solid fa-shield-halved text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black text-gray-900 leading-none">Keamanan</h2>
+                            <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider font-bold">Kelola Password Anda
+                            </p>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('password.update') }}" method="POST" class="space-y-6">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-2">
+                                <input type="password" name="current_password" placeholder="Password Saat Ini"
+                                    class="w-full px-5 py-4 bg-gray-50 border {{ $errors->updatePassword->has('current_password') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-rose-500 rounded-2xl outline-none text-sm font-bold">
+                                @error('current_password', 'updatePassword') <p
+                                class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <input type="password" name="password" placeholder="Password Baru"
+                                    class="w-full px-5 py-4 bg-gray-50 border {{ $errors->updatePassword->has('password') ? 'border-red-500' : 'border-transparent' }} focus:bg-white focus:border-rose-500 rounded-2xl outline-none text-sm font-bold">
+                                @error('password', 'updatePassword') <p
+                                class="text-red-500 text-[10px] mt-1 font-bold ml-2">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <input type="password" name="password_confirmation" placeholder="Konfirmasi Password"
+                                    class="w-full px-5 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-rose-500 rounded-2xl outline-none text-sm font-bold">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button type="submit"
+                                class="bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">
+                                Ganti Password
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                {{-- Section: Daftar Alamat --}}
+                <section class="space-y-6">
+                    <div class="flex items-center justify-between px-2">
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-900 leading-none">Daftar Alamat</h2>
+                            <p class="text-xs text-gray-400 mt-2 uppercase tracking-wider font-bold">Tujuan pengiriman
+                                pesanan Anda</p>
+                        </div>
+                        <button onclick="toggleModal('modal-address')"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-indigo-100 transition-all hover:-translate-y-0.5 active:scale-95">
+                            <i class="fa-solid fa-plus text-[10px]"></i> Tambah Baru
                         </button>
                     </div>
-                </form>
-            </section>
 
-            {{-- Section: Daftar Alamat --}}
-            <section class="space-y-6">
-                <div class="flex items-center justify-between px-2">
-                    <div>
-                        <h2 class="text-2xl font-black text-gray-900 leading-none">Daftar Alamat</h2>
-                        <p class="text-xs text-gray-400 mt-2 uppercase tracking-wider font-bold">Tujuan pengiriman pesanan Anda</p>
-                    </div>
-                    <button onclick="toggleModal('modal-address')"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-indigo-100 transition-all hover:-translate-y-0.5 active:scale-95">
-                        <i class="fa-solid fa-plus text-[10px]"></i> Tambah Baru
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-1 gap-4">
-                    @forelse($addresses as $addr)
-                        <div class="bg-white p-6 rounded-[2rem] border-2 {{ $addr->is_default ? 'border-indigo-500 bg-indigo-50/10' : 'border-transparent' }} shadow-sm relative overflow-hidden transition-all hover:shadow-md">
-                            @if($addr->is_default)
-                                <div class="absolute top-0 right-0">
-                                    <span class="bg-indigo-500 text-white text-[9px] font-black px-4 py-1.5 rounded-bl-2xl uppercase tracking-tighter">Utama</span>
-                                </div>
-                            @endif
-
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="space-y-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="bg-white border border-gray-200 text-gray-400 text-[10px] font-black px-3 py-1 rounded-lg uppercase flex items-center gap-1.5 shadow-sm">
-                                            <i class="fa-solid fa-house-chimney text-[9px]"></i> {{ $addr->label }}
-                                        </span>
+                    <div class="grid grid-cols-1 gap-4">
+                        @forelse($addresses as $addr)
+                            <div
+                                class="bg-white p-6 rounded-[2rem] border-2 {{ $addr->is_default ? 'border-indigo-500 bg-indigo-50/10' : 'border-transparent' }} shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+                                @if($addr->is_default)
+                                    <div class="absolute top-0 right-0">
+                                        <span
+                                            class="bg-indigo-500 text-white text-[9px] font-black px-4 py-1.5 rounded-bl-2xl uppercase tracking-tighter">Utama</span>
                                     </div>
+                                @endif
 
-                                    <div>
-                                        <p class="font-black text-gray-900 text-lg leading-tight">{{ $addr->recipient_name }}</p>
-                                        <p class="font-bold text-indigo-600 text-sm mt-0.5">{{ $addr->phone_number }}</p>
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="bg-white border border-gray-200 text-gray-400 text-[10px] font-black px-3 py-1 rounded-lg uppercase flex items-center gap-1.5 shadow-sm">
+                                                <i class="fa-solid fa-house-chimney text-[9px]"></i> {{ $addr->label }}
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-black text-gray-900 text-lg leading-tight">
+                                                {{ $addr->recipient_name }}</p>
+                                            <p class="font-bold text-indigo-600 text-sm mt-0.5">{{ $addr->phone_number }}</p>
+                                        </div>
+
+                                        <p class="text-sm text-gray-500 font-medium leading-relaxed max-w-2xl">
+                                            {{ $addr->full_address }}, {{ $addr->district->name }}, {{ $addr->city->name }},
+                                            {{ $addr->province->name }}, {{ $addr->postal_code }}
+                                        </p>
                                     </div>
-
-                                    <p class="text-sm text-gray-500 font-medium leading-relaxed max-w-2xl">
-                                        {{ $addr->full_address }}, {{ $addr->district->name }}, {{ $addr->city->name }},
-                                        {{ $addr->province->name }}, {{ $addr->postal_code }}
-                                    </p>
                                 </div>
-                            </div>
 
-                            <div class="mt-6 pt-6 border-t border-gray-100 flex items-center gap-4">
-                                <button onclick="toggleModal('modal-address-{{ $addr->id }}')"
-                                    class="text-xs font-black uppercase tracking-widest text-gray-900 hover:text-indigo-600 transition-colors">
-                                    <i class="fa-solid fa-pen-to-square mr-1.5 text-[10px]"></i> Ubah Alamat
-                                </button>
-                                <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
-                                <form action="{{ route('address.destroy', $addr) }}" method="POST" class="inline" onsubmit="return confirm('Hapus alamat ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-xs font-black uppercase tracking-widest text-rose-500 hover:text-rose-700 transition-colors">
-                                        <i class="fa-solid fa-trash-can mr-1.5 text-[10px]"></i> Hapus
+                                <div class="mt-6 pt-6 border-t border-gray-100 flex items-center gap-4">
+                                    <button onclick="toggleModal('modal-address-{{ $addr->id }}')"
+                                        class="text-xs font-black uppercase tracking-widest text-gray-900 hover:text-indigo-600 transition-colors">
+                                        <i class="fa-solid fa-pen-to-square mr-1.5 text-[10px]"></i> Ubah Alamat
                                     </button>
-                                </form>
+                                    <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                    <form action="{{ route('address.destroy', $addr) }}" method="POST" class="inline"
+                                        onsubmit="return confirm('Hapus alamat ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="text-xs font-black uppercase tracking-widest text-rose-500 hover:text-rose-700 transition-colors">
+                                            <i class="fa-solid fa-trash-can mr-1.5 text-[10px]"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-gray-100">
-                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-200">
-                                <i class="fa-solid fa-map-location-dot text-4xl"></i>
+                        @empty
+                            <div class="text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-gray-100">
+                                <div
+                                    class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-200">
+                                    <i class="fa-solid fa-map-location-dot text-4xl"></i>
+                                </div>
+                                <p class="text-gray-400 font-bold italic">Belum ada alamat pengiriman yang terdaftar.</p>
                             </div>
-                            <p class="text-gray-400 font-bold italic">Belum ada alamat pengiriman yang terdaftar.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </section>
+                        @endforelse
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
-</div>
 
-{{-- Modal Styles & JS tetap sama (Pastikan id modal sesuai) --}}
+    {{-- Modal Styles & JS tetap sama (Pastikan id modal sesuai) --}}
 
     <div id="modal-address" class="fixed inset-0 z-50 hidden overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -239,6 +260,29 @@
             </div>
         </div>
     </div>
+    <div class="max-w-7xl mx-auto px-8 mt-12 mb-20">
+        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-right-from-bracket text-red-500 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-900">Sesi Akun</h3>
+                    <p class="text-sm text-gray-500">Keluar dari akun Anda dengan aman</p>
+                </div>
+            </div>
+
+            <form action="{{ route('logout') }}" method="POST" class="w-full md:w-auto">
+                @csrf
+                <button type="submit"
+                    class="w-full md:w-64 bg-red-500 text-white px-8 py-4 rounded-2xl font-bold hover:bg-red-600 hover:shadow-lg hover:shadow-red-100 transition-all duration-300 flex items-center justify-center gap-2">
+                    <span>Keluar dari Akun</span>
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Edit Address Modals -->
     @foreach($addresses as $addr)
@@ -281,7 +325,8 @@
                             <option value="">Pilih Provinsi</option>
                             @foreach($provinces as $province)
                                 <option value="{{ $province->id }}" {{ $addr->province_id == $province->id ? 'selected' : '' }}>
-                                    {{ $province->name }}</option>
+                                    {{ $province->name }}
+                                </option>
                             @endforeach
                         </select>
 

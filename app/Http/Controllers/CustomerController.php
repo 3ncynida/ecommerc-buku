@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\Order;
 
 class CustomerController extends Controller
 {
@@ -75,5 +76,15 @@ class CustomerController extends Controller
         $items = $query->get();
 
         return view('customer.categories.show', compact('category', 'items'));
+    }
+
+    public function orderIndex()
+    {
+        // Mengambil semua pesanan milik user yang login, diurutkan dari yang terbaru
+        $orders = Order::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('customer.order.index', compact('orders'));
     }
 }

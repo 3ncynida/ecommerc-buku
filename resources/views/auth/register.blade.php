@@ -1,52 +1,39 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <div class="text-center mb-10">
+        <h2 class="text-2xl font-extrabold text-gray-900">Daftar Akun Baru</h2>
+        <p class="text-gray-500 text-sm mt-2">Bergabung dengan komunitas Libris sekarang</p>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+        <input id="name" type="text" name="name" :value="old('name')" 
+            class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition" 
+            placeholder="Nama Lengkap" required />
+        <x-input-error :messages="$errors->get('name')" class="mt-2" />
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <input id="email" type="email" name="email" :value="old('email')" 
+            class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition" 
+            placeholder="Email" required />
+        <x-input-error :messages="$errors->get('email')" class="mt-2" />
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <input id="password" type="password" name="password" 
+            class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition" 
+            placeholder="Kata Sandi" required />
+        <x-input-error :messages="$errors->get('password')" class="mt-2" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+        <input id="password_confirmation" type="password" name="password_confirmation" 
+            class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition" 
+            placeholder="Konfirmasi Kata Sandi" required />
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 mt-4">
+            Daftar Sekarang
+        </button>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">Sudah punya akun? 
+                <a href="{{ route('login') }}" class="text-indigo-600 font-bold hover:underline">Masuk</a>
+            </p>
         </div>
     </form>
 </x-guest-layout>

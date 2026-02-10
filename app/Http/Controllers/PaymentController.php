@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
 use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -54,6 +55,8 @@ class PaymentController extends Controller
 
                 Order::create([
                     'order_number' => $orderId,
+                    'user_id' => Auth::id(),
+                    'quantity' => array_sum(array_column($cart, 'quantity')),
                     'total_price' => $totalAmount,
                     'payment_status' => 'pending',
                     'item_id' => $itemId,
@@ -100,5 +103,25 @@ class PaymentController extends Controller
     {
         // Alias untuk createTransaction (untuk backward compatibility)
         return $this->createTransaction($request);
+    }
+
+    public function success($order_id)
+    {
+        // 1. Cari data order berdasarkan ID atau Order Number
+        // Menggunakan findOrFail agar jika data tidak ada, otomatis kembali ke 404
+        $order = Order::where('order_number', $order_id)
+                      ->where('user_id', Auth::id()) // Keamanan: Pastikan milik user yang login
+                      ->firstOrFail();
+
+        // 2. Hapus session keranjang jika masih ada (karena transaksi sudah selesai)
+        session()->forget('cart');
+
+        // 3. Kirim data ke view
+        return view('customer.payment-success', [
+            'order' => $order,
+            'total' => $order->total_price,
+            'order_number' => $order->order_number,
+            'payment_method' => $order->payment_method
+        ]);
     }
 }

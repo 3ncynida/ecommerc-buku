@@ -12,6 +12,10 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', [CustomerController::class, 'home'])->name('home');
+Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
+Route::get('/category/list', [CustomerController::class, 'categoryList'])->name('category.list');
+Route::get('/category/{id}', [CustomerController::class, 'categoryShow'])->name('category.show');
+Route::get('/book/{item:slug}', [CustomerController::class, 'show'])->name('book.show');
 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
@@ -20,12 +24,21 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('items', ItemController::class);
 });
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', fn() => 'Halo Admin');
-});
-
+// Rute khusus untuk pelanggan
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/customer', fn() => 'Halo Customer');
+    Route::get('/orders', [CustomerController::class, 'orderIndex'])->name('orders.index')->middleware('auth');
+    Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.process');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/add-to-cart/{id}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
+    Route::get('/payment/check/{orderId}', [PaymentController::class, 'checkStatus'])->name('payment.check');
+    Route::get('/payment/success/{orderId}', [PaymentController::class, 'success'])->name('payment.success');
+
+    // Rute untuk Midtrans
+    Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');
+    Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 });
 
 Route::middleware('auth')->group(function () {
@@ -40,39 +53,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/address/{address}', [ProfileController::class, 'destroyAddress'])->name('address.destroy');
 });
 
-Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
-Route::get('/categories', [CustomerController::class, 'categoryList'])->name('category.list');
-Route::get('/category/{id}', [CustomerController::class, 'categoryShow'])->name('category.show');
-Route::get('/book/{item:slug}', [CustomerController::class, 'show'])->name('book.show');
-Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
-Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
-Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.process');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/add-to-cart/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
-
-// Rute untuk Midtrans
-Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');
-Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
-Route::middleware(['auth', 'role:customer'])->group(function () {
-
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', fn() => 'Halo Admin');
 });
 
-
-
-
-
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/payment/check/{orderId}', [PaymentController::class, 'checkStatus'])->name('payment.check');
-
-// Opsional: Rute setelah pembayaran selesai
-Route::get('/payment/success', function () {
-    return view('payment.success'); // Buat view ini nanti
-})->name('payment.success');
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/customer', fn() => 'Halo Customer');
+});
 
 Route::resource('/test', testController::class);
 

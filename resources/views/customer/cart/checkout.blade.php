@@ -176,7 +176,7 @@
                         }
                         if (data.snap_token) {
                             window.snap.pay(data.snap_token, {
-                                onSuccess: function (result) { window.location.href = "{{ route('payment.success') }}"; },
+                                onSuccess: function (result) { window.location.href = "{{ route('payment.success', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', result.order_id); },
                                 onPending: function (result) { alert('Menunggu pembayaran...'); },
                                 onError: function (result) { alert('Pembayaran gagal'); }
                             });

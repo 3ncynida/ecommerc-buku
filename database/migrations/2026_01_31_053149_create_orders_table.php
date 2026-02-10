@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('order_number')->unique(); // Contoh: ORD-20231001-001
             $table->foreignId('item_id')->constrained();
             $table->integer('quantity')->default(1);

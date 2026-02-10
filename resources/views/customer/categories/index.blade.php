@@ -17,8 +17,6 @@
                         <div class="relative">
                             <h2 class="text-3xl font-black text-gray-900 tracking-tight flex items-center">
                                 {{ $category->name }}
-                                {{-- Dot dekoratif agar terlihat lebih modern --}}
-                                <span class="ml-2 w-2 h-2 bg-indigo-600 rounded-full"></span>
                             </h2>
                             <p class="text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">Koleksi Terpilih</p>
                         </div>

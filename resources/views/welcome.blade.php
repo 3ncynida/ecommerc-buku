@@ -6,69 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libris | Toko Buku Online Modern</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-900">
 
-    <nav class="bg-white py-4 px-8 flex justify-between items-center shadow-sm sticky top-0 z-50">
-        <div class="text-2xl font-bold text-indigo-600">Libris.</div>
-
-        <div class="hidden md:flex space-x-8 font-medium">
-            <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
-            <a href="{{ route('category.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
-            <a href="#" class="hover:text-indigo-600 transition">Terlaris</a>
-            <a href="#" class="hover:text-indigo-600 transition">Promo</a>
-        </div>
-
-        <div class="flex items-center space-x-5">
-            <button class="text-gray-600 hover:text-indigo-600">
-                <i class="fa-solid fa-magnifying-glass text-xl"></i>
-            </button>
-
-            <div class="relative">
-                <a href="{{ route('cart.index') }}" class="relative">
-                    <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
-                    @if(session('cart'))
-                        <span
-                            class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5 animate-bounce">
-                            {{ count(session('cart')) }}
-                        </span>
-                    @endif
-                </a>
-            </div>
-
-            @guest
-                <a href="{{ route('login') }}" class="text-gray-600 hover:text-indigo-600 transition">
-                    Masuk
-                </a>
-                <a href="{{ route('register') }}"
-                    class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition">
-                    Daftar
-                </a>
-            @endguest
-
-            {{-- Logika Autentikasi --}}
-            @auth
-                {{-- Tombol Profile untuk semua user yang login --}}
-                <a href="/profile" class="flex items-center space-x-2 group">
-                    <div
-                        class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition">
-                        <i class="fa-solid fa-user text-indigo-600 group-hover:text-white transition"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm font-semibold text-gray-700">{{ auth()->user()->name }}</span>
-                </a>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">
-                        Keluar
-                    </button>
-                </form>
-            @endauth
-        </div>
-    </nav>
-
+    @include('layouts.navigation')
 
     <header class="max-w-7xl mx-auto px-8 py-16 flex flex-col md:flex-row items-center">
         <div class="md:w-1/2 space-y-6">
@@ -104,16 +48,16 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             @foreach($categories as $cat)
-            <a href="/category/{{ $cat->id }}">
-                <div
-                    class="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group text-center">
+                <a href="/category/{{ $cat->id }}">
                     <div
-                        class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-600 transition">
-                        <i class="fa-solid fa-book-open text-indigo-600 group-hover:text-white transition text-xl"></i>
+                        class="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group text-center">
+                        <div
+                            class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-600 transition">
+                            <i class="fa-solid fa-book-open text-indigo-600 group-hover:text-white transition text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">{{ $cat->name }}</h3>
                     </div>
-                    <h3 class="font-bold text-lg">{{ $cat->name }}</h3>
-                </div>
-            </a>
+                </a>
             @endforeach
         </div>
     </section>
@@ -138,25 +82,25 @@
                             @endif
 
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent 
-                                   opacity-0 group-hover:opacity-100 transition-all duration-300
-                                   flex items-center justify-center gap-4">
+                                       opacity-0 group-hover:opacity-100 transition-all duration-300
+                                       flex items-center justify-center gap-4">
 
                                 <form action="{{ route('cart.add', $book->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                           text-gray-800 shadow-xl
-                                           hover:bg-indigo-600 hover:text-white
-                                           hover:scale-110 active:scale-95
-                                           transition-all duration-300">
+                                               text-gray-800 shadow-xl
+                                               hover:bg-indigo-600 hover:text-white
+                                               hover:scale-110 active:scale-95
+                                               transition-all duration-300">
                                         <i class="fa-solid fa-cart-plus text-lg"></i>
                                     </button>
                                 </form>
 
                                 <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                       text-gray-800 shadow-xl
-                                       hover:bg-indigo-600 hover:text-white
-                                       hover:scale-110 active:scale-95
-                                       transition-all duration-300">
+                                           text-gray-800 shadow-xl
+                                           hover:bg-indigo-600 hover:text-white
+                                           hover:scale-110 active:scale-95
+                                           transition-all duration-300">
                                     <i class="fa-solid fa-eye text-lg"></i>
                                 </a>
                             </div>

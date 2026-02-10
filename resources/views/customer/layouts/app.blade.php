@@ -2,67 +2,28 @@
 <html lang="id">
 
 <head>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com https://snap-assets.al-pc-id-b.cdn.gtflabs.io; connect-src 'self' https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{-- Update CSP untuk mengizinkan Vite Lokal (Port 5173) --}}
+    <meta http-equiv="Content-Security-Policy"
+        content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com https://snap-assets.al-pc-id-b.cdn.gtflabs.io; 
+        connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com;">
+
     <title>{{ $title ?? 'Libris | Toko Buku Online' }}</title>
+
+    {{-- Gaya agar dropdown tidak berkedip saat refresh --}}
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-900">
 
-<nav class="bg-white py-4 px-8 flex justify-between items-center shadow-sm sticky top-0 z-50">
-    <a href="/" class="text-2xl font-bold text-indigo-600">Libris.</a>
-    
-    <div class="hidden md:flex space-x-8 font-medium text-gray-600">
-        <a href="/" class="hover:text-indigo-600 transition">Beranda</a>
-        <a href="{{ route('category.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
-        <a href="#" class="hover:text-indigo-600 transition">Terlaris</a>
-    </div>
-
-    <div class="flex items-center space-x-5">
-        <button class="text-gray-600 hover:text-indigo-600">
-            <i class="fa-solid fa-magnifying-glass text-xl"></i>
-        </button>
-        
-        <div class="relative">
-            <a href="{{ route('cart.index') }}" class="relative">
-                <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
-                @if(session('cart'))
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5 animate-bounce">
-                        {{ count(session('cart')) }}
-                    </span>
-                @endif
-            </a>
-        </div>
-
-        {{-- Logika Autentikasi --}}
-        @auth
-            {{-- Jika User adalah Admin, tampilkan tombol Admin Dashboard --}}
-            @if(auth()->user()->role == 'admin') {{-- Sesuaikan field 'role' dengan database kamu --}}
-                <a href="/admin/dashboard"
-                    class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition text-sm font-bold">
-                    Admin
-                </a>
-            @endif
-
-            {{-- Tombol Profile untuk semua user yang login --}}
-            <a href="/profile" class="flex items-center space-x-2 group">
-                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition">
-                    <i class="fa-solid fa-user text-indigo-600 group-hover:text-white transition"></i>
-                </div>
-                <span class="hidden lg:block text-sm font-semibold text-gray-700">{{ auth()->user()->name }}</span>
-            </a>
-        @else
-            {{-- Jika belum login --}}
-            <a href="{{ route('login') }}" 
-                class="border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition text-sm font-bold">
-                Masuk
-            </a>
-        @endauth
-    </div>
-</nav>
+    @include('layouts.navigation')
 
     <main>
         @yield('content')
