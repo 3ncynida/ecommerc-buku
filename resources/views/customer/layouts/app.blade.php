@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     {{-- Update CSP untuk mengizinkan Vite Lokal (Port 5173) --}}
     <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com https://snap-assets.al-pc-id-b.cdn.gtflabs.io; 
@@ -14,7 +15,9 @@
 
     {{-- Gaya agar dropdown tidak berkedip saat refresh --}}
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -54,6 +57,46 @@
         </div>
         <p class="text-center text-gray-500 text-sm border-t border-gray-800 pt-8">© 2026 Libris E-commerce.</p>
     </footer>
+
+    <script>
+        function toggleFavorite(button, bookId) {
+            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+
+            if (!csrfTokenElement) {
+                console.error('CSRF token not found. Make sure <meta name="csrf-token"> is in the head.');
+                return;
+            }
+
+            fetch('/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json', // Tambahkan ini agar Laravel kirim JSON meskipun error
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ item_id: bookId })
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        window.location.href = '/login'; // Arahkan ke login jika belum auth
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const icon = button.querySelector('i');
+                    if (data.status === 'added') {
+                        icon.classList.replace('fa-regular', 'fa-solid');
+                        button.classList.add('text-red-500');
+                        button.classList.remove('text-gray-500');
+                    } else if (data.status === 'removed') {
+                        icon.classList.replace('fa-solid', 'fa-regular');
+                        button.classList.remove('text-red-500');
+                        button.classList.add('text-gray-500');
+                    }
+                });
+        }
+    </script>
 
 </body>
 

@@ -39,6 +39,16 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
+        // Jika request AJAX (fetch/JS) kirimkan JSON agar tidak perlu refresh
+        if (request()->wantsJson() || request()->ajax() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Buku berhasil ditambah ke keranjang!',
+                'cart_count' => array_sum(array_map(fn($i) => $i['quantity'], $cart)),
+                'cart' => $cart,
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Buku berhasil ditambah ke keranjang!');
     }
 

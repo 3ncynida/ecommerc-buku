@@ -22,6 +22,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);
+    Route::get('/profile', [ProfileController::class, 'adminEdit'])->name('admin.profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
 });
 
 // Rute khusus untuk pelanggan
@@ -35,6 +37,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
     Route::get('/payment/check/{orderId}', [PaymentController::class, 'checkStatus'])->name('payment.check');
     Route::get('/payment/success/{orderId}', [PaymentController::class, 'success'])->name('payment.success');
+
+    Route::post('/wishlist/toggle', [CustomerController::class, 'toggleWishlist'])->name('wishlist.toggle');
+    Route::get('/wishlist', [CustomerController::class, 'wishlistIndex'])->name('wishlist.index');
 
     // Rute untuk Midtrans
     Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');

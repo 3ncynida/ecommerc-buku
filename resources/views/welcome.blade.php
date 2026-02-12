@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libris | Toko Buku Online Modern</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -82,25 +83,35 @@
                             @endif
 
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent 
-                                       opacity-0 group-hover:opacity-100 transition-all duration-300
-                                       flex items-center justify-center gap-4">
+                                           opacity-0 group-hover:opacity-100 transition-all duration-300
+                                           flex items-center justify-center gap-4">
 
-                                <form action="{{ route('cart.add', $book->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="p-4 rounded-full bg-white/90 backdrop-blur
+                                @auth
+                                    <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
+                                        @csrf
+                                        <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                           text-gray-800 shadow-xl
+                                                           hover:bg-indigo-600 hover:text-white
+                                                           hover:scale-110 active:scale-95
+                                                           transition-all duration-300">
+                                            <i class="fa-solid fa-cart-plus text-lg"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                       text-gray-800 shadow-xl
+                                                       hover:bg-indigo-600 hover:text-white
+                                                       hover:scale-110 active:scale-95
+                                                       transition-all duration-300">
+                                        <i class="fa-solid fa-cart-plus text-lg"></i>
+                                    </a>
+                                @endauth
+
+                                <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
                                                text-gray-800 shadow-xl
                                                hover:bg-indigo-600 hover:text-white
                                                hover:scale-110 active:scale-95
                                                transition-all duration-300">
-                                        <i class="fa-solid fa-cart-plus text-lg"></i>
-                                    </button>
-                                </form>
-
-                                <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                           text-gray-800 shadow-xl
-                                           hover:bg-indigo-600 hover:text-white
-                                           hover:scale-110 active:scale-95
-                                           transition-all duration-300">
                                     <i class="fa-solid fa-eye text-lg"></i>
                                 </a>
                             </div>

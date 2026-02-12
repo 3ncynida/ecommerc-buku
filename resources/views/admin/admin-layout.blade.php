@@ -11,7 +11,7 @@
 <body class="bg-gray-100 flex">
 
     <aside class="w-64 bg-indigo-900 text-white min-h-screen sticky top-0">
-        <div class="p-6 text-2xl font-bold border-b border-indigo-800">Libris Admin</div>
+        <div class="p-6 text-2xl font-bold border-b border-indigo-800">Libris {{ auth()->user()->name }}</div>
 <nav class="mt-6 px-4 space-y-2">
 
     <a href="{{ route('admin.dashboard.index') }}"
@@ -36,6 +36,12 @@
        class="block py-2.5 px-4 rounded transition
        {{ request()->routeIs('items.*') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
         <i class="fa-solid fa-book mr-2"></i> Data Buku
+    </a>
+
+    <a href="{{ route('admin.profile.edit') }}"
+       class="block py-2.5 px-4 rounded transition
+       {{ request()->routeIs('admin.profile.edit') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+        <i class="fa-solid fa-user mr-2"></i> Profil Admin
     </a>
 
     <a href="/test" class="block py-2.5 px-4 rounded transition hover:bg-indigo-800">

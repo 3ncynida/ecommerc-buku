@@ -103,6 +103,27 @@ class ProfileController extends Controller
         return redirect()->back()->with('success', 'Alamat berhasil diubah!');
     }
 
+    public function adminEdit(Request $request): View
+    {
+        $user = $request->user();
+        return view('admin.profile.index', [
+            'user' => $user,
+        ]);
+    }
+
+    public function adminUpdate(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('admin.profile.edit')->with('success', 'Profil berhasil diperbarui!');
+    }
+
     /**
      * Delete an address.
      */

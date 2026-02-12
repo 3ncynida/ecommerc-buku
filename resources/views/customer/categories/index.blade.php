@@ -36,13 +36,9 @@
                             <div
                                 class="group relative bg-white border border-gray-100 rounded-2xl p-3 shadow-sm hover:shadow-xl transition-all duration-300">
 
-                                <div class="absolute top-5 left-5 z-10">
-                                    <span class="bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
-                                        <i class="fa-solid fa-id-badge mr-1"></i> ID
-                                    </span>
-                                </div>
-                                <button class="absolute top-5 right-5 z-10 text-gray-400 hover:text-red-500 transition-colors">
-                                    <i class="fa-solid fa-heart shadow-sm"></i>
+                                <button onclick="toggleFavorite(this, {{ $book->id }})"
+                                    class="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-1.5 rounded-full text-red-500 shadow-sm">
+                                    <i class="{{ $book->isFavorited() ? 'fa-solid' : 'fa-regular' }} fa-heart text-sm"></i>
                                 </button>
 
                                 <div class="relative aspect-[3/4] mb-4 overflow-hidden rounded-xl bg-gray-100">
@@ -50,7 +46,7 @@
                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
 
                                     {{-- Overlay Stok Habis (Contoh Logika) --}}
-                                    @if($book->Stok <= 0)
+                                    @if($book->stok <= 0)
                                         <div
                                             class="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4">
                                             <span

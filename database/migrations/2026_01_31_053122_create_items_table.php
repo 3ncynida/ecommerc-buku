@@ -26,7 +26,7 @@ return new class extends Migration {
             $table->string('language')->nullable();
             $table->string('slug')->unique(); // Tambahkan ini
             $table->text('description')->nullable();
-            $table->integer('Stok');
+            $table->integer('stok');
             $table->decimal('price', 15, 2);
             $table->string('image')->nullable();
             $table->timestamps();

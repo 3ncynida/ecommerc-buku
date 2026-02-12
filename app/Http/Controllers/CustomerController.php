@@ -7,10 +7,11 @@ use App\Http\Requests;
 use App\Models\Item;
 use App\Models\Category;
 use App\Models\Order;
+use App\Models\Wishlist;
 
 class CustomerController extends Controller
 {
-    // app/Http/Controllers/BookController.php
+    // home controller
     public function home()
     {
         // Mengambil buku beserta data author-nya sekaligus agar ringan
@@ -31,6 +32,7 @@ class CustomerController extends Controller
         return view('customer.indexShow', compact('item', 'relatedBooks'));
     }
 
+    // category controller
     public function category()
     {
         // Kita hapus bagian where('is_active', true)
@@ -78,6 +80,7 @@ class CustomerController extends Controller
         return view('customer.categories.show', compact('category', 'items'));
     }
 
+    // Order controller
     public function orderIndex()
     {
         // Mengambil semua pesanan milik user yang login, diurutkan dari yang terbaru
@@ -86,5 +89,44 @@ class CustomerController extends Controller
             ->get();
 
         return view('customer.order.index', compact('orders'));
+    }
+
+    // wishlist controller
+    public function wishlistIndex()
+    {
+        $wishlists = Wishlist::where('user_id', auth()->id())
+            ->whereHas('item') // Hanya ambil jika relasi 'item' ada
+            ->with('item.author') // Eager load agar cepat
+            ->get();
+
+        return view('customer.wishlist.index', compact('wishlists'));
+    }
+
+    public function toggleWishlist(Request $request)
+    {
+        // 1. Pastikan User Login
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // 2. Ambil item_id (sesuai dengan body JSON di JS Anda)
+        $itemId = $request->item_id;
+
+        // 3. Logika Toggle
+        $wishlist = Wishlist::where('user_id', auth()->id())
+            ->where('item_id', $itemId) // Pastikan nama kolom di DB adalah item_id
+            ->first();
+
+        if ($wishlist) {
+            $wishlist->delete();
+            return response()->json(['status' => 'removed']);
+        }
+
+        Wishlist::create([
+            'user_id' => auth()->id(),
+            'item_id' => $itemId
+        ]);
+
+        return response()->json(['status' => 'added']);
     }
 }

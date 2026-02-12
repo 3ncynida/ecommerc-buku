@@ -12,7 +12,7 @@
         <button class="text-gray-600 hover:text-indigo-600">
             <i class="fa-solid fa-magnifying-glass text-xl"></i>
         </button>
-
+        
         <div class="relative">
             <a href="{{ route('cart.index') }}" class="relative">
                 <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
@@ -73,16 +73,23 @@
 
                     {{-- List Menu --}}
                     <div class="px-2 space-y-1">
+                        <a href="{{ route('profile.edit') }}"
+                            class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Akun</span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
+                        </a>
+                        @if (auth()->user()->role === 'customer')
                         <a href="{{ route('orders.index') }}"
                             class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
                             <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Transaksi</span>
                             <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
                         </a>
-                        <a href="/profile"
+                        <a href="{{ route('wishlist.index') }}"
                             class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
-                            <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Akun</span>
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Wishlist</span>
                             <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
                         </a>
+                        @endif
                     </div>
 
                     <hr class="my-2 border-gray-50">
