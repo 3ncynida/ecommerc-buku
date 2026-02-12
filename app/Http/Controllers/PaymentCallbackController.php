@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Order;
+use App\Models\Item;
 use Illuminate\Support\Facades\Log;
 
 class PaymentCallbackController extends Controller
@@ -12,14 +13,15 @@ class PaymentCallbackController extends Controller
     public function receive(Request $request)
     {
         $serverKey = config('services.midtrans.server_key');
-        
+
         Log::info('Midtrans webhook received', $request->all());
-        
+
         // Validasi signature key untuk keamanan
-        $hashed = hash("sha512", 
-            $request->order_id . 
-            $request->status_code . 
-            $request->gross_amount . 
+        $hashed = hash(
+            "sha512",
+            $request->order_id .
+            $request->status_code .
+            $request->gross_amount .
             $serverKey
         );
 
@@ -52,10 +54,27 @@ class PaymentCallbackController extends Controller
             ]);
 
             // Update order status
-            Order::where('order_number', $request->order_id)->update([
-                'payment_status' => 'success',
-                'item_status' => 'diproses'
-            ]);
+            $order = Order::where('order_number', $request->order_id)->first();
+            if ($order) {
+                $order->update([
+                    'payment_status' => 'success',
+                    'item_status' => 'diproses'
+                ]);
+
+                // Kurangi stok produk terkait jika ada
+                try {
+                    if ($order->item_id && $order->quantity) {
+                        $item = Item::find($order->item_id);
+                        if ($item) {
+                            $newStock = max(0, (int) $item->stok - (int) $order->quantity);
+                            $item->update(['stok' => $newStock]);
+                            Log::info('Stock decremented', ['item_id' => $item->id, 'decreased_by' => $order->quantity, 'new_stock' => $newStock]);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Failed to decrement stock', ['error' => $e->getMessage(), 'order' => $order->order_number]);
+                }
+            }
 
             Log::info('Payment successful', ['order_id' => $request->order_id]);
 

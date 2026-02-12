@@ -29,8 +29,18 @@
                         placeholder="Masukkan nama author..." 
                         value="{{ old('name') }}" required>
                 </div>
-                
+
                 @error('name')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="bio" class="block text-sm font-semibold text-gray-700 mb-2">Bio Author</label>
+                <textarea name="bio" id="bio" 
+                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition @error('bio') border-red-500 @enderror"
+                    placeholder="Masukkan bio author..." rows="4">{{ old('bio') }}</textarea>
+                @error('bio')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

@@ -10,7 +10,7 @@ class AuthorController extends Controller
 {
     public function index()
     {
-        $authors = Author::latest()->get();
+        $authors = Author::latest()->paginate(10);
         return view('admin.authors.index', compact('authors'));
     }
 
@@ -29,8 +29,24 @@ class AuthorController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'bio' => 'nullable|string',
         ]);
-        Author::create($request->only('name'));
+        Author::create($request->only('name', 'bio'));
         return redirect()->route('authors.index')->with('success', 'Penulis berhasil ditambahkan');
+    }
+
+    public function edit(Author $author)
+    {
+        return view('admin.authors.edit', compact('author'));
+    }
+
+    public function update(Request $request, Author $author)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'bio' => 'nullable|string',
+        ]);
+        $author->update($request->only('name', 'bio'));
+        return redirect()->route('authors.index')->with('success', 'Penulis berhasil diupdate');
     }
 }

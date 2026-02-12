@@ -67,7 +67,6 @@
         <div class="max-w-7xl mx-auto px-8">
             <div class="flex justify-between items-center mb-10">
                 <h2 class="text-3xl font-bold text-gray-800">Koleksi Buku Terbaru</h2>
-                <a href="#" class="text-indigo-600 font-semibold hover:text-indigo-800 transition">Lihat Semua →</a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

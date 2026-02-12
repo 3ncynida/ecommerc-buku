@@ -17,6 +17,7 @@ Route::get('/category/list', [CustomerController::class, 'categoryList'])->name(
 Route::get('/category/{id}', [CustomerController::class, 'categoryShow'])->name('category.show');
 Route::get('/book/{item:slug}', [CustomerController::class, 'show'])->name('book.show');
 
+// Rute khusus untuk admin
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
     Route::resource('categories', CategoryController::class);

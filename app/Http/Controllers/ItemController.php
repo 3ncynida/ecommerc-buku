@@ -13,12 +13,19 @@ class ItemController extends Controller
     // menampilkan semua item
     public function index(Request $request)
     {
-        $items = Item::latest()->get();
+        // 1. Ambil semua kategori untuk dropdown filter
         $categories = Category::all();
 
-        $items = Item::when($request->category_id, function ($query) use ($request) {
-            $query->where('category_id', $request->category_id);
-        })->latest()->get();
+        // 2. Query utama dengan eager loading 'category' agar tidak berat
+        $items = Item::with('category')
+            ->when($request->category_id, function ($query) use ($request) {
+                $query->where('category_id', $request->category_id);
+            })
+            ->latest()
+            ->paginate(10); // Menggunakan pagination (10 data per halaman)
+
+        // 3. Tambahkan parameter query ke link pagination
+        $items->appends($request->all());
 
         return view('admin.items.index', compact('items', 'categories'));
     }
@@ -77,7 +84,7 @@ class ItemController extends Controller
     {
         $author = Author::all();
         $categories = Category::all();
-        
+
 
         return view('admin.items.edit', compact('item', 'categories', 'author'));
     }
@@ -123,6 +130,16 @@ class ItemController extends Controller
         ]);
 
         return redirect()->route('items.index')->with('success', 'Item berhasil diupdate');
+    }
+
+    public function destroy(Item $item)
+    {
+        if ($item->image) {
+            Storage::disk('public')->delete($item->image);
+        }
+
+        $item->delete();
+        return back()->with('success', 'Item berhasil dihapus');
     }
 
     public function show(Item $item)

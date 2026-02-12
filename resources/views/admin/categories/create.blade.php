@@ -22,7 +22,7 @@
                 <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nama Kategori</label>
                 <input type="text" name="name" id="name" 
                     class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition @error('name') border-red-500 @enderror"
-                    placeholder="Contoh: Elektronik, Pakaian, Jasa..." 
+                    placeholder="Masukkan nama kategori..." 
                     value="{{ old('name') }}" required>
                 
                 @error('name')

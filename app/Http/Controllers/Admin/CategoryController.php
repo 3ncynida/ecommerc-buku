@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -32,5 +32,19 @@ class CategoryController extends Controller
     {
         $category->delete();
         return back()->with('success', 'Kategori berhasil dihapus');
+    }
+
+    public function edit(Category $category)
+    {
+        return view('admin.categories.edit', compact('category'));
+    }
+
+    public function update(Request $request, Category $category)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $category->update($request->only('name'));
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diupdate');
     }
 }

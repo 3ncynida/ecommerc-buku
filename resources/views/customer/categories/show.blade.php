@@ -35,7 +35,7 @@
                 {{-- Tombol Stok Tersedia --}}
                 <a href="{{ route('category.show', ['id' => $category->id, 'filter' => 'stok', 'sort' => request('sort')]) }}"
                     class="inline-flex items-center px-6 py-2.5 border rounded-full text-sm font-bold transition shadow-sm
-                       {{ request('filter') == 'stok' ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50' }}">
+                           {{ request('filter') == 'stok' ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50' }}">
                     <i
                         class="fa-solid fa-circle-check mr-2 {{ request('filter') == 'stok' ? 'text-indigo-400' : 'text-gray-300' }}"></i>
                     Stok Tersedia
@@ -46,10 +46,10 @@
                 @forelse($items as $book)
                     <div
                         class="group relative bg-white border border-gray-100 rounded-[2rem] p-4 shadow-sm hover:shadow-2xl transition-all duration-500">
-                        
+
                         <button onclick="toggleFavorite(this, {{ $book->id }})"
                             class="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-1.5 rounded-full text-red-500 shadow-sm">
-                            <i class="fa-solid fa-heart text-sm"></i>
+                            <i class="{{ $book->isFavorited() ? 'fa-solid' : 'fa-regular' }} fa-heart text-sm"></i>
                         </button>
 
                         <div class="relative aspect-[3/4.2] mb-5 overflow-hidden rounded-[1.5rem] bg-gray-50">
