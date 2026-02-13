@@ -21,7 +21,7 @@
                             <p class="text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">Koleksi Terpilih</p>
                         </div>
 
-                        <a href="{{ route('category.show', $category->id) }}"
+                        <a href="{{ route('category.show', $category->slug) }}"
                             class="group flex items-center text-sm font-bold text-gray-400 hover:text-indigo-600 transition-all duration-300">
                             <span class="mr-2">Lihat Semua</span>
                             <div

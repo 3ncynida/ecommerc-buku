@@ -49,7 +49,7 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             @foreach($categories as $cat)
-                <a href="/category/{{ $cat->id }}">
+                <a href="/category/{{ $cat->slug }}" class="block">
                     <div
                         class="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group text-center">
                         <div
@@ -82,35 +82,35 @@
                             @endif
 
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent 
-                                           opacity-0 group-hover:opacity-100 transition-all duration-300
-                                           flex items-center justify-center gap-4">
+                                               opacity-0 group-hover:opacity-100 transition-all duration-300
+                                               flex items-center justify-center gap-4">
 
                                 @auth
                                     <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
                                         @csrf
                                         <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                           text-gray-800 shadow-xl
-                                                           hover:bg-indigo-600 hover:text-white
-                                                           hover:scale-110 active:scale-95
-                                                           transition-all duration-300">
+                                                                   text-gray-800 shadow-xl
+                                                                   hover:bg-indigo-600 hover:text-white
+                                                                   hover:scale-110 active:scale-95
+                                                                   transition-all duration-300">
                                             <i class="fa-solid fa-cart-plus text-lg"></i>
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                       text-gray-800 shadow-xl
-                                                       hover:bg-indigo-600 hover:text-white
-                                                       hover:scale-110 active:scale-95
-                                                       transition-all duration-300">
+                                                               text-gray-800 shadow-xl
+                                                               hover:bg-indigo-600 hover:text-white
+                                                               hover:scale-110 active:scale-95
+                                                               transition-all duration-300">
                                         <i class="fa-solid fa-cart-plus text-lg"></i>
                                     </a>
                                 @endauth
 
                                 <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                               text-gray-800 shadow-xl
-                                               hover:bg-indigo-600 hover:text-white
-                                               hover:scale-110 active:scale-95
-                                               transition-all duration-300">
+                                                   text-gray-800 shadow-xl
+                                                   hover:bg-indigo-600 hover:text-white
+                                                   hover:scale-110 active:scale-95
+                                                   transition-all duration-300">
                                     <i class="fa-solid fa-eye text-lg"></i>
                                 </a>
                             </div>
@@ -175,6 +175,66 @@
         </div>
         <p class="text-center text-gray-500 text-sm">© 2026 Libris E-commerce. Dibuat dengan cinta & Laravel.</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('search-input');
+            const resultsDropdown = document.getElementById('search-results');
+            const container = document.getElementById('results-container');
+            const clearBtn = document.getElementById('clear-search');
+            let debounceTimer;
+
+            input.addEventListener('input', function () {
+                const query = this.value;
+                clearBtn.classList.toggle('hidden', query.length === 0);
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (query.length < 2) {
+                        resultsDropdown.classList.add('hidden');
+                        return;
+                    }
+
+                    fetch(`/api/search?q=${query}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            container.innerHTML = '';
+
+                            if (data.items.length === 0 && data.authors.length === 0) {
+                                container.innerHTML = '<p class="px-5 py-3 text-sm text-gray-500">Tidak ditemukan hasil.</p>';
+                            } else {
+                                // Render Buku
+                                data.items.forEach(item => {
+                                    container.innerHTML += `
+                                <a href="/book/${item.slug}" class="flex items-center px-5 py-3 hover:bg-gray-50 transition">
+                                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3 text-xs"></i>
+                                    <span class="text-sm font-medium text-gray-700">${item.name}</span>
+                                    <span class="ml-auto text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">BUKU</span>
+                                </a>`;
+                                });
+                                // Render Penulis
+                                data.authors.forEach(author => {
+                                    container.innerHTML += `
+                                <a href="/author/${author.id}" class="flex items-center px-5 py-3 hover:bg-gray-50 transition">
+                                    <i class="fa-solid fa-user text-gray-400 mr-3 text-xs"></i>
+                                    <span class="text-sm font-medium text-gray-700">${author.name}</span>
+                                    <span class="ml-auto text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full font-bold">PENULIS</span>
+                                </a>`;
+                                });
+                            }
+                            resultsDropdown.classList.remove('hidden');
+                        });
+                }, 300); // Tunggu 300ms setelah berhenti mengetik
+            });
+
+            // Sembunyikan dropdown saat klik di luar
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !resultsDropdown.contains(e.target)) {
+                    resultsDropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
 
 </body>
 

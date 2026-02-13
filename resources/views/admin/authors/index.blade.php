@@ -17,6 +17,7 @@
                 <tr>
                     <th class="px-6 py-4">ID</th>
                     <th class="px-6 py-4">Nama Author</th>
+                    <th class="px-6 py-4">Biografi</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -25,6 +26,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 text-sm text-gray-600">#{{ $author->id }}</td>
                         <td class="px-6 py-4 font-medium text-gray-900">{{ $author->name }}</td>
+                        <td class="px-6 py-4 text-gray-700">{{ $author->bio ? Str::limit($author->bio, 50) : 'tidak diisi' }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-center space-x-2">
                                 <a href="{{ route('authors.edit', $author->id) }}" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition">

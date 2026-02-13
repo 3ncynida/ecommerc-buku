@@ -14,7 +14,7 @@ use App\Http\Controllers\ProfileController;
 Route::get('/', [CustomerController::class, 'home'])->name('home');
 Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
 Route::get('/category/list', [CustomerController::class, 'categoryList'])->name('category.list');
-Route::get('/category/{id}', [CustomerController::class, 'categoryShow'])->name('category.show');
+Route::get('/category/{category:slug}', [CustomerController::class, 'categoryShow'])->name('category.show');
 Route::get('/book/{item:slug}', [CustomerController::class, 'show'])->name('book.show');
 
 // Rute khusus untuk admin
@@ -58,6 +58,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/address/{address}', [ProfileController::class, 'updateAddress'])->name('address.update');
     Route::delete('/address/{address}', [ProfileController::class, 'destroyAddress'])->name('address.destroy');
 });
+
+Route::get('/api/search', [App\Http\Controllers\ItemController::class, 'liveSearch'])->name('api.search');
+
+Route::get('/author/{authorId}', [CustomerController::class, 'authorShow'])->name('author.show');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', fn() => 'Halo Admin');

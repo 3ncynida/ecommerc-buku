@@ -13,4 +13,10 @@ class Author extends Model
     {
         return $this->hasMany(Item::class);
     }
+
+    public function items()
+    {
+        // Author has many Items (Satu penulis memiliki banyak buku)
+        return $this->hasMany(Item::class);
+    }
 }

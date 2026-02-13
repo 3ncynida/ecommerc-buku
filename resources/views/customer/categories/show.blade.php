@@ -27,13 +27,13 @@
 
             <div class="flex items-center gap-3 mb-12">
                 {{-- Tombol Reset: Menghapus filter tapi mempertahankan sort --}}
-                <a href="{{ route('category.show', ['id' => $category->id, 'sort' => request('sort')]) }}"
+                <a href="{{ route('category.show', ['category' => $category->slug, 'sort' => request('sort')]) }}"
                     class="w-11 h-11 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition bg-white shadow-sm">
                     <i class="fa-solid fa-xmark text-gray-400"></i>
                 </a>
 
                 {{-- Tombol Stok Tersedia --}}
-                <a href="{{ route('category.show', ['id' => $category->id, 'filter' => 'stok', 'sort' => request('sort')]) }}"
+                <a href="{{ route('category.show', ['category' => $category->slug, 'filter' => 'stok', 'sort' => request('sort')]) }}"
                     class="inline-flex items-center px-6 py-2.5 border rounded-full text-sm font-bold transition shadow-sm
                            {{ request('filter') == 'stok' ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50' }}">
                     <i

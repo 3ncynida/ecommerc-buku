@@ -54,12 +54,10 @@ class CustomerController extends Controller
         return view('customer.categories.list', compact('categories'));
     }
 
-    public function categoryShow(Request $request, $id)
+    public function categoryShow(Category $category, Request $request)
     {
-        $category = Category::findOrFail($id);
-
         // Mulai query buku berdasarkan kategori
-        $query = Item::where('category_id', $id)->with('author');
+        $query = Item::where('category_id', $category->id)->with('author');
 
         // Filter: Hanya stok yang tersedia
         if ($request->has('filter') && $request->filter == 'stok') {
@@ -128,5 +126,20 @@ class CustomerController extends Controller
         ]);
 
         return response()->json(['status' => 'added']);
+    }
+
+    public function authorShow($authorId)
+    {
+        // Menggunakan 'items' (jamak) dan memuat jumlah buku secara otomatis
+        $author = \App\Models\Author::with(['items'])->withCount('items')->findOrFail($authorId);
+
+        // Ambil kategori untuk sidebar filter (image_87b6d7.jpg)
+        $categories = \App\Models\Category::all();
+
+        return view('customer.author.index', [
+            'author' => $author,
+            'books' => $author->items, // Mengirim koleksi buku penulis
+            'categories' => $categories
+        ]);
     }
 }

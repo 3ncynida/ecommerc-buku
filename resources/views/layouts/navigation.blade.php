@@ -9,10 +9,30 @@
     </div>
 
     <div class="flex items-center space-x-5">
-        <button class="text-gray-600 hover:text-indigo-600">
-            <i class="fa-solid fa-magnifying-glass text-xl"></i>
-        </button>
-        
+        <div class="relative flex-1 max-w-lg" x-data="{ open: false, search: '' }">
+            {{-- Search Bar --}}
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="search-input"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 pl-11 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                    placeholder="Cari buku atau penulis..." autocomplete="off">
+                {{-- Tombol Close (x) --}}
+                <button id="clear-search"
+                    class="absolute inset-y-0 right-0 pr-4 text-gray-400 hover:text-gray-600 hidden">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            {{-- Dropdown Hasil Pencarian --}}
+            <div id="search-results"
+                class="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 hidden overflow-hidden">
+                <div id="results-container" class="py-2 max-h-80 overflow-y-auto">
+                </div>
+            </div>
+        </div>
+
         <div class="relative">
             <a href="{{ route('cart.index') }}" class="relative">
                 <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
@@ -79,16 +99,16 @@
                             <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
                         </a>
                         @if (auth()->user()->role === 'customer')
-                        <a href="{{ route('orders.index') }}"
-                            class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
-                            <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Transaksi</span>
-                            <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
-                        </a>
-                        <a href="{{ route('wishlist.index') }}"
-                            class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
-                            <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Wishlist</span>
-                            <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
-                        </a>
+                            <a href="{{ route('orders.index') }}"
+                                class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Transaksi</span>
+                                <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
+                            </a>
+                            <a href="{{ route('wishlist.index') }}"
+                                class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Wishlist</span>
+                                <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-indigo-600"></i>
+                            </a>
                         @endif
                     </div>
 

@@ -152,4 +152,26 @@ class ItemController extends Controller
 
         return view('admin.items.show', compact('item', 'relatedBooks'));
     }
+
+    public function liveSearch(Request $request)
+    {
+        $query = $request->get('q');
+        if (empty($query))
+            return response()->json([]);
+
+        // Cari Buku
+        $items = \App\Models\Item::where('name', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get(['id', 'name', 'slug']);
+
+        // Cari Penulis
+        $authors = \App\Models\Author::where('name', 'LIKE', "%{$query}%")
+            ->limit(3)
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'items' => $items,
+            'authors' => $authors
+        ]);
+    }
 }
