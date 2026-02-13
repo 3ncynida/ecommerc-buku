@@ -84,7 +84,7 @@
                             <img src="{{ asset('storage/' . $book->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         </div>
                         
-                        {{-- Book Info --}}
+                        {{-- Book Info --}} 
                         <div class="px-2 pb-2">
                             <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase tracking-tight">{{ $author->name }}</p>
                             <h3 class="text-xs font-bold text-gray-800 leading-tight mb-3 h-8 line-clamp-2">{{ $book->name }}</h3>

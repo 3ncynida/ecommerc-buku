@@ -134,3 +134,63 @@
         @endauth
     </div>
 </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('search-input');
+            const resultsDropdown = document.getElementById('search-results');
+            const container = document.getElementById('results-container');
+            const clearBtn = document.getElementById('clear-search');
+            let debounceTimer;
+
+            input.addEventListener('input', function () {
+                const query = this.value;
+                clearBtn.classList.toggle('hidden', query.length === 0);
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (query.length < 2) {
+                        resultsDropdown.classList.add('hidden');
+                        return;
+                    }
+
+                    fetch(`/api/search?q=${query}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            container.innerHTML = '';
+
+                            if (data.items.length === 0 && data.authors.length === 0) {
+                                container.innerHTML = '<p class="px-5 py-3 text-sm text-gray-500">Tidak ditemukan hasil.</p>';
+                            } else {
+                                // Render Buku
+                                data.items.forEach(item => {
+                                    container.innerHTML += `
+                                <a href="/book/${item.slug}" class="flex items-center px-5 py-3 hover:bg-gray-50 transition">
+                                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3 text-xs"></i>
+                                    <span class="text-sm font-medium text-gray-700">${item.name}</span>
+                                    <span class="ml-auto text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">BUKU</span>
+                                </a>`;
+                                });
+                                // Render Penulis
+                                data.authors.forEach(author => {
+                                    container.innerHTML += `
+                                <a href="/author/${author.id}" class="flex items-center px-5 py-3 hover:bg-gray-50 transition">
+                                    <i class="fa-solid fa-user text-gray-400 mr-3 text-xs"></i>
+                                    <span class="text-sm font-medium text-gray-700">${author.name}</span>
+                                    <span class="ml-auto text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full font-bold">PENULIS</span>
+                                </a>`;
+                                });
+                            }
+                            resultsDropdown.classList.remove('hidden');
+                        });
+                }, 300); // Tunggu 300ms setelah berhenti mengetik
+            });
+
+            // Sembunyikan dropdown saat klik di luar
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !resultsDropdown.contains(e.target)) {
+                    resultsDropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
