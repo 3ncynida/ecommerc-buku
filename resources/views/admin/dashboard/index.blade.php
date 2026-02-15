@@ -78,7 +78,6 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="text-sm font-bold text-gray-900">{{ $order->item->name }}</div>
-                        <div class="text-xs text-gray-400">ID Pesanan: {{ $order->id }}</div>
                     </td>
                     <td class="px-6 py-4 text-sm font-bold text-gray-900">
                         Rp {{ number_format($order->total_price, 0, ',', '.') }}

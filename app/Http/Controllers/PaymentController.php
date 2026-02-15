@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
 use App\Models\Order;
+use App\Models\Address;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
@@ -19,7 +20,7 @@ class PaymentController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }
-    
+
     // 1. Membuat Transaksi
     public function createTransaction(Request $request)
     {
@@ -50,7 +51,20 @@ class PaymentController extends Controller
 
         try {
             // 2. Simpan Order (Gunakan Transaction agar aman)
-            \DB::transaction(function () use ($orderId, $totalAmount, $cart, $request, $itemDetails, &$snapToken) {
+            // Ambil alamat terpilih user jika ada
+            $selectedAddress = null;
+            if ($request->filled('address_id')) {
+                $selectedAddress = Address::where('id', $request->address_id)
+                    ->where('user_id', Auth::id())
+                    ->with(['province', 'city', 'district'])
+                    ->first();
+            }
+            // fallback ke alamat default user
+            if (!$selectedAddress && Auth::check()) {
+                $selectedAddress = Auth::user()->addresses()->where('is_default', true)->with(['province', 'city', 'district'])->first();
+            }
+
+            \DB::transaction(function () use ($orderId, $totalAmount, $cart, $request, $itemDetails, $selectedAddress, &$snapToken) {
                 $itemId = array_key_first($cart);
 
                 Order::create([
@@ -68,11 +82,39 @@ class PaymentController extends Controller
                         'gross_amount' => (int) $totalAmount,
                     ],
                     'item_details' => $itemDetails,
-                    'customer_details' => [
-                        'first_name' => $request->name,
-                        'email' => $request->email,
-                    ],
                 ];
+
+                // build customer details
+                $customer = [
+                    'first_name' => $request->name,
+                    'email' => $request->email,
+                ];
+
+                if ($selectedAddress) {
+                    $regionParts = [];
+                    if ($selectedAddress->district)
+                        $regionParts[] = $selectedAddress->district->name;
+                    if ($selectedAddress->city)
+                        $regionParts[] = $selectedAddress->city->name;
+                    if ($selectedAddress->province)
+                        $regionParts[] = $selectedAddress->province->name;
+                    $region = implode(', ', array_filter($regionParts));
+
+                    $addressObj = [
+                        'first_name' => $selectedAddress->recipient_name,
+                        'last_name' => '',
+                        'address' => trim($selectedAddress->full_address . ' ' . $region),
+                        'city' => $selectedAddress->city->name ?? '',
+                        'postal_code' => $selectedAddress->postal_code ?? '',
+                        'phone' => $selectedAddress->phone_number ?? '',
+                        'country_code' => 'IDN'
+                    ];
+
+                    $customer['billing_address'] = $addressObj;
+                    $customer['shipping_address'] = $addressObj;
+                }
+
+                $params['customer_details'] = $customer;
 
                 $snapToken = \Midtrans\Snap::getSnapToken($params);
 
@@ -81,6 +123,7 @@ class PaymentController extends Controller
                     'amount' => $totalAmount,
                     'status' => 'pending',
                     'snap_token' => $snapToken,
+                    'raw_response' => json_encode(['selected_address' => $selectedAddress ? $selectedAddress->toArray() : null])
                 ]);
             });
 
@@ -110,18 +153,43 @@ class PaymentController extends Controller
         // 1. Cari data order berdasarkan ID atau Order Number
         // Menggunakan findOrFail agar jika data tidak ada, otomatis kembali ke 404
         $order = Order::where('order_number', $order_id)
-                      ->where('user_id', Auth::id()) // Keamanan: Pastikan milik user yang login
-                      ->firstOrFail();
+            ->where('user_id', Auth::id()) // Keamanan: Pastikan milik user yang login
+            ->firstOrFail();
 
-        // 2. Hapus session keranjang jika masih ada (karena transaksi sudah selesai)
-        session()->forget('cart');
+        // Coba ambil record payment terbaru untuk order ini
+        $payment = Payment::where('order_id', $order->order_number)->latest()->first();
 
-        // 3. Kirim data ke view
-        return view('customer.payment-success', [
+        // Tentukan status (utamakan order->payment_status, fallback ke payment->status)
+        $status = $order->payment_status ?? ($payment->status ?? 'pending');
+
+        if ($status === 'success') {
+            // Hapus cart hanya jika benar-benar sukses
+            session()->forget('cart');
+            return view('customer.payment-success', [
+                'order' => $order,
+                'total' => $order->total_price,
+                'order_number' => $order->order_number,
+                'payment_method' => $order->payment_method
+            ]);
+        }
+
+        if ($status === 'pending') {
+            return view('customer.payment-pending', [
+                'order' => $order,
+                'total' => $order->total_price,
+                'order_number' => $order->order_number,
+                'payment_method' => $order->payment_method,
+                'payment' => $payment
+            ]);
+        }
+
+        // fallback: treat other statuses as failed
+        return view('customer.payment-failed', [
             'order' => $order,
             'total' => $order->total_price,
             'order_number' => $order->order_number,
-            'payment_method' => $order->payment_method
+            'payment_method' => $order->payment_method,
+            'payment' => $payment
         ]);
     }
 }

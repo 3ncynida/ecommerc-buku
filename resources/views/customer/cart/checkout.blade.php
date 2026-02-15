@@ -165,7 +165,8 @@
                     },
                     body: JSON.stringify({
                         name: name,
-                        email: email
+                        email: email,
+                        address_id: document.getElementById('input_address_id') ? document.getElementById('input_address_id').value : null
                     })
                 })
                     .then(res => res.json())

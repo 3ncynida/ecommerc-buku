@@ -38,6 +38,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
     Route::get('/payment/check/{orderId}', [PaymentController::class, 'checkStatus'])->name('payment.check');
     Route::get('/payment/success/{orderId}', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/failure/{orderId}', [PaymentController::class, 'failure'])->name('payment.failure');
+    Route::get('/payment/unfinish/{orderId}', [PaymentController::class, 'unfinish'])->name('payment.unfinish');
 
     Route::post('/wishlist/toggle', [CustomerController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::get('/wishlist', [CustomerController::class, 'wishlistIndex'])->name('wishlist.index');

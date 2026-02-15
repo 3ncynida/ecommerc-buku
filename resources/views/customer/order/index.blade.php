@@ -72,7 +72,7 @@
                                     </span>
                                 </div>
 
-                                <a href="{{ route('payment.success', $order->order_number) }}"
+                                <a href="{{ route('payment.success', ['orderId' => $order->order_number]) }}"
                                     class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
                                     Lihat Detail Transaksi
                                     <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
@@ -90,8 +90,9 @@
         data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     <script>
         function payOrder(snapToken) {
+            if (!snapToken) { alert('Token pembayaran tidak ditemukan.'); return; }
             window.snap.pay(snapToken, {
-                onSuccess: function (result) { window.location.href = "{{ route('payment.success', 'order_id') }}/" + result.order_id; },
+                onSuccess: function (result) { window.location.href = "{{ url('/payment/success') }}/" + result.order_id; },
                 onPending: function (result) { alert("Menunggu pembayaran Anda!"); },
                 onError: function (result) { alert("Pembayaran gagal!"); },
                 onClose: function () { console.log('Customer closed the popup without finishing the payment'); }
