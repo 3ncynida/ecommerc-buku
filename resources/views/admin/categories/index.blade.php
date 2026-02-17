@@ -15,7 +15,7 @@
         <table class="w-full text-left border-collapse">
             <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-semibold">
                 <tr>
-                    <th class="px-6 py-4">ID</th>
+                    <th class="px-6 py-4">No</th>
                     <th class="px-6 py-4">Nama Kategori</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
@@ -23,7 +23,7 @@
             <tbody class="divide-y divide-gray-100">
                 @foreach($categories as $category)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm text-gray-600">#{{ $category->id }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
                         <td class="px-6 py-4 font-medium text-gray-900">{{ $category->name }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-center space-x-2">

@@ -15,21 +15,23 @@
         <table class="w-full text-left border-collapse">
             <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-semibold">
                 <tr>
-                    <th class="px-6 py-4">ID</th>
+                    <th class="px-6 py-4">No</th>
                     <th class="px-6 py-4">Nama Author</th>
                     <th class="px-6 py-4">Biografi</th>
                     <th class="px-6 py-4 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @foreach($authors as $author)
+                @foreach ($authors as $author)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm text-gray-600">#{{ $author->id }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
                         <td class="px-6 py-4 font-medium text-gray-900">{{ $author->name }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $author->bio ? Str::limit($author->bio, 50) : 'tidak diisi' }}</td>
+                        <td class="px-6 py-4 text-gray-700">
+                            {{ $author->bio ? Str::limit($author->bio, 50) : 'tidak diisi' }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-center space-x-2">
-                                <a href="{{ route('authors.edit', $author->id) }}" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition">
+                                <a href="{{ route('authors.edit', $author->id) }}"
+                                    class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                                 <form action="{{ route('authors.destroy', $author->id) }}" method="POST">
@@ -50,3 +52,4 @@
         </div>
     </div>
 @endsection
+

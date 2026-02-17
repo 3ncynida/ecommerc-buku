@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AuthorController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\OrderController;
 
 Route::get('/', [CustomerController::class, 'home'])->name('home');
 Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
@@ -21,6 +22,9 @@ Route::get('/author/{author:slug}', [CustomerController::class, 'authorShow'])->
 // Rute khusus untuk admin
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);
