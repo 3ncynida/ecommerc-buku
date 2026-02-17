@@ -30,7 +30,10 @@
                 {{-- Bagian Kanan: Informasi Produk --}}
                 <div class="md:w-2/3">
                     <div class="mb-2">
-                        <p class="text-gray-500 text-lg">{{ $item->author->name ?? 'Penulis' }}</p>
+                        <a href="{{ route('author.show', $item->author->slug) }}"
+                            class="block text-lg text-gray-500 hover:text-blue-700 transition">
+                            {{ $item->author->name ?? 'Penulis' }}
+                        </a>
                         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mt-1">{{ $item->name }}</h1>
                     </div>
 
@@ -90,7 +93,8 @@
                     {{-- Action Buttons --}}
                     @auth
                         <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
-                            <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex gap-4 add-to-cart-form">
+                            <form action="{{ route('cart.add', $item->id) }}" method="POST"
+                                class="flex gap-4 add-to-cart-form">
                                 @csrf
                                 <div
                                     class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
@@ -134,14 +138,15 @@
                     <a href="#" class="text-indigo-600 font-semibold hover:underline">Lihat Semua</a>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    @foreach($relatedBooks as $related)
+                    @foreach ($relatedBooks as $related)
                         <a href="{{ route('book.show', $related->slug) }}" class="group">
                             <div class="bg-white rounded-xl overflow-hidden transition group-hover:translate-y-[-5px]">
                                 <img src="{{ asset('storage/' . $related->image) }}"
                                     class="w-full h-64 object-cover rounded-xl shadow-sm border">
                                 <div class="mt-3">
                                     <p class="text-xs text-gray-400 mb-1">{{ $related->author->name ?? 'Penulis' }}</p>
-                                    <h4 class="font-bold text-gray-900 truncate text-sm group-hover:text-indigo-600 transition">
+                                    <h4
+                                        class="font-bold text-gray-900 truncate text-sm group-hover:text-indigo-600 transition">
                                         {{ $related->name }}
                                     </h4>
                                     <p class="text-indigo-600 font-bold mt-1">
