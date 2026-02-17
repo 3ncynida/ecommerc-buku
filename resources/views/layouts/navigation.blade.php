@@ -174,7 +174,7 @@
                                 // Render Penulis
                                 data.authors.forEach(author => {
                                     container.innerHTML += `
-                                <a href="/author/${author.id}" class="flex items-center px-5 py-3 hover:bg-gray-50 transition">
+                                <a href="/author/${author.slug}" class="flex items-center px-5 py-3 hover:bg-gray-50 transition">
                                     <i class="fa-solid fa-user text-gray-400 mr-3 text-xs"></i>
                                     <span class="text-sm font-medium text-gray-700">${author.name}</span>
                                     <span class="ml-auto text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full font-bold">PENULIS</span>

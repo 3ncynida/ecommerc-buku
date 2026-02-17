@@ -156,8 +156,9 @@ class ItemController extends Controller
     public function liveSearch(Request $request)
     {
         $query = $request->get('q');
-        if (empty($query))
+        if (empty($query)) {
             return response()->json([]);
+        }
 
         // Cari Buku
         $items = \App\Models\Item::where('name', 'LIKE', "%{$query}%")
@@ -167,11 +168,11 @@ class ItemController extends Controller
         // Cari Penulis
         $authors = \App\Models\Author::where('name', 'LIKE', "%{$query}%")
             ->limit(3)
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'slug']);
 
         return response()->json([
             'items' => $items,
-            'authors' => $authors
+            'authors' => $authors,
         ]);
     }
 }

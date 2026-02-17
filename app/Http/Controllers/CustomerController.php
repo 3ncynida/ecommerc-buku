@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\Author;
 use App\Models\Order;
 use App\Models\Wishlist;
 
@@ -40,7 +41,7 @@ class CustomerController extends Controller
             ->with([
                 'items' => function ($query) {
                     $query->take(5); // Ambil 5 buku saja per kategori untuk preview di home
-                }
+                },
             ])
             ->get();
 
@@ -122,24 +123,20 @@ class CustomerController extends Controller
 
         Wishlist::create([
             'user_id' => auth()->id(),
-            'item_id' => $itemId
+            'item_id' => $itemId,
         ]);
 
         return response()->json(['status' => 'added']);
     }
 
-    public function authorShow($authorId)
+    public function authorShow(Author $author)
     {
         // Menggunakan 'items' (jamak) dan memuat jumlah buku secara otomatis
-        $author = \App\Models\Author::with(['items'])->withCount('items')->findOrFail($authorId);
-
-        // Ambil kategori untuk sidebar filter (image_87b6d7.jpg)
-        $categories = \App\Models\Category::all();
+        $author->load(['items'])->loadCount('items');
 
         return view('customer.author.index', [
             'author' => $author,
             'books' => $author->items, // Mengirim koleksi buku penulis
-            'categories' => $categories
         ]);
     }
 }

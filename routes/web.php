@@ -16,6 +16,7 @@ Route::get('/category', [CustomerController::class, 'category'])->name('category
 Route::get('/category/list', [CustomerController::class, 'categoryList'])->name('category.list');
 Route::get('/category/{category:slug}', [CustomerController::class, 'categoryShow'])->name('category.show');
 Route::get('/book/{item:slug}', [CustomerController::class, 'show'])->name('book.show');
+Route::get('/author/{author:slug}', [CustomerController::class, 'authorShow'])->name('author.show');
 
 // Rute khusus untuk admin
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
@@ -60,10 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/address/{address}', [ProfileController::class, 'updateAddress'])->name('address.update');
     Route::delete('/address/{address}', [ProfileController::class, 'destroyAddress'])->name('address.destroy');
 });
-
 Route::get('/api/search', [App\Http\Controllers\ItemController::class, 'liveSearch'])->name('api.search');
-
-Route::get('/author/{authorId}', [CustomerController::class, 'authorShow'])->name('author.show');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', fn() => 'Halo Admin');
