@@ -70,10 +70,12 @@ class PaymentController extends Controller
                 Order::create([
                     'order_number' => $orderId,
                     'user_id' => Auth::id(),
+                    'item_id' => $itemId,
+                    'shipping_address_id' => $selectedAddress ? $selectedAddress->id : null, // Tambahkan ini
                     'quantity' => array_sum(array_column($cart, 'quantity')),
                     'total_price' => $totalAmount,
                     'payment_status' => 'pending',
-                    'item_id' => $itemId,
+                    'item_status' => 'pending',
                 ]);
 
                 $params = [
@@ -92,12 +94,15 @@ class PaymentController extends Controller
 
                 if ($selectedAddress) {
                     $regionParts = [];
-                    if ($selectedAddress->district)
+                    if ($selectedAddress->district) {
                         $regionParts[] = $selectedAddress->district->name;
-                    if ($selectedAddress->city)
+                    }
+                    if ($selectedAddress->city) {
                         $regionParts[] = $selectedAddress->city->name;
-                    if ($selectedAddress->province)
+                    }
+                    if ($selectedAddress->province) {
                         $regionParts[] = $selectedAddress->province->name;
+                    }
                     $region = implode(', ', array_filter($regionParts));
 
                     $addressObj = [
@@ -107,7 +112,7 @@ class PaymentController extends Controller
                         'city' => $selectedAddress->city->name ?? '',
                         'postal_code' => $selectedAddress->postal_code ?? '',
                         'phone' => $selectedAddress->phone_number ?? '',
-                        'country_code' => 'IDN'
+                        'country_code' => 'IDN',
                     ];
 
                     $customer['billing_address'] = $addressObj;
@@ -123,7 +128,7 @@ class PaymentController extends Controller
                     'amount' => $totalAmount,
                     'status' => 'pending',
                     'snap_token' => $snapToken,
-                    'raw_response' => json_encode(['selected_address' => $selectedAddress ? $selectedAddress->toArray() : null])
+                    'raw_response' => json_encode(['selected_address' => $selectedAddress ? $selectedAddress->toArray() : null]),
                 ]);
             });
 
@@ -169,7 +174,7 @@ class PaymentController extends Controller
                 'order' => $order,
                 'total' => $order->total_price,
                 'order_number' => $order->order_number,
-                'payment_method' => $order->payment_method
+                'payment_method' => $order->payment_method,
             ]);
         }
 
@@ -179,7 +184,7 @@ class PaymentController extends Controller
                 'total' => $order->total_price,
                 'order_number' => $order->order_number,
                 'payment_method' => $order->payment_method,
-                'payment' => $payment
+                'payment' => $payment,
             ]);
         }
 
@@ -189,7 +194,7 @@ class PaymentController extends Controller
             'total' => $order->total_price,
             'order_number' => $order->order_number,
             'payment_method' => $order->payment_method,
-            'payment' => $payment
+            'payment' => $payment,
         ]);
     }
 }

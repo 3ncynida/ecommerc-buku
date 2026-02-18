@@ -139,4 +139,15 @@ class CustomerController extends Controller
             'books' => $author->items, // Mengirim koleksi buku penulis
         ]);
     }
+
+    // order controller
+    public function orderShow($id)
+    {
+        // Mengambil order milik user yang login dengan relasi buku, penulis, dan alamat
+        $order = \App\Models\Order::with(['item.author', 'shippingAddress'])
+                    ->where('user_id', auth()->id())
+                    ->findOrFail($id);
+
+        return view('customer.order.show', compact('order'));
+    }
 }

@@ -34,7 +34,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
 // Rute khusus untuk pelanggan
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/orders', [CustomerController::class, 'orderIndex'])->name('orders.index')->middleware('auth');
+    Route::get('/orders', [CustomerController::class, 'orderIndex'])->name('orders.index');
+    Route::get('/orders/{order}', [CustomerController::class, 'orderShow'])->name('orders.show');
     Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.process');

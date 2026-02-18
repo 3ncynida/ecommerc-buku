@@ -10,10 +10,11 @@ class Order extends Model
         'order_number',
         'user_id',
         'item_id',
+        'shipping_address_id',
         'quantity',
         'total_price',
         'item_status',
-        'payment_status'
+        'payment_status',
     ];
 
     public function item()
@@ -29,5 +30,14 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class, 'order_id', 'order_number');
+    }
+
+    /**
+     * Relasi ke model Address
+     */
+    public function shippingAddress()
+    {
+        // Pastikan nama model alamat Anda adalah 'Address'
+        return $this->belongsTo(Address::class, 'shipping_address_id');
     }
 }

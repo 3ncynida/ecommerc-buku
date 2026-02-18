@@ -19,9 +19,9 @@ return new class extends Migration {
             $table->string('label'); // Contoh: Rumah, Kantor
 
             // Relasi ke tabel Laravolt (Menggunakan ID wilayah)
-            $table->foreignId('province_id')->constrained('indonesia_provinces');
-            $table->foreignId('city_id')->constrained('indonesia_cities');
-            $table->foreignId('district_id')->constrained('indonesia_districts');
+            $table->unsignedBigInteger('province_id');
+            $table->unsignedBigInteger('city_id');
+            $table->unsignedBigInteger('district_id');
 
             $table->string('postal_code');
             $table->text('full_address');

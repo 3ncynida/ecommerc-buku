@@ -39,9 +39,9 @@
                                         <div class="flex items-center gap-3 mt-1">
                                             <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y, H:i') }} WIB</p>
                                             <span
-                                                class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider 
+                                                class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
                                                         {{ $order->payment_status == 'success' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600' }}">
-                                                {{ $order->payment_status }}    
+                                                {{ $order->payment_status }}
                                             </span>
                                         </div>
                                     </div>
@@ -72,8 +72,7 @@
                                     </span>
                                 </div>
 
-                                <a href="{{ route('payment.success', ['orderId' => $order->order_number]) }}"
-                                    class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
+                                <a href="{{ route('orders.show', {{$order-id}} ) }}" class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
                                     Lihat Detail Transaksi
                                     <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                                 </a>

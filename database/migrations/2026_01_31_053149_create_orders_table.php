@@ -13,17 +13,16 @@ return new class extends Migration {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->string('order_number')->unique(); // Contoh: ORD-20231001-001
+
+            // Tambahkan kolom shipping_address_id yang berelasi ke tabel addresses
+            $table->foreignId('shipping_address_id')->constrained('addresses');
+
+            $table->string('order_number')->unique();
             $table->foreignId('item_id')->constrained();
             $table->integer('quantity')->default(1);
             $table->decimal('total_price', 15, 2);
 
-            // Status Progres Barang
-            // Contoh: pending, diproses, dikirim, selesai, dibatalkan
             $table->string('item_status')->default('pending');
-
-            // Status Pembayaran (Sinkron dengan Midtrans)
-            // Contoh: pending, success, failed
             $table->string('payment_status')->default('pending');
 
             $table->timestamps();

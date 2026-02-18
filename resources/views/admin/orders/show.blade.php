@@ -107,7 +107,33 @@
                             <div>
                                 <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Alamat Pengiriman</p>
                                 <p class="text-sm text-gray-600 leading-relaxed">
-                                    {{ $order->shipping_address ?? 'Alamat tidak tersedia' }}
+                                    @if ($order->shippingAddress)
+                                        {{-- Menampilkan Nama Penerima --}}
+                                        <p class="font-bold text-gray-900 mb-1">
+                                            Penerima : {{ $order->shippingAddress->recipient_name }}
+                                        </p>
+
+                                        {{-- Menampilkan Nomor Telepon --}}
+                                        <p class="text-sm text-gray-500 mb-3">
+                                            Nomor : {{ $order->shippingAddress->phone_number }}
+                                        </p>
+
+                                        {{-- Menampilkan Alamat Lengkap & Wilayah --}}
+                                        <p class="text-sm text-gray-600 leading-relaxed">
+                                            {{ $order->shippingAddress->full_address }}<br>
+
+                                            {{-- Pastikan memanggil ->name agar tidak muncul JSON --}}
+                                            {{ $order->shippingAddress->district->name ?? '' }},
+                                            {{ $order->shippingAddress->city->name ?? '' }},
+                                            {{ $order->shippingAddress->province->name ?? '' }}
+
+                                            <br>
+                                            <span class="font-bold">Kode Pos:
+                                                {{ $order->shippingAddress->postal_code }}</span>
+                                        </p>
+                                    @else
+                                        <p class="text-sm text-gray-400 italic">Data alamat tidak tersedia.</p>
+                                    @endif
                                 </p>
                             </div>
                         </div>
