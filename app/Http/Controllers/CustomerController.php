@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Author;
 use App\Models\Order;
 use App\Models\Wishlist;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -16,10 +17,26 @@ class CustomerController extends Controller
     public function home()
     {
         // Mengambil buku beserta data author-nya sekaligus agar ringan
-        $featuredBooks = Item::with('author')->latest()->get();
+        $featuredBooks = Item::with('author')->latest()->take(8)->get();
         $categories = Category::all()->take(4);
+        $bestSellerIds = Order::select('item_id', DB::raw('SUM(quantity) as sold_qty'))
+            ->groupBy('item_id')
+            ->orderByDesc('sold_qty')
+            ->limit(4)
+            ->pluck('item_id');
 
-        return view('welcome', compact('featuredBooks', 'categories'));
+        $bestSellers = collect();
+        if ($bestSellerIds->isNotEmpty()) {
+            $bestSellers = Item::with('author')
+                ->whereIn('id', $bestSellerIds)
+                ->get()
+                ->sortBy(function ($item) use ($bestSellerIds) {
+                    return array_search($item->id, $bestSellerIds->all(), true);
+                })
+                ->values();
+        }
+
+        return view('welcome', compact('featuredBooks', 'categories', 'bestSellers'));
     }
 
     public function show(Item $item)

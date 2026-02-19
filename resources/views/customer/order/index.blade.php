@@ -72,7 +72,7 @@
                                     </span>
                                 </div>
 
-                                <a href="{{ route('orders.show', {{$order-id}} ) }}" class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
+                                <a href="{{ route('orders.show', $order->id ) }}" class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
                                     Lihat Detail Transaksi
                                     <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                                 </a>

@@ -23,12 +23,28 @@
                     class="text-indigo-600">Dunia Anda</span> Disini.</h1>
             <p class="text-gray-500 text-lg max-w-md">Jelajahi ribuan koleksi buku dari penulis terbaik dunia dengan
                 harga yang bersahabat dan pengiriman kilat.</p>
+            <div class="relative max-w-md">
+                <div class="flex items-center bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <span class="px-4 text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" placeholder="Cari judul buku atau penulis..."
+                        class="w-full px-2 py-3 text-sm focus:outline-none"
+                        data-home-search-input>
+                </div>
+                <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-20"
+                    data-home-search-results>
+                    <ul class="max-h-72 overflow-y-auto" data-home-search-list></ul>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Gunakan kata kunci singkat untuk hasil terbaik.</p>
+            </div>
             <div class="flex space-x-4">
-                <button
+                <a href="{{ route('category.list') }}"
                     class="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-indigo-200 hover:scale-105 transition">Mulai
-                    Belanja</button>
-                <button class="border border-gray-300 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition">Lihat
-                    Katalog</button>
+                    Belanja</a>
+                <a href="{{ route('category.index') }}"
+                    class="border border-gray-300 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition">Lihat
+                    Katalog</a>
             </div>
         </div>
         <div class="md:w-1/2 mt-12 md:mt-0 relative flex justify-center">
@@ -42,7 +58,7 @@
     <section class="max-w-7xl mx-auto px-8 py-20">
         <div class="flex justify-between items-end mb-10">
             <div>
-                <h2 class="text-3xl font-bold">Kategori Populer</h2>
+                <h2 class="text-3xl font-bold">Kategori Terpopuler</h2>
                 <p class="text-gray-500">Cari buku berdasarkan minat Anda</p>
             </div>
             <a href="{{ route('category.list') }}" class="text-indigo-600 font-semibold hover:underline">Lihat Semua</a>
@@ -60,6 +76,87 @@
                     </div>
                 </a>
             @endforeach
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-8 pb-20">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <h2 class="text-3xl font-bold">Buku Terlaris</h2>
+                <p class="text-gray-500">Pilihan favorit pembaca minggu ini</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            @forelse($bestSellers as $book)
+                <div class="group">
+                    <div class="relative overflow-hidden rounded-xl aspect-[3/4] bg-gray-100 mb-4 shadow-sm">
+                        @if($book->image)
+                            <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->name }}"
+                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        @else
+                            <img src="https://via.placeholder.com/300x400?text=No+Image" alt="No Image"
+                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        @endif
+
+                        <div class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                            Terlaris
+                        </div>
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
+                                           opacity-0 group-hover:opacity-100 transition-all duration-300
+                                           flex items-center justify-center gap-4">
+
+                            @auth
+                                <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
+                                    @csrf
+                                    <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                               text-gray-800 shadow-xl
+                                                               hover:bg-indigo-600 hover:text-white
+                                                               hover:scale-110 active:scale-95
+                                                               transition-all duration-300">
+                                        <i class="fa-solid fa-cart-plus text-lg"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                           text-gray-800 shadow-xl
+                                                           hover:bg-indigo-600 hover:text-white
+                                                           hover:scale-110 active:scale-95
+                                                           transition-all duration-300">
+                                    <i class="fa-solid fa-cart-plus text-lg"></i>
+                                </a>
+                            @endauth
+
+                            <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
+                                               text-gray-800 shadow-xl
+                                               hover:bg-indigo-600 hover:text-white
+                                               hover:scale-110 active:scale-95
+                                               transition-all duration-300">
+                                <i class="fa-solid fa-eye text-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <h3
+                        class="font-bold text-lg leading-tight mb-1 text-gray-900 group-hover:text-indigo-600 transition">
+                        {{ $book->name }}
+                    </h3>
+                    <p class="text-gray-500 text-sm mb-2">{{ $book->author->name ?? 'Penulis Anonim' }}</p>
+
+                    <div class="flex justify-between items-center">
+                        <p class="text-indigo-600 font-bold text-lg">
+                            Rp {{ number_format($book->price, 0, ',', '.') }}
+                        </p>
+                        <span
+                            class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-md font-medium">Tersedia</span>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-16">
+                    <i class="fa-solid fa-book-open text-5xl text-gray-200 mb-4"></i>
+                    <p class="text-gray-500 italic">Belum ada data penjualan untuk ditampilkan.</p>
+                </div>
+            @endforelse
         </div>
     </section>
 
@@ -81,7 +178,7 @@
                                     class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                             @endif
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent 
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
                                                opacity-0 group-hover:opacity-100 transition-all duration-300
                                                flex items-center justify-center gap-4">
 

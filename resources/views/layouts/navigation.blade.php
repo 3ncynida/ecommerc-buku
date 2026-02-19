@@ -1,84 +1,95 @@
-<nav class="bg-white py-4 px-8 flex justify-between items-center shadow-sm sticky top-0 z-50">
-    <div class="text-2xl font-bold text-indigo-600">Libris.</div>
+@php
+    $navCategories = \App\Models\Category::orderBy('name')->get();
+@endphp
 
-    <div class="hidden md:flex space-x-8 font-medium">
-        <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
-        <a href="{{ route('category.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
-        <a href="#" class="hover:text-indigo-600 transition">Terlaris</a>
-        <a href="#" class="hover:text-indigo-600 transition">Promo</a>
-    </div>
+<nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center gap-3">
+        <a href="{{ route('home') }}" class="text-[22px] font-bold text-indigo-600 shrink-0">Libris.</a>
 
-    <div class="flex items-center space-x-5">
-        <div class="relative flex-1 max-w-lg" x-data="{ open: false, search: '' }">
-            {{-- Search Bar --}}
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-                <input type="text" id="search-input"
-                    class="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 pl-11 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
-                    placeholder="Cari buku atau penulis..." autocomplete="off">
-                {{-- Tombol Close (x) --}}
-                <button id="clear-search"
-                    class="absolute inset-y-0 right-0 pr-4 text-gray-400 hover:text-gray-600 hidden">
-                    <i class="fa-solid fa-circle-xmark"></i>
-                </button>
-            </div>
+        <div class="relative hidden lg:block" x-data="{ open: false }">
+            <button @click="open = !open" @click.away="open = false"
+                class="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:border-indigo-500 hover:text-indigo-600 transition">
+                Kategori
+                <i class="fa-solid fa-chevron-down text-[10px] text-gray-400" :class="open ? 'rotate-180' : ''"></i>
+            </button>
 
-            {{-- Dropdown Hasil Pencarian --}}
-            <div id="search-results"
-                class="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 hidden overflow-hidden">
-                <div id="results-container" class="py-2 max-h-80 overflow-y-auto">
+            <div x-show="open" x-cloak x-transition
+                class="absolute left-0 mt-3 w-[720px] bg-white border border-gray-100 rounded-2xl shadow-xl p-6 z-50">
+                <div class="grid grid-cols-3 gap-6 text-sm">
+                    @foreach($navCategories->chunk(6) as $chunk)
+                        <div class="space-y-3">
+                            @foreach($chunk as $category)
+                                <a href="{{ route('category.show', $category->slug) }}"
+                                    class="block text-gray-700 hover:text-indigo-600 transition">{{ $category->name }}</a>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+                <div class="mt-5 pt-4 border-t border-gray-100">
+                    <a href="{{ route('category.list') }}"
+                        class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:underline">
+                        Lihat semua kategori
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="relative">
-            <a href="{{ route('cart.index') }}" class="relative">
-                <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
-                @if(session('cart'))
-                    <span
-                        class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5 animate-bounce">
-                        {{ count(session('cart')) }}
-                    </span>
-                @endif
-            </a>
+        <div class="relative flex-1 max-w-[640px]">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" id="search-input"
+                class="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 pl-11 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                placeholder="Cari produk, judul buku, atau penulis..." autocomplete="off">
+            <button id="clear-search"
+                class="absolute inset-y-0 right-0 pr-4 text-gray-400 hover:text-gray-600 hidden">
+                <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+
+            <div id="search-results"
+                class="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 hidden overflow-hidden">
+                <div id="results-container" class="py-2 max-h-80 overflow-y-auto"></div>
+            </div>
         </div>
 
+        <a href="{{ route('cart.index') }}" class="relative shrink-0">
+            <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
+            @if(session('cart'))
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5">
+                    {{ count(session('cart')) }}
+                </span>
+            @endif
+        </a>
+
         @guest
-            <a href="{{ route('login') }}" class="text-gray-600 hover:text-indigo-600 transition">
+            <a href="{{ route('login') }}"
+                class="px-4 py-2 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:border-indigo-500 hover:text-indigo-600 transition">
                 Masuk
             </a>
             <a href="{{ route('register') }}"
-                class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition">
+                class="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-indigo-700 transition">
                 Daftar
             </a>
         @endguest
 
-        {{-- Logika Autentikasi --}}
         @auth
-            <div class="relative" x-data="{ open: false }">
-                {{-- Tombol Pemicu --}}
+            <div class="relative shrink-0" x-data="{ open: false }">
                 <button @click="open = !open" @click.away="open = false"
-                    class="flex items-center space-x-2 group focus:outline-none">
-                    <div
-                        class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition duration-300">
-                        <i class="fa-solid fa-user text-gray-500 group-hover:text-white transition"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm font-semibold text-gray-700">{{ auth()->user()->name }}</span>
-                    {{-- Icon Panah yang Berputar --}}
+                    class="flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:border-indigo-500 hover:text-indigo-600 transition">
+                    <span class="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-user text-xs text-gray-500"></i>
+                    </span>
+                    <span class="hidden lg:block">{{ auth()->user()->name }}</span>
                     <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-300"
                         :class="open ? 'rotate-180' : ''"></i>
                 </button>
 
-                {{-- Dropdown Card --}}
                 <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                     x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
                     class="absolute right-0 mt-3 w-72 bg-white rounded-[25px] shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-50 py-4 z-50">
-
-                    {{-- Info User --}}
                     <div class="px-6 py-4 flex items-center space-x-4">
                         <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center overflow-hidden">
                             <i class="fa-solid fa-user text-2xl text-indigo-300"></i>
@@ -91,7 +102,6 @@
 
                     <hr class="my-2 border-gray-50">
 
-                    {{-- List Menu --}}
                     <div class="px-2 space-y-1">
                         <a href="{{ route('profile.edit') }}"
                             class="flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 group transition text-left">
@@ -114,7 +124,6 @@
 
                     <hr class="my-2 border-gray-50">
 
-                    {{-- Logout --}}
                     <div class="px-2">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
