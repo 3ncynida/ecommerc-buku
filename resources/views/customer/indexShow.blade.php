@@ -8,9 +8,7 @@
             <nav class="flex mb-8 text-sm text-gray-500 overflow-x-auto whitespace-nowrap">
                 <a href="/" class="hover:text-indigo-600">Home</a>
                 <span class="mx-2 text-gray-300">></span>
-                <a href="#" class="hover:text-indigo-600">Buku</a>
-                <span class="mx-2 text-gray-300">></span>
-                <span class="text-gray-400">{{ $item->category->name ?? 'Kategori' }}</span>
+                <a href="/category/{{ $item->category->slug }}" class="hover:text-indigo-600">{{ $item->category->name ?? 'Kategori' }}</a>
                 <span class="mx-2 text-gray-300">></span>
                 <span class="text-gray-800 font-medium truncate">{{ $item->name }}</span>
             </nav>
