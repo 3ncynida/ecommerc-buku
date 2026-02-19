@@ -139,6 +139,23 @@ class ProfileController extends Controller
     }
 
     /**
+     * Set a default address for the user.
+     */
+    public function setDefaultAddress(Address $address)
+    {
+        if ($address->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak diizinkan mengubah alamat ini.');
+        }
+
+        \DB::transaction(function () use ($address) {
+            Address::where('user_id', auth()->id())->update(['is_default' => false]);
+            $address->update(['is_default' => true]);
+        });
+
+        return redirect()->back()->with('success', 'Alamat utama berhasil diperbarui!');
+    }
+
+    /**
      * Get cities by province (AJAX).
      */
     public function getCities($provinceId)

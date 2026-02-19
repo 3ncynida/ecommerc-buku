@@ -165,6 +165,17 @@
                                                         <i class="fa-solid fa-pen-to-square mr-1.5 text-[10px]"></i> Ubah Alamat
                                                     </button>
                                                     <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                                    @if(!$addr->is_default)
+                                                        <form action="{{ route('address.set-default', $addr) }}" method="POST" class="inline">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <button type="submit"
+                                                                class="text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 transition-colors">
+                                                                <i class="fa-solid fa-star mr-1.5 text-[10px]"></i> Jadikan Utama
+                                                            </button>
+                                                        </form>
+                                                        <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                                    @endif
                                                     <form action="{{ route('address.destroy', $addr) }}" method="POST" class="inline"
                                                         onsubmit="return confirm('Hapus alamat ini?')">
                                                         @csrf

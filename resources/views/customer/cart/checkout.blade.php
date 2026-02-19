@@ -45,9 +45,8 @@
                                 {{ $address->district->name ?? '' }}, {{ $address->city->name ?? '' }},
                                 {{ $address->province->name ?? '' }}, {{ $address->postal_code }}
                             </div>
-
-                            <input type="hidden" name="address_id" id="input_address_id" value="{{ $address->id }}">
                         </div>
+                        <input type="hidden" name="address_id" id="input_address_id" value="{{ $address->id }}">
                     @else
                         <div class="text-center py-4">
                             <div class="text-sm text-gray-500 mb-4">Belum ada alamat yang terdaftar.</div>
@@ -223,18 +222,22 @@
 function selectAddress(addr, regionInfo) {
     // Update display di halaman checkout
     const display = document.getElementById('selected-address-display');
+    const defaultBadge = addr.is_default ? '<span class="text-xs font-bold uppercase px-2 py-0.5 bg-green-100 text-green-600 rounded">Utama</span>' : '';
     display.innerHTML = `
         <div class="flex items-center gap-2 mb-2">
             <span class="text-xs font-bold uppercase px-2 py-0.5 bg-gray-200 text-gray-600 rounded">${addr.label}</span>
+            ${defaultBadge}
         </div>
         <div class="font-bold text-gray-900">${addr.recipient_name}</div>
         <div class="text-sm text-gray-600 mt-1">${addr.phone_number}</div>
         <div class="text-sm text-gray-500 mt-2">${addr.full_address}<br>${regionInfo}, ${addr.postal_code}</div>
-        <input type="hidden" name="address_id" value="${addr.id}">
     `;
     
     // Update hidden input
-    document.getElementById('input_address_id').value = addr.id;
+    const hiddenInput = document.getElementById('input_address_id');
+    if (hiddenInput) {
+        hiddenInput.value = addr.id;
+    }
     
     // Tutup modal
     document.getElementById('modalPilihAlamat').classList.add('hidden');

@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
     // Address Routes
     Route::post('/address', [ProfileController::class, 'storeAddress'])->name('address.store');
     Route::put('/address/{address}', [ProfileController::class, 'updateAddress'])->name('address.update');
+    Route::put('/address/{address}/default', [ProfileController::class, 'setDefaultAddress'])->name('address.set-default');
     Route::delete('/address/{address}', [ProfileController::class, 'destroyAddress'])->name('address.destroy');
 });
 Route::get('/api/search', [App\Http\Controllers\ItemController::class, 'liveSearch'])->name('api.search');
