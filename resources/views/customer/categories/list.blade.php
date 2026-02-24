@@ -14,7 +14,7 @@
             {{-- Category Grid --}}
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($categories as $category)
-                    <a href="{{ route('category.show', $category->id) }}" class="group">
+                    <a href="{{ route('category.show', $category->slug) }}" class="group">
                         <div
                             class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all duration-300 flex flex-col items-center text-center h-full">
 

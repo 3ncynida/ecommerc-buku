@@ -29,7 +29,7 @@
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
                     <input type="text" placeholder="Cari judul buku atau penulis..."
-                        class="w-full px-2 py-3 text-sm focus:outline-none"
+                        class="w-full px-2 py-3 text-sm focus:outline-none" autocomplete="off"
                         data-home-search-input>
                 </div>
                 <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-20"

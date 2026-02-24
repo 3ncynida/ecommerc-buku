@@ -23,9 +23,9 @@ class AddressSeeder extends Seeder
                 'full_address'     => 'Jl. Jenderal Sudirman No. 123',
                 'is_default'       => true,
                 'postal_code'      => '10210',
-                'province_id'      => 31,
-                'city_id'          => 3171,
-                'district_id'      => 3171010,
+                'province_id'      => 15,
+                'city_id'          => 228,
+                'district_id'      => 3299,
             ]);
         }
 

@@ -168,6 +168,9 @@ class PaymentController extends Controller
         $status = $order->payment_status ?? ($payment->status ?? 'pending');
 
         if ($status === 'success') {
+            // Kurangi stok item
+            $order->item->decrement('stok', $order->quantity);
+
             // Hapus cart hanya jika benar-benar sukses
             session()->forget('cart');
             return view('customer.payment-success', [

@@ -16,7 +16,7 @@ if (input && results && resultsList) {
       return;
     }
 
-    const html = [];
+    const shtml = [];
     if (items.length) {
       html.push('<li class="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Buku</li>');
       items.forEach((item) => {
