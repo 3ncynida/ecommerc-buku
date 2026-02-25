@@ -24,15 +24,16 @@ class CartController extends Controller
     {
         $product = Item::findOrFail($id);
         $cart = session()->get('cart', []);
+        $quantity = request('quantity', 1);
 
         // Jika produk sudah ada di keranjang, tambah quantity
         if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
+            $cart[$id]['quantity'] += $quantity;
         } else {
             // Jika belum ada, tambahkan data baru
             $cart[$id] = [
                 "name" => $product->name,
-                "quantity" => 1,
+                "quantity" => $quantity,
                 "price" => $product->price,
                 "image" => $product->image
             ];

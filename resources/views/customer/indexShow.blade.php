@@ -8,7 +8,8 @@
             <nav class="flex mb-8 text-sm text-gray-500 overflow-x-auto whitespace-nowrap">
                 <a href="/" class="hover:text-indigo-600">Home</a>
                 <span class="mx-2 text-gray-300">></span>
-                <a href="/category/{{ $item->category->slug }}" class="hover:text-indigo-600">{{ $item->category->name ?? 'Kategori' }}</a>
+                <a href="/category/{{ $item->category->slug }}"
+                    class="hover:text-indigo-600">{{ $item->category->name ?? 'Kategori' }}</a>
                 <span class="mx-2 text-gray-300">></span>
                 <span class="text-gray-800 font-medium truncate">{{ $item->name }}</span>
             </nav>
@@ -91,15 +92,16 @@
                     {{-- Action Buttons --}}
                     @auth
                         <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
-                            <form action="{{ route('cart.add', $item->id) }}" method="POST"
-                                class="flex gap-4 add-to-cart-form">
+                            <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex gap-4 add-to-cart-form">
                                 @csrf
                                 <div
                                     class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
-                                    <button type="button" class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
+                                    <button type="button" onclick="changeQuantity(this, -1)"
+                                        class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
                                     <input type="number" name="quantity" value="1"
                                         class="w-12 text-center border-none focus:ring-0 font-bold" min="1">
-                                    <button type="button" class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
+                                    <button type="button" onclick="changeQuantity(this, 1)"
+                                        class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
                                 </div>
                                 <button data-add-to-cart
                                     class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
@@ -113,10 +115,10 @@
                             <div class="flex gap-4">
                                 <div
                                     class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
-                                    <button type="button" class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
+                                    <button type="button" disabled class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
                                     <input type="number" name="quantity" value="1" disabled
                                         class="w-12 text-center border-none focus:ring-0 font-bold bg-gray-100" min="1">
-                                    <button type="button" class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
+                                    <button type="button" disabled class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
                                 </div>
                                 <a href="{{ route('register') }}"
                                     class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
@@ -143,8 +145,7 @@
                                     class="w-full h-64 object-cover rounded-xl shadow-sm border">
                                 <div class="mt-3">
                                     <p class="text-xs text-gray-400 mb-1">{{ $related->author->name ?? 'Penulis' }}</p>
-                                    <h4
-                                        class="font-bold text-gray-900 truncate text-sm group-hover:text-indigo-600 transition">
+                                    <h4 class="font-bold text-gray-900 truncate text-sm group-hover:text-indigo-600 transition">
                                         {{ $related->name }}
                                     </h4>
                                     <p class="text-indigo-600 font-bold mt-1">
@@ -157,4 +158,15 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        function changeQuantity(button, delta) {
+            const input = button.parentElement.querySelector('input[name="quantity"]');
+            let val = parseInt(input.value) + delta;
+            if (val < 1) val = 1;
+            input.value = val;
+        }
+    </script>
 @endsection
