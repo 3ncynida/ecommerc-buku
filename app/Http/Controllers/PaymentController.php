@@ -8,6 +8,7 @@ use Midtrans\Config;
 use Midtrans\Snap;
 use App\Models\Order;
 use App\Models\Address;
+use App\Notifications\PaymentSuccessNotification;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
@@ -199,5 +200,17 @@ class PaymentController extends Controller
             'payment_method' => $order->payment_method,
             'payment' => $payment,
         ]);
+    }
+
+    public function finish(Request $request)
+    {
+        $order = Order::where('order_number', $request->order_id)->first();
+
+        if ($order && $order->payment_status === 'success') {
+            // Kirim notifikasi ke user
+            $order->user->notify(new PaymentSuccessNotification($order));
+        }
+
+        return view('customer.payment-success', compact('order'));
     }
 }
