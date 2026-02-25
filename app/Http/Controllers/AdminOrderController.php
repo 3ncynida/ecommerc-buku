@@ -9,10 +9,37 @@ class AdminOrderController extends Controller
 {
     public function index()
     {
-        // Mengambil data order beserta data itemnya (Eager Loading)
-        $orders = Order::with('item')->latest()->get();
+        // Statistik Dasar
+        $totalRevenue = Order::where('payment_status', 'success')->sum('total_price');
+        $totalOrders = Order::count();
+        $pendingOrders = Order::where('payment_status', 'pending')->count();
+        $shippingOrders = Order::whereIn('item_status', ['pending', 'diproses'])->count();
+
+        // Data Tambahan
+        $totalItems = \App\Models\Item::count();
+        $totalCustomers = \App\Models\User::where('role', 'customer')->count();
+
+        // Data untuk Chart (7 hari terakhir)
+        $salesData = Order::where('payment_status', 'success')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->selectRaw('DATE(created_at) as date, SUM(total_price) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Mengambil transaksi terbaru (limit 10)
+        $orders = Order::with(['item', 'user'])->latest()->limit(10)->get();
         
-        return view('admin.dashboard.index', compact('orders'));
+        return view('admin.dashboard.index', compact(
+            'orders', 
+            'totalRevenue', 
+            'totalOrders', 
+            'pendingOrders', 
+            'shippingOrders',
+            'totalItems',
+            'totalCustomers',
+            'salesData'
+        ));
     }
 
     public function updateStatus(Request $request, $id)
