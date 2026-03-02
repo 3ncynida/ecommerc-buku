@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use App\Models\Item;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\PaymentSuccessNotification;
 
 class PaymentCallbackController extends Controller
 {
@@ -46,37 +47,59 @@ class PaymentCallbackController extends Controller
 
         // Update payment status
         if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
-            $payment->update([
-                'status' => 'success',
-                'transaction_id' => $request->transaction_id,
-                'payment_type' => $request->payment_type ?? null,
-                'raw_response' => json_encode($request->all()),
-            ]);
-
-            // Update order status
-            $order = Order::where('order_number', $request->order_id)->first();
-            if ($order) {
-                $order->update([
-                    'payment_status' => 'success',
-                    'item_status' => 'diproses'
+            
+            // Pengecekan krusial: Pastikan status sebelumnya belum sukses
+            // Ini mencegah pengiriman email berulang dan pengurangan stok ganda
+            if ($payment->status !== 'success') {
+                
+                $payment->update([
+                    'status' => 'success',
+                    'transaction_id' => $request->transaction_id,
+                    'payment_type' => $request->payment_type ?? null,
+                    'raw_response' => json_encode($request->all()),
                 ]);
 
-                // Kurangi stok produk terkait jika ada
-                try {
-                    if ($order->item_id && $order->quantity) {
-                        $item = Item::find($order->item_id);
-                        if ($item) {
-                            $newStock = max(0, (int) $item->stok - (int) $order->quantity);
-                            $item->update(['stok' => $newStock]);
-                            Log::info('Stock decremented', ['item_id' => $item->id, 'decreased_by' => $order->quantity, 'new_stock' => $newStock]);
-                        }
-                    }
-                } catch (\Exception $e) {
-                    Log::error('Failed to decrement stock', ['error' => $e->getMessage(), 'order' => $order->order_number]);
-                }
-            }
+                // Update order status
+                $order = Order::where('order_number', $request->order_id)->first();
+                if ($order) {
+                    $order->update([
+                        'payment_status' => 'success',
+                        'item_status' => 'diproses'
+                    ]);
 
-            Log::info('Payment successful', ['order_id' => $request->order_id]);
+                    // === 1. KIRIM NOTIFIKASI EMAIL DI SINI ===
+                    try {
+                        // Pastikan relasi user() ada di model Order
+                        if ($order->user) {
+                            $order->user->notify(new PaymentSuccessNotification($order));
+                            Log::info('Email notification sent', ['order_id' => $order->order_number]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send email notification', [
+                            'error' => $e->getMessage(), 
+                            'order' => $order->order_number
+                        ]);
+                    }
+
+                    // === 2. KURANGI STOK ===
+                    try {
+                        if ($order->item_id && $order->quantity) {
+                            $item = Item::find($order->item_id);
+                            if ($item) {
+                                $newStock = max(0, (int) $item->stok - (int) $order->quantity);
+                                $item->update(['stok' => $newStock]);
+                                Log::info('Stock decremented', ['item_id' => $item->id, 'decreased_by' => $order->quantity, 'new_stock' => $newStock]);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Failed to decrement stock', ['error' => $e->getMessage(), 'order' => $order->order_number]);
+                    }
+                }
+
+                Log::info('Payment successful and processed', ['order_id' => $request->order_id]);
+            } else {
+                Log::info('Payment already marked as success, ignored', ['order_id' => $request->order_id]);
+            }
 
         } elseif ($transactionStatus == 'pending') {
             $payment->update(['status' => 'pending']);

@@ -94,15 +94,6 @@
 
             <!-- RIGHT: Payment + Summary -->
             <div class="space-y-6">
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border">
-                    <h3 class="font-semibold text-lg mb-3">Voucher</h3>
-                    <div class="flex gap-3">
-                        <input id="voucher" type="text" placeholder="Gunakan Voucher" class="flex-1 border rounded-xl p-3">
-                        <button id="apply-voucher" class="bg-indigo-600 text-white px-4 rounded-xl">Gunakan</button>
-                    </div>
-                </div>
-
                 <div class="bg-white p-6 rounded-2xl shadow-sm border">
                     <h3 class="font-semibold text-lg mb-3">Ringkasan Belanja</h3>
                     <div class="text-sm text-gray-500 mb-3">Detail biaya pesanan</div>
@@ -111,22 +102,6 @@
                         <div class="flex justify-between">
                             <div>Total Harga ({{ count($cart) }} Barang)</div>
                             <div>Rp{{ number_format($total, 0, ',', '.') }}</div>
-                        </div>
-                        <div class="flex justify-between text-gray-500">
-                            <div>Total Biaya Pengiriman</div>
-                            <div>Rp0</div>
-                        </div>
-                        <div class="flex justify-between text-red-500">
-                            <div>Diskon Belanja</div>
-                            <div>-Rp0</div>
-                        </div>
-                        <div class="flex justify-between text-red-500">
-                            <div>Voucher</div>
-                            <div>-Rp0</div>
-                        </div>
-                        <div class="flex justify-between text-red-500">
-                            <div>Voucher Ongkir</div>
-                            <div>-Rp0</div>
                         </div>
                     </div>
 
@@ -175,10 +150,16 @@
                             return;
                         }
                         if (data.snap_token) {
+                            const orderId = data.order_id; // simpan untuk callback
                             window.snap.pay(data.snap_token, {
                                 onSuccess: function (result) { window.location.href = "{{ route('payment.success', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', result.order_id); },
                                 onPending: function (result) { alert('Menunggu pembayaran...'); },
-                                onError: function (result) { alert('Pembayaran gagal'); }
+                                onError: function (result) {
+                                    window.location.href = "{{ route('payment.failure', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId);
+                                },
+                                onClose: function() {
+                                    window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId);
+                                }
                             });
                         }
                     })

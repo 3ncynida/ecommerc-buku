@@ -87,6 +87,13 @@ class PaymentController extends Controller
                     'item_details' => $itemDetails,
                 ];
 
+                // tambahkan callback agar Midtrans otomatis redirect
+                $params['callbacks'] = [
+                    'finish' => route('payment.success', ['orderId' => $orderId]),
+                    'unfinish' => route('payment.unfinish', ['orderId' => $orderId]),
+                    'error' => route('payment.failure', ['orderId' => $orderId]),
+                ];
+
                 // build customer details
                 $customer = [
                     'first_name' => $request->name,
@@ -134,7 +141,7 @@ class PaymentController extends Controller
             });
 
             // JANGAN hapus cart di sini. Hapus di JavaScript onSuccess.
-            return response()->json(['snap_token' => $snapToken]);
+            return response()->json(['snap_token' => $snapToken, 'order_id' => $orderId]);
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -212,5 +219,45 @@ class PaymentController extends Controller
         }
 
         return view('customer.payment-success', compact('order'));
+    }
+
+    /**
+     * Halaman redirect saat transaksi gagal/error.
+     */
+    public function failure($order_id)
+    {
+        $order = Order::where('order_number', $order_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $payment = Payment::where('order_id', $order->order_number)->latest()->first();
+
+        return view('customer.payment-failed', [
+            'order' => $order,
+            'total' => $order->total_price,
+            'order_number' => $order->order_number,
+            'payment_method' => $order->payment_method,
+            'payment' => $payment,
+        ]);
+    }
+
+    /**
+     * Halaman redirect ketika user menutup atau tidak menyelesaikan pembayaran.
+     */
+    public function unfinish($order_id)
+    {
+        $order = Order::where('order_number', $order_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $payment = Payment::where('order_id', $order->order_number)->latest()->first();
+
+        return view('customer.payment-pending', [
+            'order' => $order,
+            'total' => $order->total_price,
+            'order_number' => $order->order_number,
+            'payment_method' => $order->payment_method,
+            'payment' => $payment,
+        ]);
     }
 }

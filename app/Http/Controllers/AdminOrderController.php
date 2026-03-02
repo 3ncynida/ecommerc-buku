@@ -25,16 +25,20 @@ class AdminOrderController extends Controller
             ->selectRaw('DATE(created_at) as date, SUM(total_price) as total')
             ->groupBy('date')
             ->orderBy('date')
-            ->get();
+            ->get()
+            ->map(function ($row) {
+                $row->total = (float) $row->total;
+                return $row;
+            });
 
         // Mengambil transaksi terbaru (limit 10)
         $orders = Order::with(['item', 'user'])->latest()->limit(10)->get();
-        
+
         return view('admin.dashboard.index', compact(
-            'orders', 
-            'totalRevenue', 
-            'totalOrders', 
-            'pendingOrders', 
+            'orders',
+            'totalRevenue',
+            'totalOrders',
+            'pendingOrders',
             'shippingOrders',
             'totalItems',
             'totalCustomers',

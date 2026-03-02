@@ -112,6 +112,7 @@
         </div>
     </div>
 
+
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 border-b border-gray-50 flex justify-between items-center">
             <div>
@@ -203,20 +204,25 @@
 
     <script>
         const ctx = document.getElementById('salesChart').getContext('2d');
+        // make sure the arrays contain numbers, not strings
+        const labels = {!! json_encode($salesData->pluck('date')) !!};
+        const rawData = {!! json_encode($salesData->pluck('total')) !!};
+        const dataPoints = rawData.map(n => parseFloat(n) || 0);
+
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: {!! json_encode($salesData->pluck('date')) !!},
+                labels: labels,
                 datasets: [{
                     label: 'Pendapatan (Rp)',
-                    data: {!! json_encode($salesData->pluck('total')) !!},
+                    data: dataPoints,
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
                     borderWidth: 4,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff',
+                    pointRadius: 6,
+                    pointBackgroundColor: '#6366f1',
                     pointBorderColor: '#6366f1',
                     pointBorderWidth: 2
                 }]
@@ -248,7 +254,8 @@
                             display: false
                         },
                         ticks: {
-                            font: { size: 10, weight: 'bold' }
+                            font: { size: 10, weight: 'bold' },
+                            autoSkip: labels.length > 7 ? true : false
                         }
                     }
                 }

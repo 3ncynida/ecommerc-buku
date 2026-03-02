@@ -35,12 +35,13 @@
                                     <div>
                                         <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">ID Pesanan</p>
                                         <h3 class="font-bold text-gray-900 text-lg uppercase tracking-tight">
-                                            {{ $order->order_number }}</h3>
+                                            {{ $order->order_number }}
+                                        </h3>
                                         <div class="flex items-center gap-3 mt-1">
                                             <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y, H:i') }} WIB</p>
                                             <span
                                                 class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                                        {{ $order->payment_status == 'success' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600' }}">
+                                                                    {{ $order->payment_status == 'success' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600' }}">
                                                 {{ $order->payment_status }}
                                             </span>
                                         </div>
@@ -53,7 +54,8 @@
                                         Rp{{ number_format($order->total_price, 0, ',', '.') }}
                                     </p>
                                     @if($order->payment_status == 'pending')
-                                        <button onclick="payOrder('{{ $order->payment->snap_token ?? '' }}')"
+                                        <button
+                                            onclick="payOrder('{{ $order->payment->snap_token ?? '' }}','{{ $order->order_number }}')"
                                             class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center gap-2">
                                             <i class="fa-solid fa-credit-card"></i>
                                             Bayar Sekarang
@@ -72,7 +74,8 @@
                                     </span>
                                 </div>
 
-                                <a href="{{ route('orders.show', $order->id ) }}" class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
+                                <a href="/orders/{{ $order->order_number }}"
+                                    class="text-indigo-600 font-bold hover:text-indigo-800 text-sm flex items-center gap-2 group">
                                     Lihat Detail Transaksi
                                     <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                                 </a>
@@ -88,13 +91,17 @@
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     <script>
-        function payOrder(snapToken) {
+        function payOrder(snapToken, orderId) {
             if (!snapToken) { alert('Token pembayaran tidak ditemukan.'); return; }
             window.snap.pay(snapToken, {
                 onSuccess: function (result) { window.location.href = "{{ url('/payment/success') }}/" + result.order_id; },
                 onPending: function (result) { alert("Menunggu pembayaran Anda!"); },
-                onError: function (result) { alert("Pembayaran gagal!"); },
-                onClose: function () { console.log('Customer closed the popup without finishing the payment'); }
+                onError: function (result) {
+                    window.location.href = "{{ url('/payment/failure') }}/" + orderId;
+                },
+                onClose: function () {
+                    window.location.href = "{{ url('/payment/unfinish') }}/" + orderId;
+                }
             });
         }
     </script>
