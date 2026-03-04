@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Models\Item;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
@@ -34,6 +35,16 @@ class PaymentController extends Controller
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             return response()->json(['error' => 'Keranjang kosong'], 400);
+        }
+
+        // pastikan stok masih tersedia untuk setiap item
+        foreach ($cart as $id => $details) {
+            $product = Item::find($id);
+            if (!$product || $product->stok < $details['quantity']) {
+                return response()->json([
+                    'error' => "Stok tidak mencukupi untuk {$details['name']}",
+                ], 400);
+            }
         }
 
         $orderId = 'LBRS-' . time();

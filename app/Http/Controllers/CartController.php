@@ -23,12 +23,34 @@ class CartController extends Controller
     public function add($id)
     {
         $product = Item::findOrFail($id);
+
+        // jangan biarkan user menambahkan jika stok habis
+        if ($product->stok <= 0) {
+            if (request()->wantsJson() || request()->ajax() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stok tidak tersedia',
+                ], 400);
+            }
+
+            return redirect()->back()->with('error', 'Stok buku habis');
+        }
+
         $cart = session()->get('cart', []);
-        $quantity = request('quantity', 1);
+        $quantity = (int) request('quantity', 1);
+
+        // jika user minta lebih dari stok, beri tahu atau batasi
+        if ($quantity > $product->stok) {
+            $quantity = $product->stok;
+        }
 
         // Jika produk sudah ada di keranjang, tambah quantity
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += $quantity;
+            // jangan melebihi stok total
+            if ($cart[$id]['quantity'] > $product->stok) {
+                $cart[$id]['quantity'] = $product->stok;
+            }
         } else {
             // Jika belum ada, tambahkan data baru
             $cart[$id] = [
@@ -82,8 +104,18 @@ class CartController extends Controller
         $allAddresses = $user->addresses;
 
         $cart = session()->get('cart', []);
-        if (empty($cart))
+        if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Keranjang masih kosong!');
+        }
+
+        // Verifikasi stok untuk setiap item sebelum checkout
+        foreach ($cart as $id => $details) {
+            $product = Item::find($id);
+            if (!$product || $product->stok < $details['quantity']) {
+                return redirect()->route('cart.index')
+                    ->with('error', "Stok untuk {$details['name']} tidak mencukupi. Silakan periksa keranjang Anda.");
+            }
+        }
 
         $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
         return view('customer.cart.checkout', compact('cart', 'total'));

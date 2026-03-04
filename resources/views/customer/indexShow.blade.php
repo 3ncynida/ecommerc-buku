@@ -92,23 +92,29 @@
                     {{-- Action Buttons --}}
                     @auth
                         <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
-                            <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex gap-4 add-to-cart-form">
-                                @csrf
-                                <div
-                                    class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
-                                    <button type="button" onclick="changeQuantity(this, -1)"
-                                        class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
-                                    <input type="number" name="quantity" value="1"
-                                        class="w-12 text-center border-none focus:ring-0 font-bold" min="1">
-                                    <button type="button" onclick="changeQuantity(this, 1)"
-                                        class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
+                            @if($item->stok > 0)
+                                <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex gap-4 add-to-cart-form">
+                                    @csrf
+                                    <div
+                                        class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
+                                        <button type="button" onclick="changeQuantity(this, -1)"
+                                            class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
+                                        <input type="number" name="quantity" value="1" max="{{ $item->stok }}"
+                                            class="w-12 text-center border-none focus:ring-0 font-bold" min="1">
+                                        <button type="button" onclick="changeQuantity(this, 1)"
+                                            class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
+                                    </div>
+                                    <button data-add-to-cart
+                                        class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
+                                        <i class="fa-solid fa-cart-plus text-xl"></i>
+                                        Tambah ke Keranjang
+                                    </button>
+                                </form>
+                            @else
+                                <div class="text-center w-full bg-red-50 border border-red-200 rounded-xl py-4 font-bold text-red-600">
+                                    Stok Habis
                                 </div>
-                                <button data-add-to-cart
-                                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
-                                    <i class="fa-solid fa-cart-plus text-xl"></i>
-                                    Tambah ke Keranjang
-                                </button>
-                            </form>
+                            @endif
                         </div>
                     @else
                         <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
@@ -165,7 +171,9 @@
         function changeQuantity(button, delta) {
             const input = button.parentElement.querySelector('input[name="quantity"]');
             let val = parseInt(input.value) + delta;
+            const max = parseInt(input.getAttribute('max')) || Infinity;
             if (val < 1) val = 1;
+            if (val > max) val = max;
             input.value = val;
         }
     </script>

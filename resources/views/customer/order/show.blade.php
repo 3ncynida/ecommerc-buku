@@ -110,14 +110,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-- Tombol Lacak Pesanan (Opsional) --}}
-                        @if ($order->item_status == 'dikirim')
-                            <button
-                                class="w-full mt-6 py-3 bg-gray-900 text-white rounded-2xl text-xs font-bold hover:bg-black transition">
-                                Lacak Pesanan
-                            </button>
-                        @endif
                     </div>
                 </div>
 

@@ -5,6 +5,21 @@
         <div class="max-w-7xl mx-auto px-8">
             <h1 class="text-3xl font-bold mb-10">Keranjang Belanja</h1>
 
+            @php
+                $stockIssues = [];
+                foreach ($cart as $id => $details) {
+                    $product = \App\Models\Item::find($id);
+                    if ($product && $product->stok < $details['quantity']) {
+                        $stockIssues[] = "{$details['name']} (tersisa {$product->stok})";
+                    }
+                }
+            @endphp
+            @if(count($stockIssues) > 0)
+                <div class="bg-red-100 text-red-800 p-4 rounded mb-6">
+                    Stok untuk {{ implode(', ', $stockIssues) }} tidak mencukupi. Silakan perbarui jumlah atau hapus item.
+                </div>
+            @endif
+
             <div class="flex flex-col lg:flex-row gap-8">
                 <div class="lg:w-2/3">
                     <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
@@ -27,13 +42,15 @@
                                             <span class="font-bold text-gray-800">{{ $details['name'] }}</span>
                                         </td>
                                         <td class="px-6 py-6 text-gray-600">Rp
-                                            {{ number_format($details['price'], 0, ',', '.') }}</td>
+                                            {{ number_format($details['price'], 0, ',', '.') }}
+                                        </td>
                                         <td class="px-6 py-6">
                                             <span
                                                 class="bg-gray-100 px-3 py-1 rounded-lg text-sm">{{ $details['quantity'] }}</span>
                                         </td>
                                         <td class="px-6 py-6 font-bold text-indigo-600">Rp
-                                            {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}</td>
+                                            {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}
+                                        </td>
                                         <td class="px-6 py-6">
                                             <form action="{{ route('cart.remove') }}" method="POST">
                                                 @csrf @method('DELETE')

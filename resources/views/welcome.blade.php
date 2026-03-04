@@ -24,19 +24,10 @@
             <p class="text-gray-500 text-lg max-w-md">Jelajahi ribuan koleksi buku dari penulis terbaik dunia dengan
                 harga yang bersahabat dan pengiriman kilat.</p>
             <div class="relative max-w-md">
-                <div class="flex items-center bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <span class="px-4 text-gray-400">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </span>
-                    <input type="text" placeholder="Cari judul buku atau penulis..."
-                        class="w-full px-2 py-3 text-sm focus:outline-none" autocomplete="off"
-                        data-home-search-input>
-                </div>
                 <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-20"
                     data-home-search-results>
                     <ul class="max-h-72 overflow-y-auto" data-home-search-list></ul>
                 </div>
-                <p class="text-xs text-gray-400 mt-2">Gunakan kata kunci singkat untuk hasil terbaik.</p>
             </div>
             <div class="flex space-x-4">
                 <a href="{{ route('category.list') }}"
@@ -98,47 +89,53 @@
                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         @endif
 
-                        <div class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        <div
+                            class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
                             Terlaris
                         </div>
 
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
-                                           opacity-0 group-hover:opacity-100 transition-all duration-300
-                                           flex items-center justify-center gap-4">
+                                               opacity-0 group-hover:opacity-100 transition-all duration-300
+                                               flex items-center justify-center gap-4">
 
-                            @auth
-                                <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
-                                    @csrf
-                                    <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                               text-gray-800 shadow-xl
-                                                               hover:bg-indigo-600 hover:text-white
-                                                               hover:scale-110 active:scale-95
-                                                               transition-all duration-300">
-                                        <i class="fa-solid fa-cart-plus text-lg"></i>
-                                    </button>
-                                </form>
+                            @if($book->stok <= 0)
+                                <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                    Stok Habis
+                                </span>
                             @else
-                                <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                           text-gray-800 shadow-xl
-                                                           hover:bg-indigo-600 hover:text-white
-                                                           hover:scale-110 active:scale-95
-                                                           transition-all duration-300">
-                                    <i class="fa-solid fa-cart-plus text-lg"></i>
-                                </a>
-                            @endauth
+                                @auth
+                                    <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
+                                        @csrf
+                                        <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                                               text-gray-800 shadow-xl
+                                                                               hover:bg-indigo-600 hover:text-white
+                                                                               hover:scale-110 active:scale-95
+                                                                               transition-all duration-300">
+                                            <i class="fa-solid fa-cart-plus text-lg"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                                           text-gray-800 shadow-xl
+                                                                           hover:bg-indigo-600 hover:text-white
+                                                                           hover:scale-110 active:scale-95
+                                                                           transition-all duration-300">
+                                        <i class="fa-solid fa-cart-plus text-lg"></i>
+                                    </a>
+                                @endauth
+                            @endif
 
                             <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                               text-gray-800 shadow-xl
-                                               hover:bg-indigo-600 hover:text-white
-                                               hover:scale-110 active:scale-95
-                                               transition-all duration-300">
+                                                   text-gray-800 shadow-xl
+                                                   hover:bg-indigo-600 hover:text-white
+                                                   hover:scale-110 active:scale-95
+                                                   transition-all duration-300">
                                 <i class="fa-solid fa-eye text-lg"></i>
                             </a>
                         </div>
                     </div>
 
-                    <h3
-                        class="font-bold text-lg leading-tight mb-1 text-gray-900 group-hover:text-indigo-600 transition">
+                    <h3 class="font-bold text-lg leading-tight mb-1 text-gray-900 group-hover:text-indigo-600 transition">
                         {{ $book->name }}
                     </h3>
                     <p class="text-gray-500 text-sm mb-2">{{ $book->author->name ?? 'Penulis Anonim' }}</p>
@@ -147,8 +144,7 @@
                         <p class="text-indigo-600 font-bold text-lg">
                             Rp {{ number_format($book->price, 0, ',', '.') }}
                         </p>
-                        <span
-                            class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-md font-medium">Tersedia</span>
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-md font-medium">Tersedia</span>
                     </div>
                 </div>
             @empty
@@ -179,35 +175,41 @@
                             @endif
 
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
-                                               opacity-0 group-hover:opacity-100 transition-all duration-300
-                                               flex items-center justify-center gap-4">
+                                                   opacity-0 group-hover:opacity-100 transition-all duration-300
+                                                   flex items-center justify-center gap-4">
 
-                                @auth
-                                    <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
-                                        @csrf
-                                        <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                                   text-gray-800 shadow-xl
-                                                                   hover:bg-indigo-600 hover:text-white
-                                                                   hover:scale-110 active:scale-95
-                                                                   transition-all duration-300">
-                                            <i class="fa-solid fa-cart-plus text-lg"></i>
-                                        </button>
-                                    </form>
+                                @if($book->stok <= 0)
+                                    <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                        Stok Habis
+                                    </span>
                                 @else
-                                    <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                               text-gray-800 shadow-xl
-                                                               hover:bg-indigo-600 hover:text-white
-                                                               hover:scale-110 active:scale-95
-                                                               transition-all duration-300">
-                                        <i class="fa-solid fa-cart-plus text-lg"></i>
-                                    </a>
-                                @endauth
+                                    @auth
+                                        <form action="{{ route('cart.add', $book->id) }}" method="POST" class="add-to-cart-form">
+                                            @csrf
+                                            <button type="button" data-add-to-cart class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                                                   text-gray-800 shadow-xl
+                                                                                   hover:bg-indigo-600 hover:text-white
+                                                                                   hover:scale-110 active:scale-95
+                                                                                   transition-all duration-300">
+                                                <i class="fa-solid fa-cart-plus text-lg"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('register') }}" class="p-4 rounded-full bg-white/90 backdrop-blur
+                                                                               text-gray-800 shadow-xl
+                                                                               hover:bg-indigo-600 hover:text-white
+                                                                               hover:scale-110 active:scale-95
+                                                                               transition-all duration-300">
+                                            <i class="fa-solid fa-cart-plus text-lg"></i>
+                                        </a>
+                                    @endauth
+                                @endif
 
                                 <a href="/book/{{ $book->slug }}" class="p-4 rounded-full bg-white/90 backdrop-blur
-                                                   text-gray-800 shadow-xl
-                                                   hover:bg-indigo-600 hover:text-white
-                                                   hover:scale-110 active:scale-95
-                                                   transition-all duration-300">
+                                                       text-gray-800 shadow-xl
+                                                       hover:bg-indigo-600 hover:text-white
+                                                       hover:scale-110 active:scale-95
+                                                       transition-all duration-300">
                                     <i class="fa-solid fa-eye text-lg"></i>
                                 </a>
                             </div>

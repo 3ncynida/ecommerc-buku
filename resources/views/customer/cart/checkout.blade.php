@@ -7,6 +7,20 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- LEFT: Address + Order Items (col-span 2) -->
             <div class="lg:col-span-2 space-y-6">
+                @php
+                    $stockIssues = [];
+                    foreach(session('cart', []) as $id => $details) {
+                        $product = \App\Models\Item::find($id);
+                        if ($product && $product->stok < ($details['quantity'] ?? 0)) {
+                            $stockIssues[] = "{$details['name']} (tersisa {$product->stok})";
+                        }
+                    }
+                @endphp
+                @if(count($stockIssues) > 0)
+                    <div class="bg-red-100 text-red-800 p-4 rounded">
+                        Stok untuk {{ implode(', ', $stockIssues) }} tidak mencukupi. Silakan kembali ke keranjang dan perbarui.
+                    </div>
+                @endif
                 <!-- Address Card -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border">
                     <div class="flex justify-between items-center mb-4">
