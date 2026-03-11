@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 http://localhost:5173 https://app.sandbox.midtrans.com https://cdn.jsdelivr.net; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com;">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body class="bg-gray-100 flex">

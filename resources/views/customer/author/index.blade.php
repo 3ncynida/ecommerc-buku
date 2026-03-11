@@ -67,11 +67,6 @@
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 @forelse($books as $book)
                 <div class="group relative bg-white border border-transparent rounded-3xl p-2 transition hover:border-gray-100 hover:shadow-lg hover:shadow-gray-50">
-                    
-                    {{-- Badge Bahasa (Top-Left) --}}
-                    <div class="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1 border border-blue-100">
-                        <i class="fa-solid fa-globe"></i> ID
-                    </div>
 
                     {{-- Tombol Favorit (Top-Right) --}}
                     <button onclick="toggleFavorite(this, {{ $book->id }})" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-red-500 transition">

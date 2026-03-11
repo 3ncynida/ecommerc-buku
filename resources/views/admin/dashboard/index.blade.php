@@ -4,75 +4,71 @@
 @section('content')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Revenue Card -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pendapatan</p>
-                    <h4 class="text-2xl font-black text-indigo-600 mt-1">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h4>
-                </div>
-                <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-money-bill-trend-up text-xl"></i>
-                </div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pendapatan</p>
+                <h4 class="text-2xl font-black text-indigo-600 mt-1">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h4>
             </div>
-            <div class="mt-4 flex items-center text-xs text-emerald-600 font-bold">
-                <i class="fa-solid fa-arrow-up mr-1"></i>
-                <span>Statistik Real-time</span>
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-money-bill-trend-up text-xl"></i>
             </div>
         </div>
-
-        <!-- Orders Card -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pesanan</p>
-                    <h4 class="text-2xl font-black text-gray-800 mt-1">{{ $totalOrders }}</h4>
-                </div>
-                <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-box text-xl"></i>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center text-xs text-amber-600 font-bold">
-                <i class="fa-solid fa-clock mr-1"></i>
-                <span>{{ $pendingOrders }} Menunggu Pembayaran</span>
-            </div>
-        </div>
-
-        <!-- Customers Card -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pelanggan</p>
-                    <h4 class="text-2xl font-black text-gray-800 mt-1">{{ $totalCustomers }}</h4>
-                </div>
-                <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-users text-xl"></i>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center text-xs text-emerald-600 font-bold">
-                <i class="fa-solid fa-user-plus mr-1"></i>
-                <span>User Terdaftar</span>
-            </div>
-        </div>
-
-        <!-- Items Card -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Koleksi Buku</p>
-                    <h4 class="text-2xl font-black text-gray-800 mt-1">{{ $totalItems }}</h4>
-                </div>
-                <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-xl"></i>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center text-xs text-blue-600 font-bold">
-                <i class="fa-solid fa-truck-fast mr-1"></i>
-                <span>{{ $shippingOrders }} Perlu Diproses</span>
-            </div>
+        <div class="mt-4 flex items-center text-xs text-emerald-600 font-bold">
+            <i class="fa-solid fa-arrow-up mr-1"></i>
+            <span>Statistik Real-time</span>
         </div>
     </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pesanan</p>
+                <h4 class="text-2xl font-black text-gray-800 mt-1">{{ $totalOrders }}</h4>
+            </div>
+            <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-box text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-xs text-amber-600 font-bold">
+            <i class="fa-solid fa-clock mr-1"></i>
+            <span>{{ $pendingOrders }} Menunggu Pembayaran</span>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pelanggan</p>
+                <h4 class="text-2xl font-black text-gray-800 mt-1">{{ $totalCustomers }}</h4>
+            </div>
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-users text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-xs text-emerald-600 font-bold">
+            <i class="fa-solid fa-user-plus mr-1"></i>
+            <span>User Terdaftar</span>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Koleksi Buku</p>
+                <h4 class="text-2xl font-black text-gray-800 mt-1">{{ $totalItems }}</h4>
+            </div>
+            <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-book-open text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center text-xs text-blue-600 font-bold">
+            <i class="fa-solid fa-truck-fast mr-1"></i>
+            <span>{{ $shippingOrders }} Perlu Diproses</span>
+        </div>
+    </div>
+</div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <!-- Sales Chart -->
@@ -133,7 +129,6 @@
                         <th class="px-6 py-4">Nominal</th>
                         <th class="px-6 py-4 text-center">Payment</th>
                         <th class="px-6 py-4 text-center">Logistik</th>
-                        <th class="px-6 py-4 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -181,19 +176,6 @@
                             @else bg-blue-50 text-blue-600 @endif border border-current opacity-70">
                                     {{ $order->item_status }}
                                 </span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
-                                    @csrf
-                                    @method('PATCH')
-                                    <select name="item_status" onchange="this.form.submit()"
-                                        class="text-[10px] font-bold border-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-1 bg-gray-50 cursor-pointer uppercase tracking-tighter">
-                                        <option value="pending" {{ $order->item_status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="diproses" {{ $order->item_status == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                                        <option value="dikirim" {{ $order->item_status == 'dikirim' ? 'selected' : '' }}>Dikirim</option>
-                                        <option value="selesai" {{ $order->item_status == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                    </select>
-                                </form>
                             </td>
                         </tr>
                     @endforeach

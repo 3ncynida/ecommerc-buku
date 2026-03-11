@@ -61,33 +61,57 @@
                         </div>
                     </div>
 
-                    {{-- Spesifikasi Detail --}}
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4 mt-10 p-6 bg-gray-50 rounded-2xl">
-                        @if ($item->publisher)
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Penerbit</p>
-                                <p class="text-sm font-semibold text-gray-800">{{ $item->publisher }}</p>
-                            </div>
-                        @endif
-                        @if ($item->isbn)
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">ISBN</p>
-                                <p class="text-sm font-semibold text-gray-800">{{ $item->isbn }}</p>
-                            </div>
-                        @endif
-                        @if ($item->pages)
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Halaman</p>
-                                <p class="text-sm font-semibold text-gray-800">{{ $item->pages }} Halaman</p>
-                            </div>
-                        @endif
-                        @if ($item->publication_year)
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Tahun Terbit</p>
-                                <p class="text-sm font-semibold text-gray-800">{{ $item->publication_year }}</p>
-                            </div>
-                        @endif
-                    </div>
+{{-- Spesifikasi Detail --}}
+<div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4 mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+    @if ($item->publisher)
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Penerbit</p>
+            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-building text-gray-300 text-xs"></i>
+                {{ $item->publisher }}
+            </p>
+        </div>
+    @endif
+
+    @if ($item->isbn)
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">ISBN</p>
+            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-barcode text-gray-300 text-xs"></i>
+                {{ $item->isbn }}
+            </p>
+        </div>
+    @endif
+
+    {{-- Informasi Stok --}}
+    <div>
+        <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Ketersediaan</p>
+        <p class="text-sm font-bold flex items-center gap-2 {{ $item->stok <= 5 ? 'text-rose-600' : 'text-emerald-600' }}">
+            <i class="fa-solid {{ $item->stok <= 5 ? 'fa-box-open' : 'fa-boxes-stacked' }} text-xs opacity-70"></i>
+            {{ $item->stok > 0 ? $item->stok . ' Unit Tersedia' : 'Stok Habis' }}
+        </p>
+    </div>
+
+    @if ($item->pages)
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Halaman</p>
+            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-gray-300 text-xs"></i>
+                {{ $item->pages }} Halaman
+            </p>
+        </div>
+    @endif
+
+    @if ($item->publication_year)
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Tahun Terbit</p>
+            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-days text-gray-300 text-xs"></i>
+                {{ $item->publication_year }}
+            </p>
+        </div>
+    @endif
+</div>
 
                     {{-- Action Buttons --}}
                     @auth
@@ -141,7 +165,6 @@
             <div class="mt-24">
                 <div class="flex justify-between items-end mb-8">
                     <h2 class="text-2xl font-bold text-gray-900">Mungkin Anda Juga Suka</h2>
-                    <a href="#" class="text-indigo-600 font-semibold hover:underline">Lihat Semua</a>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                     @foreach ($relatedBooks as $related)
