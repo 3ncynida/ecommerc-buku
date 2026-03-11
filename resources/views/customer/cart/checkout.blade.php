@@ -85,7 +85,7 @@
                         @php $lineTotal = ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
                         $total += $lineTotal; @endphp
                         <div class="flex items-center gap-4 py-4 border-b last:border-b-0">
-                            <img src="{{ $item['image'] ?? asset('storage/placeholder.png') }}"
+                            <img src="{{ asset('storage/' . ($item['image'] ?? 'default.jpg')) }}"
                                 alt="{{ $item['name'] ?? 'Item' }}" class="w-16 h-20 object-cover rounded-md">
                             <div class="flex-1">
                                 <div class="font-medium">{{ $item['name'] ?? 'Produk' }}</div>

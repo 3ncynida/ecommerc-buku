@@ -30,14 +30,16 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('items', ItemController::class);
     Route::get('/profile', [ProfileController::class, 'adminEdit'])->name('admin.profile.edit');
     Route::patch('/profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
+    Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
+    Route::post('/reports/generate', [App\Http\Controllers\Admin\ReportController::class, 'generate'])->name('admin.reports.generate');
 });
 
 // Rute khusus untuk pelanggan
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/orders', [CustomerController::class, 'orderIndex'])->name('orders.index');
     // routes/web.php
-Route::get('/orders/{order:order_number}', [CustomerController::class, 'orderShow'])
-    ->name('orders.show');
+    Route::get('/orders/{order:order_number}', [CustomerController::class, 'orderShow'])
+        ->name('orders.show');
     Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.process');

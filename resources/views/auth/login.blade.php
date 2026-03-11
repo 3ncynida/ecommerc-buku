@@ -35,17 +35,7 @@
         <button type="submit" class="w-full bg-gray-200 text-gray-500 font-bold py-4 rounded-2xl hover:bg-indigo-600 hover:text-white transition duration-300">
             Masuk
         </button>
-
-        <div class="text-center py-4">
-            <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Atau</span>
-        </div>
-
-        {{-- Social Login Button (image_b1eb82.png) --}}
-        <button type="button" class="w-full border border-gray-200 text-gray-700 font-bold py-3 rounded-2xl hover:bg-gray-50 transition flex items-center justify-center gap-3">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
-            <span class="text-sm">Masuk dengan Google</span>
-        </button>
-
+         
         <div class="mt-8 text-center">
             <p class="text-sm text-gray-500">Belum punya akun? 
                 <a href="{{ route('register') }}" class="text-indigo-600 font-bold hover:underline">Daftar</a>

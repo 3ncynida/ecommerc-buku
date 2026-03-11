@@ -48,6 +48,9 @@
                     class="absolute inset-y-0 right-0 pr-4 text-gray-400 hover:text-gray-600 hidden">
                     <i class="fa-solid fa-circle-xmark"></i>
                 </button>
+                <div id="search-spinner" class="absolute inset-y-0 right-0 pr-4 text-gray-400 hidden">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
 
                 <div id="search-results"
                     class="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 hidden overflow-hidden">
@@ -171,6 +174,10 @@
                     return;
                 }
 
+                // Tampilkan spinner loading
+                document.getElementById('search-spinner').classList.remove('hidden');
+                clearBtn.classList.add('hidden'); // Sembunyikan clear button saat loading
+
                 fetch(`/api/search?q=${query}`)
                     .then(res => res.json())
                     .then(data => {
@@ -199,6 +206,18 @@
                             });
                         }
                         resultsDropdown.classList.remove('hidden');
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        container.innerHTML = '<p class="px-5 py-3 text-sm text-red-500">Terjadi kesalahan saat mencari.</p>';
+                        resultsDropdown.classList.remove('hidden');
+                    })
+                    .finally(() => {
+                        // Sembunyikan spinner loading
+                        document.getElementById('search-spinner').classList.add('hidden');
+                        if (query.length > 0) {
+                            clearBtn.classList.remove('hidden'); // Tampilkan kembali clear button jika ada query
+                        }
                     });
             }, 300); // Tunggu 300ms setelah berhenti mengetik
         });
