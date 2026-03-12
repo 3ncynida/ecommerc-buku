@@ -41,10 +41,15 @@ class CustomerController extends Controller
 
     public function show(Item $item)
     {
-        // Ambil buku lain dengan kategori yang sama sebagai rekomendasi
-        $relatedBooks = Item::where('category_id', $item->category_id)
+        // Ambil ID kategori yang dimiliki buku ini
+        $categoryIds = $item->categories->pluck('id');
+
+        // Cari buku lain yang memiliki setidaknya satu kategori yang sama
+        $relatedBooks = Item::whereHas('categories', function ($q) use ($categoryIds) {
+            $q->whereIn('categories.id', $categoryIds);
+        })
             ->where('id', '!=', $item->id)
-            ->take(4)
+            ->take(5)
             ->get();
 
         return view('customer.indexShow', compact('item', 'relatedBooks'));
@@ -74,8 +79,8 @@ class CustomerController extends Controller
 
     public function categoryShow(Category $category, Request $request)
     {
-        // Mulai query buku berdasarkan kategori
-        $query = Item::where('category_id', $category->id)->with('author');
+        // Gunakan relasi items() dari model Category (Many-to-Many)
+        $query = $category->items()->with('author');
 
         // Filter: Hanya stok yang tersedia
         if ($request->has('filter') && $request->filter == 'stok') {
@@ -88,7 +93,7 @@ class CustomerController extends Controller
         } elseif ($request->sort == 'termahal') {
             $query->orderBy('price', 'desc');
         } else {
-            $query->latest(); // Default: Terbaru
+            $query->latest();
         }
 
         $items = $query->get();
@@ -162,8 +167,8 @@ class CustomerController extends Controller
     {
         // Mengambil order milik user yang login dengan relasi buku, penulis, dan alamat
         $order = \App\Models\Order::with(['item.author', 'shippingAddress'])
-                    ->where('user_id', auth()->id())
-                    ->findOrFail($order->id);
+            ->where('user_id', auth()->id())
+            ->findOrFail($order->id);
 
         return view('customer.order.show', compact('order'));
     }

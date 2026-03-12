@@ -11,23 +11,32 @@ class ItemSeeder extends Seeder
 {
     public function run(): void
     {
+        // Mengambil data Author dan Category yang sudah ada
         $author = Author::where("name", "Odading")->first();
         $category = Category::where('name', 'Manga')->first();
 
-        Item::firstOrCreate([
-            'name' => 'One Piece',
-            'slug' => 'one-piece',
-            'publisher' => 'Shueisha',
-            'image' => 'items/one-piece.jpg',
-            'publication_year' => 1997,
-            'isbn' => '978-4-08-872871-0',
-            'pages' => 105,
-            'language' => 'Indonesia',
-            'description' => 'One Piece (Jepang: ワンピース, Hepburn: Wan Pīsu) adalah sebuah seri manga Jepang yang ditulis dan diilustrasikan oleh Eiichiro Oda. Manga ini telah dimuat di majalah Weekly Shōnen Jump milik Shueisha sejak tanggal 22 Juli 1997, dan telah dibundel menjadi 105 volume tankōbon hingga Maret 2023. Ceritanya mengisahkan petualangan Monkey D. Luffy, seorang anak laki-laki yang memiliki kemampuan tubuh elastis seperti karet setelah memakan Buah Iblis secara tidak disengaja. Luffy bersama kru bajak lautnya, yang dinamakan Bajak Laut Topi Jerami, menjelajahi Grand Line untuk mencari harta karun terbesar di dunia yang dikenal sebagai "One Piece" dalam rangka untuk menjadi Raja Bajak Laut yang berikutnya.',
-            'stok' => 10,
-            'price' => 30000,
-            'category_id' => $category->id,
-            'author_id' => $author->id,
-        ]);
+        // 1. Buat data Item tanpa menyertakan 'category_id' secara langsung
+        $item = Item::firstOrCreate(
+            ['slug' => 'one-piece'], // Cek berdasarkan slug agar tidak duplikat
+            [
+                'name' => 'One Piece',
+                'publisher' => 'Shueisha',
+                'image' => 'items/one-piece.jpg',
+                'publication_year' => 1997,
+                'isbn' => '978-4-08-872871-0',
+                'pages' => 105,
+                'language' => 'Indonesia',
+                'description' => 'One Piece adalah sebuah seri manga Jepang yang ditulis dan diilustrasikan oleh Eiichiro Oda. Ceritanya mengisahkan petualangan Monkey D. Luffy bersama kru bajak lautnya untuk mencari harta karun terbesar di dunia yang dikenal sebagai "One Piece".',
+                'stok' => 10,
+                'price' => 30000,
+                'author_id' => $author->id,
+            ]
+        );
+
+        // 2. Hubungkan Item dengan Category melalui tabel pivot 'category_item'
+        // Gunakan sync() agar tidak terjadi duplikasi jika seeder dijalankan berkali-kali
+        if ($category) {
+            $item->categories()->sync([$category->id]);
+        }
     }
 }

@@ -15,7 +15,6 @@ class Item extends Model
         'isbn',
         'pages',
         'language',
-        'category_id',
         'author_id',
         'price',
         'image',
@@ -36,9 +35,9 @@ class Item extends Model
         });
     }
 
-    public function category()
+    public function categories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class);
     }
 
     public function author()

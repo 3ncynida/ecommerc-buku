@@ -17,10 +17,12 @@ class ItemController extends Controller
         // 1. Ambil semua kategori untuk dropdown filter
         $categories = Category::all();
 
-        // 2. Query utama dengan eager loading 'category' agar tidak berat
-        $items = Item::with('category')
+        // 2. Query utama dengan eager loading 'categories' agar tidak berat
+        $items = Item::with('categories')
             ->when($request->category_id, function ($query) use ($request) {
-                $query->where('category_id', $request->category_id);
+                $query->whereHas('categories', function ($q) use ($request) {
+                    $q->where('categories.id', $request->category_id);
+                });
             })
             ->latest()
             ->paginate(10); // Menggunakan pagination (10 data per halaman)
@@ -39,13 +41,14 @@ class ItemController extends Controller
     }
 
 
-    // simpan item baru + upload gambar
     public function store(Request $request)
     {
+        // 1. Validasi Input
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
+            'category_ids' => 'required|array', // Harus array (karena banyak kategori)
+            'category_ids.*' => 'exists:categories,id', // Setiap ID kategori harus valid
             'author_id' => 'required|exists:authors,id',
             'stok' => 'required|numeric',
             'publisher' => 'nullable|string|max:255',
@@ -54,18 +57,19 @@ class ItemController extends Controller
             'pages' => 'nullable|numeric|min:1',
             'language' => 'nullable|string|max:50',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'description' => 'nullable|string',
         ]);
 
+        // 2. Olah Gambar
         $imagePath = null;
-
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('items', 'public');
         }
 
-        Item::create([
+        // 3. Simpan Data Buku Utama (Tanpa category_id tunggal)
+        $item = Item::create([
             'name' => $request->name,
             'price' => $request->price,
-            'category_id' => $request->category_id,
             'description' => $request->description,
             'stok' => $request->stok,
             'author_id' => $request->author_id,
@@ -77,8 +81,13 @@ class ItemController extends Controller
             'image' => $imagePath,
         ]);
 
-        return redirect()->route('items.index')->with('success', 'Item berhasil ditambahkan');
+        // 4. Simpan Relasi Kategori ke Tabel Pivot
+        // Method sync() otomatis mengisi tabel category_item
+        $item->categories()->sync($request->category_ids);
+
+        return redirect()->route('items.index')->with('success', 'Buku dan kategori berhasil ditambahkan');
     }
+
     // Update stok item via AJAX/modal
     public function updateStock(Request $request, Item $item)
     {
@@ -130,23 +139,26 @@ class ItemController extends Controller
         ]);
     }
 
-    // tampilkan form edit
+    // Tampilkan form edit
     public function edit(Item $item)
     {
         $author = Author::all();
         $categories = Category::all();
 
+        // Mengambil ID kategori yang sudah dimiliki buku ini untuk di-check di view
+        $selectedCategoryIds = $item->categories->pluck('id')->toArray();
 
-        return view('admin.items.edit', compact('item', 'categories', 'author'));
+        return view('admin.items.edit', compact('item', 'categories', 'author', 'selectedCategoryIds'));
     }
 
-    // update item + ganti gambar
     public function update(Request $request, Item $item)
     {
+        // 1. Validasi Input
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,id',
             'author_id' => 'required|exists:authors,id',
             'stok' => 'required|numeric',
             'publisher' => 'nullable|string|max:255',
@@ -155,23 +167,26 @@ class ItemController extends Controller
             'pages' => 'nullable|numeric|min:1',
             'language' => 'nullable|string|max:50',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'description' => 'nullable|string',
         ]);
 
+        // 2. Update Gambar jika ada file baru
         if ($request->hasFile('image')) {
+            // Hapus gambar lama dari storage
             if ($item->image) {
-                Storage::disk('public')->delete($item->image);
+                \Storage::disk('public')->delete($item->image);
             }
-
             $item->image = $request->file('image')->store('items', 'public');
         }
 
+        // 3. Perbarui Data Buku Utama
         $item->update([
             'name' => $request->name,
+            'slug' => str($request->name)->slug(), // Update slug jika nama berubah
             'price' => $request->price,
             'description' => $request->description,
             'stok' => $request->stok,
             'author_id' => $request->author_id,
-            'category_id' => $request->category_id,
             'publisher' => $request->publisher,
             'publication_year' => $request->publication_year,
             'isbn' => $request->isbn,
@@ -180,7 +195,11 @@ class ItemController extends Controller
             'image' => $item->image,
         ]);
 
-        return redirect()->route('items.index')->with('success', 'Item berhasil diupdate');
+        // 4. Sinkronisasi Kategori (Many-to-Many)
+        // sync() akan otomatis menghapus yang tidak dipilih dan menambah yang baru
+        $item->categories()->sync($request->category_ids);
+
+        return redirect()->route('items.index')->with('success', 'Data buku dan kategori berhasil diperbarui');
     }
 
     public function destroy(Item $item)

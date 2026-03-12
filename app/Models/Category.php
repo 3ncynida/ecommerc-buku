@@ -12,10 +12,10 @@ class Category extends Model
 
     public function items()
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsToMany(Item::class);
     }
 
-        protected static function booted()
+    protected static function booted()
     {
         static::creating(function ($category) {
             // Mengubah "Belajar Laravel 11" menjadi "belajar-laravel-11"

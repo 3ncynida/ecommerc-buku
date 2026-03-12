@@ -6,4 +6,3 @@ Alpine.start();
 
 // Cart AJAX handlers
 import './cart';
-import './home-search';

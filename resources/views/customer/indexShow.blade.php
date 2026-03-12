@@ -8,8 +8,15 @@
             <nav class="flex mb-8 text-sm text-gray-500 overflow-x-auto whitespace-nowrap">
                 <a href="/" class="hover:text-indigo-600">Home</a>
                 <span class="mx-2 text-gray-300">></span>
-                <a href="/category/{{ $item->category->slug }}"
-                    class="hover:text-indigo-600">{{ $item->category->name ?? 'Kategori' }}</a>
+                
+                {{-- Mengambil kategori pertama sebagai path breadcrumb --}}
+                @if($item->categories->isNotEmpty())
+                    <a href="{{ route('category.show', $item->categories->first()->slug) }}"
+                        class="hover:text-indigo-600">{{ $item->categories->first()->name }}</a>
+                @else
+                    <span class="text-gray-400">Kategori</span>
+                @endif
+                
                 <span class="mx-2 text-gray-300">></span>
                 <span class="text-gray-800 font-medium truncate">{{ $item->name }}</span>
             </nav>
@@ -30,13 +37,23 @@
                 <div class="md:w-2/3">
                     <div class="mb-2">
                         <a href="{{ route('author.show', $item->author->slug) }}"
-                            class="block text-lg text-gray-500 hover:text-blue-700 transition">
+                            class="block text-lg text-gray-500 hover:text-indigo-600 transition font-medium">
                             {{ $item->author->name ?? 'Penulis' }}
                         </a>
                         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mt-1">{{ $item->name }}</h1>
+                        
+                        {{-- LIST BANYAK KATEGORI / GENRE --}}
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            @foreach ($item->categories as $category)
+                                <a href="{{ route('category.show', $category->slug) }}" 
+                                   class="px-3 py-1 bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg border border-slate-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition duration-300">
+                                    {{ $category->name }}
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
 
-                    <div class="mt-4 mb-6">
+                    <div class="mt-6 mb-6">
                         <span class="text-4xl font-extrabold text-gray-900">
                             Rp{{ number_format($item->price, 0, ',', '.') }}
                         </span>
@@ -46,81 +63,90 @@
                         <button onclick="toggleFavorite(this, {{ $item->id }})"
                             class="favorite-btn flex items-center transition {{ $item->isFavorited() ? 'text-red-500' : 'text-gray-500 hover:text-red-500' }}">
                             <i class="{{ $item->isFavorited() ? 'fa-solid' : 'fa-regular' }} fa-heart mr-2 text-xl"></i>
-                            <span>Favorit</span>
+                            <span class="font-bold text-sm">Favorit</span>
                         </button>
                         <button class="flex items-center text-gray-500 hover:text-indigo-600 transition">
-                            <i class="fa-solid fa-share-nodes mr-2 text-xl"></i> Bagikan
+                            <i class="fa-solid fa-share-nodes mr-2 text-xl"></i> 
+                            <span class="font-bold text-sm">Bagikan</span>
                         </button>
                     </div>
 
-                    {{-- Deskripsi Ringkas --}}
+                    {{-- Deskripsi/Sinopsis --}}
                     <div class="border-t pt-8">
-                        <h3 class="font-bold text-gray-900 mb-4">Sinopsis</h3>
-                        <div class="text-gray-600 leading-relaxed prose prose-indigo">
+                        <h3 class="font-bold text-gray-900 mb-4 uppercase text-xs tracking-widest">Sinopsis</h3>
+                        <div class="text-gray-600 leading-relaxed prose prose-indigo max-w-none">
                             {{ $item->description ?? 'Tidak ada deskripsi untuk buku ini.' }}
                         </div>
                     </div>
 
-{{-- Spesifikasi Detail --}}
-<div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4 mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
-    @if ($item->publisher)
-        <div>
-            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Penerbit</p>
-            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-building text-gray-300 text-xs"></i>
-                {{ $item->publisher }}
-            </p>
-        </div>
-    @endif
+                    {{-- Spesifikasi Detail --}}
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4 mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                        @if ($item->publisher)
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Penerbit</p>
+                                <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-building text-gray-300 text-xs"></i>
+                                    {{ $item->publisher }}
+                                </p>
+                            </div>
+                        @endif
 
-    @if ($item->isbn)
-        <div>
-            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">ISBN</p>
-            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-barcode text-gray-300 text-xs"></i>
-                {{ $item->isbn }}
-            </p>
-        </div>
-    @endif
+                        @if ($item->isbn)
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">ISBN</p>
+                                <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-barcode text-gray-300 text-xs"></i>
+                                    {{ $item->isbn }}
+                                </p>
+                            </div>
+                        @endif
 
-    {{-- Informasi Stok --}}
-    <div>
-        <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Ketersediaan</p>
-        <p class="text-sm font-bold flex items-center gap-2 {{ $item->stok <= 5 ? 'text-rose-600' : 'text-emerald-600' }}">
-            <i class="fa-solid {{ $item->stok <= 5 ? 'fa-box-open' : 'fa-boxes-stacked' }} text-xs opacity-70"></i>
-            {{ $item->stok > 0 ? $item->stok . ' Unit Tersedia' : 'Stok Habis' }}
-        </p>
-    </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Ketersediaan</p>
+                            <p class="text-sm font-bold flex items-center gap-2 {{ $item->stok <= 5 ? 'text-rose-600' : 'text-emerald-600' }}">
+                                <i class="fa-solid {{ $item->stok <= 5 ? 'fa-box-open' : 'fa-boxes-stacked' }} text-xs opacity-70"></i>
+                                {{ $item->stok > 0 ? $item->stok . ' Unit Tersedia' : 'Stok Habis' }}
+                            </p>
+                        </div>
 
-    @if ($item->pages)
-        <div>
-            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Halaman</p>
-            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-book-open text-gray-300 text-xs"></i>
-                {{ $item->pages }} Halaman
-            </p>
-        </div>
-    @endif
+                        @if ($item->pages)
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Halaman</p>
+                                <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-book-open text-gray-300 text-xs"></i>
+                                    {{ $item->pages }} Halaman
+                                </p>
+                            </div>
+                        @endif
 
-    @if ($item->publication_year)
-        <div>
-            <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Tahun Terbit</p>
-            <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-calendar-days text-gray-300 text-xs"></i>
-                {{ $item->publication_year }}
-            </p>
-        </div>
-    @endif
-</div>
+                        @if ($item->publication_year)
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Tahun Terbit</p>
+                                <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-days text-gray-300 text-xs"></i>
+                                    {{ $item->publication_year }}
+                                </p>
+                            </div>
+                        @endif
+
+                        @if ($item->language)
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Bahasa</p>
+                                <p class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-globe text-gray-300 text-xs"></i>
+                                    {{ $item->language }}
+                                </p>
+                            </div>
+                        @endif
+                    </div>
 
                     {{-- Action Buttons --}}
-                    @auth
-                        <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
+                    <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
+                        @auth
                             @if($item->stok > 0)
                                 <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex gap-4 add-to-cart-form">
                                     @csrf
-                                    <div
-                                        class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
+                                    <div class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
                                         <button type="button" onclick="changeQuantity(this, -1)"
                                             class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
                                         <input type="number" name="quantity" value="1" max="{{ $item->stok }}"
@@ -128,7 +154,7 @@
                                         <button type="button" onclick="changeQuantity(this, 1)"
                                             class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
                                     </div>
-                                    <button data-add-to-cart
+                                    <button type="submit"
                                         class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
                                         <i class="fa-solid fa-cart-plus text-xl"></i>
                                         Tambah ke Keranjang
@@ -136,55 +162,54 @@
                                 </form>
                             @else
                                 <div class="text-center w-full bg-red-50 border border-red-200 rounded-xl py-4 font-bold text-red-600">
-                                    Stok Habis
+                                    Maaf, Stok Sedang Habis
                                 </div>
                             @endif
-                        </div>
-                    @else
-                        <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
+                        @else
                             <div class="flex gap-4">
-                                <div
-                                    class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
-                                    <button type="button" disabled class="px-4 py-2 hover:bg-gray-100 font-bold">-</button>
-                                    <input type="number" name="quantity" value="1" disabled
-                                        class="w-12 text-center border-none focus:ring-0 font-bold bg-gray-100" min="1">
-                                    <button type="button" disabled class="px-4 py-2 hover:bg-gray-100 font-bold">+</button>
-                                </div>
-                                <a href="{{ route('register') }}"
+                                <a href="{{ route('login') }}"
                                     class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
-                                    <i class="fa-solid fa-cart-plus text-xl"></i>
-                                    Daftar untuk Membeli
+                                    <i class="fa-solid fa-right-to-bracket text-xl"></i>
+                                    Login untuk Membeli
                                 </a>
                             </div>
-                        </div>
-                    @endauth
+                        @endauth
+                    </div>
                 </div>
             </div>
 
-            {{-- Produk Terkait --}}
-            <div class="mt-24">
-                <div class="flex justify-between items-end mb-8">
-                    <h2 class="text-2xl font-bold text-gray-900">Mungkin Anda Juga Suka</h2>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    @foreach ($relatedBooks as $related)
-                        <a href="{{ route('book.show', $related->slug) }}" class="group">
-                            <div class="bg-white rounded-xl overflow-hidden transition group-hover:translate-y-[-5px]">
-                                <img src="{{ asset('storage/' . $related->image) }}"
-                                    class="w-full h-64 object-cover rounded-xl shadow-sm border">
-                                <div class="mt-3">
-                                    <p class="text-xs text-gray-400 mb-1">{{ $related->author->name ?? 'Penulis' }}</p>
-                                    <h4 class="font-bold text-gray-900 truncate text-sm group-hover:text-indigo-600 transition">
-                                        {{ $related->name }}
-                                    </h4>
-                                    <p class="text-indigo-600 font-bold mt-1">
-                                        Rp{{ number_format($related->price, 0, ',', '.') }}</p>
+            {{-- Produk Terkait (Berdasarkan Kategori yang Sama) --}}
+            @if($relatedBooks->count() > 0)
+                <div class="mt-24">
+                    <div class="flex justify-between items-end mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900">Buku Terkait</h2>
+                        <span class="w-20 h-1 bg-indigo-600 rounded-full"></span>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                        @foreach ($relatedBooks as $related)
+                            <a href="{{ route('book.show', $related->slug) }}" class="group">
+                                <div class="bg-white rounded-xl overflow-hidden transition group-hover:translate-y-[-5px]">
+                                    <div class="relative aspect-[3/4] mb-3">
+                                        <img src="{{ asset('storage/' . $related->image) }}"
+                                            class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-100">
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                                            {{ $related->author->name ?? 'Penulis' }}
+                                        </p>
+                                        <h4 class="font-bold text-gray-900 truncate text-sm group-hover:text-indigo-600 transition">
+                                            {{ $related->name }}
+                                        </h4>
+                                        <p class="text-indigo-600 font-black mt-1">
+                                            Rp{{ number_format($related->price, 0, ',', '.') }}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    @endforeach
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 @endsection
@@ -198,6 +223,12 @@
             if (val < 1) val = 1;
             if (val > max) val = max;
             input.value = val;
+        }
+
+        // Fungsi toggle favorite (jika Anda sudah punya API-nya)
+        function toggleFavorite(btn, id) {
+            // Logika AJAX Anda di sini
+            console.log('Toggled favorite for book ID:', id);
         }
     </script>
 @endsection

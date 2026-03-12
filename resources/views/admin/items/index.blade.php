@@ -37,6 +37,7 @@
                             <th class="px-6 py-4">No</th>
                             <th class="px-6 py-4">Gambar</th>
                             <th class="px-6 py-4">Nama Item</th>
+                            <th class="px-6 py-4">Kategori</th>
                             <th class="px-6 py-4">Author</th>
                             <th class="px-6 py-4">Harga</th>
                             <th class="px-6 py-4">Stok</th>
@@ -59,6 +60,15 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 font-medium text-gray-900">{{ $item->name }}</td>
+                                <td class="px-6 py-4">
+    <div class="flex flex-wrap gap-1">
+        @foreach($item->categories as $cat)
+            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase border border-indigo-100">
+                {{ $cat->name }}
+            </span>
+        @endforeach
+    </div>
+</td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ $item->author->name }}</td>
                                 <td class="px-6 py-4 text-sm font-semibold text-emerald-600">
                                     Rp {{ number_format($item->price, 0, ',', '.') }}

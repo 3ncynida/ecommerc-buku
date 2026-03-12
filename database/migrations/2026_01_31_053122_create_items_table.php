@@ -12,12 +12,8 @@ return new class extends Migration {
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')
-                ->constrained()
-                ->cascadeOnDelete();
-            $table->foreignId('author_id')
-                ->constrained()
-                ->cascadeOnDelete();
+            $table->foreignId('category_id')->nullable()->constrained();
+            $table->foreignId('author_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('publisher')->nullable();
             $table->year('publication_year')->nullable();
