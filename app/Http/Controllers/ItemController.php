@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\Author;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Models\StockLog;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
@@ -77,6 +78,56 @@ class ItemController extends Controller
         ]);
 
         return redirect()->route('items.index')->with('success', 'Item berhasil ditambahkan');
+    }
+    // Update stok item via AJAX/modal
+    public function updateStock(Request $request, Item $item)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'notes' => 'nullable|string|max:255',
+            'action_type' => 'required|in:add,reduce', // Tambahkan validasi tipe aksi
+        ]);
+
+        $oldStock = $item->stok;
+        $quantity = $request->input('quantity');
+        $notes = $request->input('notes');
+        $actionType = $request->input('action_type');
+
+        // Validasi agar stok tidak minus jika dikurangi
+        if ($actionType === 'reduce' && $item->stok < $quantity) {
+            return response()->json([
+                'message' => 'Gagal: Jumlah pengurangan melebihi stok saat ini.',
+            ], 422);
+        }
+
+        // Update stok berdasarkan aksi
+        if ($actionType === 'add') {
+            $item->stok += $quantity;
+            // Agar quantity_added di tabel log bernilai positif
+            $logQuantity = $quantity;
+        } else {
+            $item->stok -= $quantity;
+            // Agar quantity_added di tabel log bernilai negatif (opsional, tergantung struktur DB Anda)
+            // Jika Anda punya kolom 'quantity_reduced', Anda bisa sesuaikan di sini.
+            $logQuantity = -$quantity;
+        }
+
+        $item->save();
+
+        // Log perubahan stok
+        StockLog::create([
+            'item_id' => $item->id,
+            'user_id' => auth()->id(),
+            'quantity_added' => $logQuantity, // Akan bernilai negatif jika dikurangi
+            'previous_stock' => $oldStock,
+            'new_stock' => $item->stok,
+            'notes' => $notes,
+        ]);
+
+        return response()->json([
+            'message' => 'Stok berhasil diperbarui',
+            'new_stock' => $item->stok,
+        ]);
     }
 
     // tampilkan form edit

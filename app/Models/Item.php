@@ -46,6 +46,11 @@ class Item extends Model
         return $this->belongsTo(Author::class);
     }
 
+    public function stockLogs()
+    {
+        return $this->hasMany(StockLog::class);
+    }
+
     public function isFavorited()
     {
         // Cek apakah user sudah login

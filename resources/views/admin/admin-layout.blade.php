@@ -9,6 +9,7 @@
         content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 http://localhost:5173 https://app.sandbox.midtrans.com https://cdn.jsdelivr.net; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com;">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body class="bg-gray-100 flex">
@@ -37,19 +38,24 @@
                 <i class="fa-solid fa-book mr-2"></i> Data Buku
             </a>
 
-            <a href="{{ route('admin.profile.edit') }}" class="block py-2.5 px-4 rounded transition
-       {{ request()->routeIs('admin.profile.edit') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
-                <i class="fa-solid fa-user mr-2"></i> Profil Admin
-            </a>
 
             <a href="{{ route('admin.orders.index') }}" class="block py-2.5 px-4 rounded transition
-       {{ request()->routeIs('admin.orders.index') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+            {{ request()->routeIs('admin.orders.index') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
                 <i class="fa-solid fa-clipboard-list mr-2"></i> Pesanan
             </a>
 
             <a href="{{ route('admin.reports.index') }}" class="block py-2.5 px-4 rounded transition
-       {{ request()->routeIs('admin.reports.*') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+        {{ request()->routeIs('admin.reports.*') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
                 <i class="fa-solid fa-chart-line mr-2"></i> Laporan
+            </a>
+
+            <a href="{{ route('stock-logs.index') }}" class="block py-2.5 px-4 rounded transition
+        {{ request()->routeIs('stock-logs.*') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+                <i class="fa-solid fa-history mr-2"></i> Log Stok
+            </a>
+            <a href="{{ route('admin.profile.edit') }}" class="block py-2.5 px-4 rounded transition
+        {{ request()->routeIs('admin.profile.edit') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+                <i class="fa-solid fa-user mr-2"></i> Profil Admin
             </a>
         </nav>
 

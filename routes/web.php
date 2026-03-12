@@ -28,6 +28,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);
+    Route::patch('/items/{item}/stock', [ItemController::class, 'updateStock'])->name('items.update-stock');
+    Route::get('/stock-logs', [App\Http\Controllers\Admin\StockLogController::class, 'index'])->name('stock-logs.index');
     Route::get('/profile', [ProfileController::class, 'adminEdit'])->name('admin.profile.edit');
     Route::patch('/profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
