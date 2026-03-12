@@ -26,17 +26,16 @@ class PaymentSuccessNotification extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    // Desain isi emailnya di sini
+    // Desain isi invoice di sini
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(subject: 'Pembayaran Berhasil - Libris #' . $this->order->order_number)
-            ->greeting('Halo, ' . $notifiable->name . '!')
-            ->line('Terima kasih telah berbelanja di Libris.')
-            ->line('Pembayaran untuk pesanan nomor **' . $this->order->order_number . '** telah kami terima.')
-            ->line('Total Pembayaran: Rp ' . number_format($this->order->total_price, 0, ',', '.'))
-            ->action('Lihat Detail Pesanan', url('/orders/' . $this->order->order_number))
-            ->line('Kami akan segera memproses pengiriman buku Anda!')
-            ->salutation('Salam hangat, Tim Libris');
+            ->subject('Invoice Pembayaran - Libris #' . $this->order->order_number)
+            ->markdown('emails.invoice', [
+                'order' => $this->order,
+                'payment' => $this->order->payment,
+                'shippingAddress' => $this->order->shippingAddress,
+                'recipientName' => $notifiable->name,
+            ]);
     }
 }

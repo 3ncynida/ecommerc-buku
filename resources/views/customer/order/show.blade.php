@@ -37,15 +37,13 @@
                             <img src="{{ asset('storage/' . $order->item->image) }}" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1">
-                            <p class="text-[10px] font-bold text-indigo-600 uppercase mb-1">{{ $order->item->author->name }}
-                            </p>
+                            <p class="text-[10px] font-bold text-indigo-600 uppercase mb-1">{{ $order->item->author->name }}</p>
                             <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $order->item->name }}</h3>
 
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
                                     <p class="text-[10px] text-gray-400 font-bold uppercase">Harga</p>
-                                    <p class="text-sm font-bold text-gray-900">
-                                        Rp{{ number_format($order->item->price, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">Rp{{ number_format($order->item->price, 0, ',', '.') }}</p>
                                 </div>
                                 <div>
                                     <p class="text-[10px] text-gray-400 font-bold uppercase">Jumlah</p>
@@ -53,9 +51,22 @@
                                 </div>
                                 <div>
                                     <p class="text-[10px] text-gray-400 font-bold uppercase">Subtotal</p>
-                                    <p class="text-sm font-black text-indigo-600">
-                                        Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-black text-indigo-600">Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
                                 </div>
+                            </div>
+
+                            {{-- TAMBAHAN: BAGIAN CATATAN PEMBELI --}}
+                            <div class="mt-6 pt-6 border-t border-dashed border-gray-100">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-2 flex items-center gap-2">
+                                    <i class="fa-regular fa-note-sticky text-indigo-500"></i> Catatan Anda
+                                </p>
+                                @if($order->note)
+                                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 italic leading-relaxed border border-gray-100">
+                                        "{{ $order->note }}"
+                                    </div>
+                                @else
+                                    <p class="text-sm text-gray-400 italic">Tidak ada catatan untuk pesanan ini.</p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -64,30 +75,18 @@
                 {{-- 2. Alamat & Pengiriman --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8">
-                        <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6">Alamat Pengiriman</h2>
+                        <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6 text-indigo-500">Alamat Pengiriman</h2>
 
                         @if ($order->shippingAddress)
-                            {{-- Menampilkan Nama Penerima --}}
-                            <p class="font-bold text-gray-900 mb-1">
-                                {{ $order->shippingAddress->recipient_name }}
-                            </p>
-
-                            {{-- Menampilkan Nomor Telepon --}}
-                            <p class="text-sm text-gray-500 mb-3">
-                                {{ $order->shippingAddress->phone_number }}
-                            </p>
-
-                            {{-- Menampilkan Alamat Lengkap & Wilayah --}}
+                            <p class="font-bold text-gray-900 mb-1">{{ $order->shippingAddress->recipient_name }}</p>
+                            <p class="text-sm text-gray-500 mb-3">{{ $order->shippingAddress->phone_number }}</p>
                             <p class="text-sm text-gray-600 leading-relaxed">
                                 {{ $order->shippingAddress->full_address }}<br>
-
-                                {{-- Pastikan memanggil ->name agar tidak muncul JSON --}}
                                 {{ $order->shippingAddress->district->name ?? '' }},
                                 {{ $order->shippingAddress->city->name ?? '' }},
                                 {{ $order->shippingAddress->province->name ?? '' }}
-
                                 <br>
-                                <span class="font-bold">Kode Pos: {{ $order->shippingAddress->postal_code }}</span>
+                                <span class="font-bold text-gray-900">Kode Pos: {{ $order->shippingAddress->postal_code }}</span>
                             </p>
                         @else
                             <p class="text-sm text-gray-400 italic">Data alamat tidak tersedia.</p>
@@ -96,17 +95,14 @@
 
                     <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8 flex flex-col justify-between">
                         <div>
-                            <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6">Status Logistik
-                            </h2>
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
-                                    <i class="fa-solid fa-truck-fast"></i>
+                            <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6 text-indigo-500">Status Logistik</h2>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm">
+                                    <i class="fa-solid fa-truck-fast text-lg"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-gray-900 uppercase">{{ $order->item_status }}</p>
-                                    <p class="text-[10px] text-gray-400 font-medium">Status diperbarui pada
-                                        {{ $order->updated_at->format('d M Y') }}</p>
+                                    <p class="text-sm font-black text-gray-900 uppercase tracking-tight">{{ $order->item_status }}</p>
+                                    <p class="text-[10px] text-gray-400 font-medium">Diperbarui pada {{ $order->updated_at->format('d M Y, H:i') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -114,21 +110,18 @@
                 </div>
 
                 {{-- 3. Ringkasan Pembayaran --}}
-                <div class="bg-indigo-900 rounded-[30px] p-8 text-white">
+                <div class="bg-indigo-900 rounded-[30px] p-8 text-white shadow-xl shadow-indigo-100">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
-                            <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-1">Total Pembayaran
-                            </p>
-                            <p class="text-3xl font-black text-white">
-                                Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
+                            <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-1">Total Pembayaran</p>
+                            <p class="text-4xl font-black text-white">Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
                         </div>
 
-                        <div
-                            class="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                        <div class="flex items-center gap-4 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
                             <i class="fa-solid fa-shield-check text-2xl text-indigo-300"></i>
                             <div>
                                 <p class="text-[10px] font-bold uppercase opacity-60">Metode Pembayaran</p>
-                                <p class="text-sm font-bold">Midtrans Payment Gateway</p>
+                                <p class="text-sm font-bold">Midtrans Secure Payment</p>
                             </div>
                         </div>
                     </div>

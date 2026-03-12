@@ -103,6 +103,13 @@
                         <div class="text-sm text-gray-600">Total Pesanan</div>
                         <div class="font-bold">Rp{{ number_format($total, 0, ',', '.') }}</div>
                     </div>
+                    <div class="mt-6">
+                        <label for="order-note" class="block text-sm font-semibold text-gray-700 mb-1">Catatan untuk penjual (opsional)</label>
+                        <textarea id="order-note" name="order_note" rows="3"
+                            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 resize-none"
+                            placeholder="Contoh: Tolong kirimkan paket sebelum jam 12.">{{ old('order_note') }}</textarea>
+                        <p class="text-xs text-gray-500 mt-2">Maksimal 500 karakter.</p>
+                    </div>
                 </div>
             </div>
 
@@ -143,6 +150,8 @@
 
                 const name = '{{ auth()->check() ? auth()->user()->name : "" }}';
                 const email = '{{ auth()->check() ? auth()->user()->email : "" }}';
+                const noteField = document.getElementById('order-note');
+                const note = noteField ? (noteField.value.trim() || null) : null;
 
                 fetch("{{ route('payment.create') }}", {
                     method: 'POST',
@@ -154,7 +163,8 @@
                     body: JSON.stringify({
                         name: name,
                         email: email,
-                        address_id: document.getElementById('input_address_id') ? document.getElementById('input_address_id').value : null
+                        address_id: document.getElementById('input_address_id') ? document.getElementById('input_address_id').value : null,
+                        note: note
                     })
                 })
                     .then(res => res.json())

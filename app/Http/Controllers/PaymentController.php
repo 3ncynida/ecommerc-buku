@@ -30,6 +30,7 @@ class PaymentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
+            'note' => 'nullable|string|max:500',
         ]);
 
         $cart = session()->get('cart', []);
@@ -86,6 +87,7 @@ class PaymentController extends Controller
                     'shipping_address_id' => $selectedAddress ? $selectedAddress->id : null, // Tambahkan ini
                     'quantity' => array_sum(array_column($cart, 'quantity')),
                     'total_price' => $totalAmount,
+                    'note' => $request->note,
                     'payment_status' => 'pending',
                     'item_status' => 'pending',
                 ]);
