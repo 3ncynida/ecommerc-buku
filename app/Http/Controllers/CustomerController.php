@@ -10,6 +10,7 @@ use App\Models\Author;
 use App\Models\Order;
 use App\Models\Wishlist;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Response;
 
 class CustomerController extends Controller
 {
@@ -171,5 +172,20 @@ class CustomerController extends Controller
             ->findOrFail($order->id);
 
         return view('customer.order.show', compact('order'));
+    }
+
+    public function confirmDelivery(Request $request, Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($order->item_status !== 'sampai' || ! $order->delivery_proof_path) {
+            return back()->with('error', 'Bukti pengiriman belum lengkap atau sudah dikonfirmasi.');
+        }
+
+        $order->update(['item_status' => 'selesai']);
+
+        return back()->with('status', 'Terima kasih atas konfirmasinya. Pesanan telah selesai.');
     }
 }

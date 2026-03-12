@@ -64,7 +64,7 @@ class PaymentCallbackController extends Controller
                 if ($order) {
                     $order->update([
                         'payment_status' => 'success',
-                        'item_status' => 'diproses'
+                        'item_status' => 'menunggu_kurir'
                     ]);
 
                     // === 1. KIRIM NOTIFIKASI EMAIL DI SINI ===

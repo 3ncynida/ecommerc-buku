@@ -107,6 +107,28 @@
                             </div>
                         </div>
                     </div>
+            <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8">
+                <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6 text-indigo-500">Bukti Foto Pengiriman</h2>
+                @if($order->delivery_proof_path)
+                    <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 mb-4">
+                        <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti {{ $order->order_number }}" class="w-full h-48 object-cover object-center">
+                    </a>
+                    <p class="text-sm text-gray-500">Catatan dari kurir: {{ $order->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
+                    @if($order->item_status === 'sampai')
+                        <form action="{{ route('orders.confirm', ['order' => $order->order_number]) }}" method="POST" class="mt-4">
+                            @csrf
+                            <button type="submit" class="w-full rounded-2xl bg-green-600 text-white font-bold py-3 hover:bg-green-700 transition">
+                                <i class="fa-solid fa-check-circle mr-2"></i>
+                                Konfirmasi Selesai
+                            </button>
+                        </form>
+                    @endif
+                @else
+                    <div class="rounded-2xl border border-dashed border-gray-200 px-4 py-5 text-sm text-gray-500 text-center">
+                        Kurir belum mengunggah foto bukti pengiriman.
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
                 {{-- 3. Ringkasan Pembayaran --}}

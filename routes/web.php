@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AuthorController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\CourierController;
 
 Route::get('/', [CustomerController::class, 'home'])->name('home');
 Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
@@ -24,7 +25,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
-    Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);
@@ -42,6 +42,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // routes/web.php
     Route::get('/orders/{order:order_number}', [CustomerController::class, 'orderShow'])
         ->name('orders.show');
+    Route::post('/orders/{order:order_number}/confirm-delivery', [CustomerController::class, 'confirmDelivery'])
+        ->name('orders.confirm');
     Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.process');
@@ -59,6 +61,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Rute untuk Midtrans
     Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');
     Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
+});
+
+Route::middleware(['auth', 'role:courier'])->prefix('courier')->group(function () {
+    Route::get('/dashboard', [CourierController::class, 'dashboard'])->name('courier.dashboard');
+    Route::patch('/orders/{order}/claim', [CourierController::class, 'claim'])->name('courier.orders.claim');
+    Route::patch('/orders/{order}/status', [CourierController::class, 'updateStatus'])->name('courier.orders.status');
+    Route::post('/orders/{order}/proof', [CourierController::class, 'uploadProof'])->name('courier.orders.proof');
+    Route::post('/orders/{order}/failure', [CourierController::class, 'reportFailure'])->name('courier.orders.failure');
 });
 
 Route::middleware('auth')->group(function () {

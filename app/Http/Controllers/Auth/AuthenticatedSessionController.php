@@ -11,6 +11,8 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
+    use RedirectsUsers;
+
     /**
      * Display the login view.
      */
@@ -31,12 +33,7 @@ class AuthenticatedSessionController extends Controller
         // Redirect berdasarkan role user
         $user = Auth::user();
 
-        if ($user->role === 'admin') {
-            return redirect()->intended(route('admin.dashboard.index', absolute: false));
-        }
-
-        // Default untuk customer atau role lainnya
-        return redirect()->intended(route('home', absolute: false));
+        return redirect()->intended($this->redirectPathFor($user));
     }
 
     /**

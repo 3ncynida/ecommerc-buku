@@ -85,16 +85,16 @@
                 <h3 class="font-bold text-xl mb-4 text-indigo-100">Ringkasan Logistik</h3>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center bg-indigo-800/50 p-3 rounded-xl">
-                        <span class="text-sm font-medium">Pending</span>
-                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $orders->where('item_status', 'pending')->count() }}</span>
+                        <span class="text-sm font-medium">Menunggu Kurir</span>
+                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $orders->where('item_status', 'menunggu_kurir')->count() }}</span>
                     </div>
                     <div class="flex justify-between items-center bg-indigo-800/50 p-3 rounded-xl">
-                        <span class="text-sm font-medium">Diproses</span>
-                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $orders->where('item_status', 'diproses')->count() }}</span>
+                        <span class="text-sm font-medium">Diproses Kurir</span>
+                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $orders->where('item_status', 'diproses_kurir')->count() }}</span>
                     </div>
                     <div class="flex justify-between items-center bg-indigo-800/50 p-3 rounded-xl">
-                        <span class="text-sm font-medium">Dikirim</span>
-                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $orders->where('item_status', 'dikirim')->count() }}</span>
+                        <span class="text-sm font-medium">Dalam Pengiriman</span>
+                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $orders->whereIn('item_status', ['dikirim', 'sampai'])->count() }}</span>
                     </div>
                 </div>
                 <a href="/admin/orders">
@@ -131,6 +131,15 @@
                         <th class="px-6 py-4 text-center">Logistik</th>
                     </tr>
                 </thead>
+                @php
+                    $statusStyles = [
+                        'menunggu_kurir' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
+                        'diproses_kurir' => 'bg-amber-50 text-amber-600 border-amber-100',
+                        'dikirim' => 'bg-blue-50 text-blue-600 border-blue-100',
+                        'sampai' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                        'selesai' => 'bg-gray-100 text-gray-500 border-gray-200',
+                    ];
+                @endphp
                 <tbody class="divide-y divide-gray-50">
                     @foreach ($orders as $order)
                         <tr class="hover:bg-gray-50/50 transition group">
@@ -171,10 +180,11 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest
-                            @if ($order->item_status == 'selesai') bg-gray-100 text-gray-500
-                            @else bg-blue-50 text-blue-600 @endif border border-current opacity-70">
-                                    {{ $order->item_status }}
+                                @php
+                                    $badgeClasses = $statusStyles[$order->item_status] ?? 'bg-indigo-50 text-indigo-600 border-indigo-100';
+                                @endphp
+                                <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border {{ $badgeClasses }}">
+                                    {{ strtoupper(str_replace('_', ' ', $order->item_status)) }}
                                 </span>
                             </td>
                         </tr>

@@ -10,8 +10,19 @@
                     <span class="text-sm font-bold">{{ session('success') }}</span>
                 </div>
             @endif
+            @php
+                $itemStatuses = [
+                    'menunggu_kurir' => 'Menunggu Kurir',
+                    'diproses_kurir' => 'Diproses',
+                    'dikirim' => 'Dalam Pengiriman',
+                    'sampai' => 'Sampai Tujuan',
+                    'selesai' => 'Selesai',
+                ];
+                $currentItemStatusLabel = $itemStatuses[$order->item_status] ?? 'Menunggu Kurir';
+            @endphp
+
             {{-- Header Detail --}}
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex flex-col gap-4 mb-8 lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-4">
                     <a href="{{ route('admin.orders.index') }}"
                         class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center border border-gray-100 shadow-sm hover:text-indigo-600 transition">
@@ -24,20 +35,20 @@
                     </div>
                 </div>
 
-                {{-- Form Update Status --}}
-                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST" class="flex gap-3">
-                    @csrf
-                    @method('PATCH')
-                    <select name="status"
-                        class="bg-white border-gray-200 rounded-2xl text-sm font-bold px-5 py-2.5 focus:ring-indigo-500">
-                        <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="diproses" {{ $order->status == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                        <option value="dikirim" {{ $order->status == 'dikirim' ? 'selected' : '' }}>Dikirim</option>
-                        <option value="selesai" {{ $order->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                    </select>
-                    <button type="submit"
-                        class="bg-gray-900 text-white px-6 py-2.5 rounded-2xl font-bold hover:bg-black transition">Update</button>
-                </form>
+            </div>
+
+            <div class="mb-8">
+                <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-6 space-y-3">
+                    <p class="text-xs uppercase tracking-[0.3em] text-gray-400 font-bold">Rangkaian Status Kurir</p>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        @foreach($itemStatuses as $key => $label)
+                            <div class="rounded-2xl border px-4 py-3 text-center text-xs font-bold uppercase tracking-[0.2em]
+                                {{ $order->item_status === $key ? 'bg-indigo-600 border-indigo-600 text-white shadow' : 'bg-white text-gray-500 border-gray-100' }}">
+                                {{ $label }}
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -147,6 +158,42 @@
                             <i class="fa-solid fa-shield-check text-indigo-300"></i>
                             <span class="text-xs font-bold uppercase tracking-wider">Transaksi Aman</span>
                         </div>
+                    </div>
+
+                    <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-8 space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-[10px] tracking-[0.3em] uppercase text-gray-400 font-bold">Kurir Penugasan</p>
+                                @if ($order->courier)
+                                    <h4 class="text-lg font-bold text-gray-900">{{ $order->courier->name }}</h4>
+                                    <p class="text-sm text-gray-500">{{ $order->courier->email }}</p>
+                                @else
+                                    <h4 class="text-lg font-bold text-gray-900">Belum ditugaskan</h4>
+                                    <p class="text-sm text-gray-500">Cari kurir yang tersedia untuk memproses pesanan ini.</p>
+                                @endif
+                            </div>
+                            <div class="inline-flex items-center justify-center rounded-full border border-indigo-100 px-3 py-1 text-xs font-bold text-indigo-600">
+                                <i class="fa-solid fa-truck-arrow-right mr-1"></i>
+                                {{ strtoupper(str_replace('_', ' ', $order->item_status ?? 'menunggu_kurir')) }}
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p class="font-bold text-gray-900">Catatan Kurir</p>
+                            <p class="text-gray-500">{{ $order->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-8 space-y-4">
+                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-indigo-500">Bukti Foto Pengiriman</h3>
+                        @if ($order->delivery_proof_path)
+                            <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block rounded-3xl overflow-hidden border border-gray-200 bg-gray-50">
+                                <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti {{ $order->order_number }}" class="w-full h-48 object-cover object-center">
+                            </a>
+                            <p class="text-sm text-gray-500">Catatan kurir: {{ $order->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
+                        @else
+                            <div class="rounded-2xl border border-dashed border-gray-200 px-4 py-5 text-sm text-gray-500 text-center">
+                                Kurir belum mengunggah foto bukti pengiriman.
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

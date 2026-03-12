@@ -14,6 +14,8 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    use RedirectsUsers;
+
     /**
      * Display the registration view.
      */
@@ -45,6 +47,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect($this->redirectPathFor($user));
     }
 }

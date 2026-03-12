@@ -89,7 +89,7 @@ class PaymentController extends Controller
                     'total_price' => $totalAmount,
                     'note' => $request->note,
                     'payment_status' => 'pending',
-                    'item_status' => 'pending',
+                    'item_status' => 'menunggu_kurir',
                 ]);
 
                 $params = [

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Order extends Model
 {
     protected $fillable = [
         'order_number',
         'user_id',
+        'courier_id',
         'item_id',
         'shipping_address_id',
         'quantity',
@@ -16,6 +18,8 @@ class Order extends Model
         'note',
         'item_status',
         'payment_status',
+        'courier_note',
+        'delivery_proof_path',
     ];
 
     public function item()
@@ -31,6 +35,11 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class, 'order_id', 'order_number');
+    }
+
+    public function courier()
+    {
+        return $this->belongsTo(User::class, 'courier_id');
     }
 
     /**
