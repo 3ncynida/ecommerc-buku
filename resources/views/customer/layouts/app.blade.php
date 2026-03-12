@@ -7,9 +7,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Update CSP untuk mengizinkan Vite Lokal (Port 5174) --}}
+    {{-- Update CSP untuk mengizinkan Vite Lokal (Port 5173 & 5174) dan CDN NProgress --}}
+{{-- Update CSP untuk mengizinkan Vite Lokal (Javascript & CSS) dan CDN --}}
+{{-- Update CSP untuk mengizinkan Vite Lokal (Javascript & CSS) dan CDN --}}
     <meta http-equiv="Content-Security-Policy"
-        content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5174 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com https://snap-assets.al-pc-id-b.cdn.gtflabs.io; 
-        connect-src 'self' http://127.0.0.1:5174 ws://127.0.0.1:5174 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com;">
+        content="
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 http://127.0.0.1:5174 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com https://snap-assets.al-pc-id-b.cdn.gtflabs.io https://cdnjs.cloudflare.com; 
+        style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 http://127.0.0.1:5174 https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 http://127.0.0.1:5174 ws://127.0.0.1:5174 https://app.sandbox.midtrans.com https://api.sandbox.midtrans.com;">
 
     <title>{{ $title ?? 'Libris | Toko Buku Online' }}</title>
 
@@ -23,9 +29,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- NProgress loading bar -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
-        integrity="sha512-b/jHzD1ijrC6VllXc3fy7VME8+W5iFcgthG2/j8p22s3Vl+zHdxKm0Hz4LUE3M6+zW4h4PvwHzYyjk3j+8b4qw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-900">
@@ -103,9 +107,7 @@
     </script>
 
     <!-- NProgress and basic page load handlers -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"
-        integrity="sha512-b+7z2+KdE9iR29Q1TeL+9djLLzVzRp/FuT7fEt8rP9pM1RpsQwv4kgJZYrQ7uQ+dNEcHuvifFgGac2Iz3TfKYA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             NProgress.configure({ showSpinner: false, trickleSpeed: 200 });
