@@ -59,17 +59,20 @@
                         </span>
                     </div>
 
-                    <div class="flex space-x-6 mb-8">
-                        <button onclick="toggleFavorite(this, {{ $item->id }})"
-                            class="favorite-btn flex items-center transition {{ $item->isFavorited() ? 'text-red-500' : 'text-gray-500 hover:text-red-500' }}">
-                            <i class="{{ $item->isFavorited() ? 'fa-solid' : 'fa-regular' }} fa-heart mr-2 text-xl"></i>
-                            <span class="font-bold text-sm">Favorit</span>
-                        </button>
-                        <button class="flex items-center text-gray-500 hover:text-indigo-600 transition">
-                            <i class="fa-solid fa-share-nodes mr-2 text-xl"></i> 
-                            <span class="font-bold text-sm">Bagikan</span>
-                        </button>
-                    </div>
+<div class="flex space-x-6 mb-8">
+    <button type="button" 
+        id="fav-btn-{{ $item->id }}"
+        onclick="toggleFavorite(this, {{ $item->id }})"
+        class="flex items-center transition {{ $item->isFavorited() ? 'text-red-500' : 'text-gray-500 hover:text-red-500' }}">
+        
+        <i class="{{ $item->isFavorited() ? 'fa-solid fa-heart' : 'fa-regular fa-heart' }} mr-2 text-xl fav-icon"></i>
+        <span class="fav-text">{{ $item->isFavorited()}} Favorit</span>
+    </button>
+
+    <button class="flex items-center text-gray-500 hover:text-indigo-600 transition">
+        <i class="fa-solid fa-share-nodes mr-2 text-xl"></i> Bagikan
+    </button>
+</div>
 
                     {{-- Deskripsi/Sinopsis --}}
                     <div class="border-t pt-8">
@@ -230,5 +233,52 @@
             // Logika AJAX Anda di sini
             console.log('Toggled favorite for book ID:', id);
         }
+
+        function toggleFavorite(btn, itemId) {
+    // Ambil Token CSRF dari meta tag
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    // Animasi klik sederhana
+    btn.classList.add('scale-90');
+    setTimeout(() => btn.classList.remove('scale-90'), 100);
+
+    fetch('/wishlist/toggle', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            item_id: itemId
+        })
+    })
+    .then(response => {
+        if (response.status === 401) {
+            alert('Silakan login terlebih dahulu untuk menambah favorit.');
+            window.location.href = '/login';
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'added') {
+            // Ubah tampilan ke Aktif (Merah)
+            btn.classList.remove('text-gray-500', 'hover:text-red-500');
+            btn.classList.add('text-red-500');
+            btn.querySelector('.fav-icon').classList.replace('fa-regular', 'fa-solid');
+            btn.querySelector('.fav-text').innerText = 'Favorit';
+        } else if (data.status === 'removed') {
+            // Ubah tampilan ke Non-aktif (Abu-abu)
+            btn.classList.remove('text-red-500');
+            btn.classList.add('text-gray-500', 'hover:text-red-500');
+            btn.querySelector('.fav-icon').classList.replace('fa-solid', 'fa-regular');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan, coba lagi nanti.');
+    });
+}
     </script>
 @endsection
