@@ -37,6 +37,13 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
+        User::factory()->create([
+            'name' => 'Kurir',
+            'email' => 'kurir@email.com',
+            'password' => bcrypt('123123123'),
+            'role' => 'courier',
+        ]);
+
         $this->call([
             AuthorSeeder::class,
             CategorySeeder::class,
