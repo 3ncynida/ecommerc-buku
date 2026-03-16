@@ -1,5 +1,7 @@
 @php
     $navCategories = \App\Models\Category::orderBy('name')->get();
+    $cartItems = session('cart', []);
+    $cartCount = collect($cartItems)->sum('quantity');
 @endphp
 
 <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -60,11 +62,9 @@
 
             <a href="{{ route('cart.index') }}" class="relative shrink-0">
                 <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
-                @if(session('cart'))
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5">
-                        {{ count(session('cart')) }}
-                    </span>
-                @endif
+                <span data-cart-count class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5 {{ $cartCount > 0 ? '' : 'hidden' }}">
+                    {{ $cartCount }}
+                </span>
             </a>
 
             @guest

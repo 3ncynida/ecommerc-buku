@@ -44,7 +44,13 @@ document.addEventListener('click', (e) => {
             if (data && data.success) {
                 // update any cart count indicators
                 document.querySelectorAll('[data-cart-count]').forEach(el => {
-                    el.textContent = data.cart_count ?? Object.values(data.cart ?? {}).reduce((s,i)=>s+(i.quantity||0),0);
+                    const count = data.cart_count ?? Object.values(data.cart ?? {}).reduce((s,i)=>s+(i.quantity||0),0);
+                    el.textContent = count;
+                    if (count > 0) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
                 });
 
                 flashMessage(data.message || 'Produk ditambahkan ke keranjang');
