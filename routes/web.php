@@ -34,6 +34,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
     Route::post('/reports/generate', [App\Http\Controllers\Admin\ReportController::class, 'generate'])->name('admin.reports.generate');
+    Route::resource('couriers', App\Http\Controllers\Admin\CourierController::class);
 });
 
 // Rute khusus untuk pelanggan

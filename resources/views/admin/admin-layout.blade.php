@@ -44,6 +44,11 @@
                 <i class="fa-solid fa-clipboard-list mr-2"></i> Pesanan
             </a>
 
+            <a href="{{ route('couriers.index') }}" class="block py-2.5 px-4 rounded transition
+            {{ request()->routeIs('couriers.*') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
+                <i class="fa-solid fa-truck mr-2"></i> Kurir
+            </a>
+
             <a href="{{ route('admin.reports.index') }}" class="block py-2.5 px-4 rounded transition
         {{ request()->routeIs('admin.reports.*') ? 'bg-indigo-700' : 'hover:bg-indigo-800' }}">
                 <i class="fa-solid fa-chart-line mr-2"></i> Laporan
