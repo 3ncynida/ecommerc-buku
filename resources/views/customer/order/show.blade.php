@@ -73,7 +73,7 @@
                 </div>
 
                 {{-- 2. Alamat & Pengiriman --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8">
                         <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6 text-indigo-500">Alamat Pengiriman</h2>
 
@@ -105,27 +105,44 @@
                                     <p class="text-[10px] text-gray-400 font-medium">Diperbarui pada {{ $order->updated_at->format('d M Y, H:i') }}</p>
                                 </div>
                             </div>
+                            <div class="mt-5 border-t border-dashed border-gray-100 pt-4">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-2">Info Kurir</p>
+                                @if ($order->courier)
+                                    <p class="text-sm font-bold text-gray-900">{{ $order->courier->name }}</p>
+                                    <p class="text-sm text-gray-500">{{ $order->courier->email }}</p>
+                                @else
+                                    <p class="text-sm text-gray-400 italic">Kurir belum ditugaskan.</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
-            <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8">
-                <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6 text-indigo-500">Bukti Foto Pengiriman</h2>
-                @if($order->delivery_proof_path)
-                    <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 mb-4">
-                        <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti {{ $order->order_number }}" class="w-full h-48 object-cover object-center">
-                    </a>
-                    <p class="text-sm text-gray-500">Catatan dari kurir: {{ $order->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
-                    @if($order->item_status === 'sampai')
-                        <form action="{{ route('orders.confirm', ['order' => $order->order_number]) }}" method="POST" class="mt-4">
-                            @csrf
-                            <button type="submit" class="w-full rounded-2xl bg-green-600 text-white font-bold py-3 hover:bg-green-700 transition">
-                                <i class="fa-solid fa-check-circle mr-2"></i>
-                                Konfirmasi Selesai
-                            </button>
-                        </form>
-                    @endif
-                @else
-                    <div class="rounded-2xl border border-dashed border-gray-200 px-4 py-5 text-sm text-gray-500 text-center">
-                        Kurir belum mengunggah foto bukti pengiriman.
+                    <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8">
+                        <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6 text-indigo-500">Bukti Foto Pengiriman</h2>
+
+                        @if($order->item_status === 'gagal')
+                            <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-700 mb-4">
+                                <p class="text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Pengiriman Gagal</p>
+                                <p>{{ $order->courier_note ?? 'Alasan gagal belum diisi.' }}</p>
+                            </div>
+                        @endif
+
+                        @if($order->delivery_proof_path)
+                            <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 mb-4">
+                                <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti {{ $order->order_number }}" class="w-full h-48 object-cover object-center">
+                            </a>
+                            <p class="text-sm text-gray-500">Catatan dari kurir: {{ $order->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
+                            @if($order->item_status === 'sampai')
+                                <form action="{{ route('orders.confirm', ['order' => $order->order_number]) }}" method="POST" class="mt-4">
+                                    @csrf
+                                    <button type="submit" class="w-full rounded-2xl bg-green-600 text-white font-bold py-3 hover:bg-green-700 transition">
+                                        <i class="fa-solid fa-check-circle mr-2"></i>
+                                        Konfirmasi Selesai
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <div class="rounded-2xl border border-dashed border-gray-200 px-4 py-5 text-sm text-gray-500 text-center">
+                                Kurir belum mengunggah foto bukti pengiriman.
                             </div>
                         @endif
                     </div>

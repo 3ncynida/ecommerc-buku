@@ -167,7 +167,7 @@ class CustomerController extends Controller
     public function orderShow(Order $order)
     {
         // Mengambil order milik user yang login dengan relasi buku, penulis, dan alamat
-        $order = \App\Models\Order::with(['item.author', 'shippingAddress'])
+        $order = \App\Models\Order::with(['item.author', 'shippingAddress', 'courier'])
             ->where('user_id', auth()->id())
             ->findOrFail($order->id);
 
