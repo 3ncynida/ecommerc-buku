@@ -6,18 +6,18 @@
         use Illuminate\Support\Str;
 
         $courierActionLabels = [
-            'diproses_kurir' => 'Kirim Paket',
-            'dikirim' => 'Konfirmasi Sampai Tujuan',
+            'diproses_kurir' => 'Mulai Kirim Paket',
+            'dikirim' => 'Konfirmasi Sampai',
             'sampai' => 'Tandai Selesai',
         ];
 
         $statusLabels = [
-            'menunggu_kurir' => 'Menunggu Kurir',
-            'diproses_kurir' => 'Diproses Kurir',
-            'dikirim' => 'Dalam Pengiriman',
-            'sampai' => 'Sampai Tujuan',
+            'menunggu_kurir' => 'Menunggu',
+            'diproses_kurir' => 'Diproses',
+            'dikirim' => 'Dikirim',
+            'sampai' => 'Sampai',
             'selesai' => 'Selesai',
-            'gagal' => 'Gagal Pengiriman',
+            'gagal' => 'Gagal',
         ];
 
         $statusCounts = [
@@ -25,312 +25,234 @@
             'diproses_kurir' => $myTasks->where('item_status', 'diproses_kurir')->count(),
             'dikirim' => $myTasks->where('item_status', 'dikirim')->count(),
             'sampai' => $myTasks->where('item_status', 'sampai')->count(),
-            'selesai' => $myTasks->where('item_status', 'selesai')->count(),
             'gagal' => $myTasks->where('item_status', 'gagal')->count(),
         ];
 
         $initialTab = in_array(request('tab'), ['available', 'tasks']) ? request('tab') : 'available';
     @endphp
-    <div class="space-y-6">
-        <div class="space-y-2">
-            <p class="text-xs text-gray-500 uppercase tracking-[0.4em]">Operasional Ekspedisi</p>
-            <h1 class="text-3xl font-black text-gray-900">Dashboard Kurir</h1>
-            <p class="text-sm text-gray-500 max-w-2xl">Kelola pesanan siap antar dan update status secara real-time langsung dari perangkat mobile Anda.</p>
+
+    <div class="max-w-2xl mx-auto pb-24 px-4 sm:px-6 mt-6">
+
+        {{-- Header Minimalis --}}
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Dashboard Kurir</h1>
+            <p class="text-sm text-gray-500 mt-1">Kelola dan update pengiriman Anda hari ini.</p>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-            @foreach ($statusCounts as $statusKey => $count)
-                <div class="rounded-2xl border px-5 py-4 text-sm font-bold uppercase tracking-[0.3em]
-                    {{ $statusKey === 'gagal' ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-white border-indigo-50 text-gray-600' }}">
-                    <p class="text-xs tracking-[0.35em]">{{ $statusLabels[$statusKey] }}</p>
-                    <p class="text-3xl font-black text-gray-900 mt-2">{{ $count }}</p>
-                </div>
-            @endforeach
-        </div>
-
+        {{-- Flash Messages --}}
         @if(session('status'))
-            <div class="rounded-[30px] border border-indigo-200 bg-indigo-50/80 px-4 py-3 text-sm font-semibold text-indigo-700 shadow-inner">
+            <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 text-sm font-medium text-green-800">
                 {{ session('status') }}
             </div>
         @endif
-
         @if(session('error'))
-            <div class="rounded-[30px] border border-rose-200 bg-rose-50/80 px-4 py-3 text-sm font-semibold text-rose-700 shadow-inner">
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800">
                 {{ session('error') }}
             </div>
         @endif
 
-        <div x-data="{ tab: '{{ $initialTab }}' }" class="bg-white/80 border border-indigo-100 rounded-[30px] shadow-lg p-4 space-y-4">
-            <div class="flex gap-2 overflow-x-auto pb-2">
-                <button
-                    @click="tab = 'available'"
-                    :class="tab === 'available' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-600'"
-                    class="flex-1 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none">
-                    <i class="fa-solid fa-inbox mr-2"></i>
+        {{-- Statistik Grid --}}
+        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-8">
+            @foreach ($statusCounts as $statusKey => $count)
+                <div class="rounded-xl border border-gray-100 bg-white p-3 text-center shadow-sm">
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1 truncate">{{ $statusLabels[$statusKey] }}</p>
+                    <p class="text-xl font-bold {{ $statusKey === 'gagal' ? 'text-red-600' : 'text-gray-900' }}">{{ $count }}</p>
+                </div>
+            @endforeach
+        </div>
+
+        <div x-data="{ tab: '{{ $initialTab }}' }">
+
+            {{-- Tabs Segmen Minimalis --}}
+            <div class="flex p-1 bg-gray-100 rounded-xl mb-6">
+                <button @click="tab = 'available'"
+                    :class="tab === 'available' ? 'bg-white shadow-sm text-black font-semibold' : 'text-gray-500 font-medium hover:text-gray-700'"
+                    class="flex-1 py-2.5 text-sm rounded-lg transition-all">
                     Tersedia
                 </button>
-                <button
-                    @click="tab = 'tasks'"
-                    :class="tab === 'tasks' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-600'"
-                    class="flex-1 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none">
-                    <i class="fa-solid fa-truck-fast mr-2"></i>
+                <button @click="tab = 'tasks'"
+                    :class="tab === 'tasks' ? 'bg-white shadow-sm text-black font-semibold' : 'text-gray-500 font-medium hover:text-gray-700'"
+                    class="flex-1 py-2.5 text-sm rounded-lg transition-all relative">
                     Tugas Saya
+                    @if($myTasks->count() > 0)
+                        <span class="absolute top-2.5 right-4 w-2 h-2 bg-red-500 rounded-full"></span>
+                    @endif
                 </button>
             </div>
 
-            <div x-show="tab === 'available'" x-cloak class="space-y-4">
+            {{-- TAB: TERSEDIA --}}
+            <div x-show="tab === 'available'" x-cloak class="space-y-3">
                 @if($availableOrders->isEmpty())
-                    <div class="rounded-[30px] border border-dashed border-indigo-200 p-6 text-center text-sm font-semibold text-gray-500">
-                        Tidak ada pesanan yang siap diklaim. Periksa kembali nanti.
+                    <div class="rounded-2xl border border-dashed border-gray-300 py-12 text-center">
+                        <i class="fa-solid fa-box-open text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-sm text-gray-500">Tidak ada paket baru saat ini.</p>
                     </div>
                 @else
-                    <div class="grid gap-4">
-                        @foreach($availableOrders as $order)
-                            @php
-                                $addressParts = collect([
-                                    $order->shippingAddress->full_address ?? null,
-                                    $order->shippingAddress->district->name ?? null,
-                                    $order->shippingAddress->city->name ?? null,
-                                    $order->shippingAddress->province->name ?? null,
-                                    $order->shippingAddress->postal_code ?? null,
-                                ])->filter()->toArray();
-                                $fullAddress = implode(', ', $addressParts);
-                                $phone = preg_replace('/[^0-9]/', '', $order->shippingAddress->phone_number ?? '');
-                            @endphp
-                            <div class="rounded-[30px] bg-white border border-indigo-100 shadow-sm p-5 space-y-4">
-                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                    <div>
-                                        <p class="text-xs uppercase text-gray-400 tracking-[0.3em]">Order {{ $order->order_number }}</p>
-                                        <h2 class="text-2xl font-black text-gray-900">{{ $order->user->name }}</h2>
-                                        <p class="text-sm text-gray-500">{{ $order->user->email }}</p>
-                                    </div>
-                                    <span class="px-4 py-1 rounded-full text-[11px] font-black uppercase tracking-[0.3em] text-indigo-600 border border-indigo-100 bg-indigo-50">
-                                        {{ str_replace('_', ' ', strtoupper($order->item_status)) }}
+                    @foreach($availableOrders as $order)
+                        @php
+                            $fullAddress = collect([$order->shippingAddress->full_address ?? null, $order->shippingAddress->district->name ?? null, $order->shippingAddress->city->name ?? null])->filter()->implode(', ');
+                        @endphp
+
+                        {{-- Wrapper Card dengan state 'expanded' --}}
+                        <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+                            {{-- Header Card yang bisa di-klik --}}
+                            <div @click="expanded = !expanded" class="p-5 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors select-none">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Order #{{ $order->order_number }}</span>
+                                    <h3 class="font-bold text-lg text-gray-900 mt-0.5">{{ $order->user->name }}</h3>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                                        {{ $statusLabels[$order->item_status] ?? 'Baru' }}
                                     </span>
+                                    <i class="fa-solid fa-chevron-down text-gray-400 text-sm transition-transform duration-300" :class="expanded ? 'rotate-180' : ''"></i>
                                 </div>
+                            </div>
 
-                                <div class="text-sm text-gray-600 space-y-1">
-                                    <p class="font-semibold text-gray-800">Alamat Lengkap</p>
-                                    <p>{{ $fullAddress ?: 'Alamat belum tersedia' }}</p>
-                                    <p class="text-gray-400 text-xs">{{ $order->shippingAddress->recipient_name ?? 'Tidak diketahui' }} · {{ $order->shippingAddress->phone_number ?? '-' }}</p>
-                                </div>
-
-                                <div class="grid gap-3 md:grid-cols-3 text-sm text-gray-600">
-                                    <div>
-                                        <p class="text-xs text-gray-400 uppercase tracking-[0.3em]">Item</p>
-                                        <p class="font-semibold text-gray-800">{{ $order->item->name ?? 'N/A' }}</p>
-                                        <p class="text-xs text-gray-400">{{ $order->quantity }} barang</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-400 uppercase tracking-[0.3em]">Total</p>
-                                        <p class="font-semibold text-gray-800">Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-400 uppercase tracking-[0.3em]">Tujuan</p>
-                                        <p>{{ $order->shippingAddress->city->name ?? $order->shippingAddress->province->name ?? '-' }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="grid gap-4 md:grid-cols-3 text-sm text-gray-600 mt-6">
-                                    <div class="rounded-2xl border border-indigo-100 bg-indigo-50/80 p-4 space-y-2">
-                                        <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Status Barang</p>
-                                        <p class="text-lg font-black text-gray-900">
-                                            {{ $statusLabels[$order->item_status] ?? 'Menunggu Kurir' }}
+                            {{-- Body Card (Sembunyi by default) --}}
+                            <div x-show="expanded" x-collapse x-cloak>
+                                <div class="px-5 pb-5 border-t border-gray-50 pt-4">
+                                    <div class="text-sm text-gray-600 mb-5">
+                                        <p class="flex items-start gap-2 mb-2">
+                                            <i class="fa-solid fa-location-dot mt-1 text-gray-300 w-4"></i>
+                                            <span>{{ $fullAddress ?: 'Alamat tidak lengkap' }}</span>
                                         </p>
-                                        <div class="flex flex-wrap gap-2">
-                                            @foreach ($statusLabels as $statusKey => $statusLabel)
-                                                <span class="rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em]
-                                                    {{ $order->item_status === $statusKey ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white text-gray-500 border-gray-100' }}">
-                                                    {{ Str::upper($statusLabel) }}
-                                                </span>
-                                            @endforeach
-                                        </div>
+                                        <p class="flex items-start gap-2">
+                                            <i class="fa-solid fa-box mt-1 text-gray-300 w-4"></i>
+                                            <span>{{ $order->quantity }}x {{ $order->item->name ?? 'Produk' }}</span>
+                                        </p>
                                     </div>
-                                    <div class="rounded-2xl border border-gray-100 p-4 space-y-2">
-                                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Catatan & Gagal</p>
-                                        <p class="text-sm text-gray-700">{{ $order->note ?? 'Tidak ada catatan tambahan.' }}</p>
-                                        @if ($order->item_status === 'gagal')
-                                            <div class="text-xs font-bold uppercase tracking-[0.35em] text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-3 py-2">
-                                                Gagal: {{ Str::limit($order->note ?? 'Kendala tidak dijelaskan', 60) }}
-                                            </div>
-                                        @else
-                                            <div class="text-xs font-bold uppercase tracking-[0.35em] text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-2xl px-3 py-2">
-                                                Tidak ada kendala, lanjutkan pengiriman.
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="rounded-2xl border border-gray-100 p-4 space-y-2">
-                                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Gambar Produk</p>
-                                        <div class="h-28 rounded-2xl border border-gray-200 bg-gray-50 overflow-hidden">
-                                            @if ($order->item && $order->item->image)
-                                                <img src="{{ asset('storage/' . $order->item->image) }}"
-                                                     alt="{{ $order->item->name }}"
-                                                     class="w-full h-full object-cover object-center">
-                                            @else
-                                                <div class="flex h-full items-center justify-center text-[11px] text-gray-400 uppercase tracking-[0.3em]">
-                                                    Gambar belum tersedia
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="flex flex-col sm:flex-row gap-3">
-                                    <a href="https://wa.me/{{ $phone }}?text={{ urlencode('Halo, saya kurir Libris. Saya ingin mengonfirmasi pesanan ' . $order->order_number) }}"
-                                       target="_blank"
-                                       rel="noopener"
-                                       class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-green-100 bg-green-50 text-green-700 text-sm font-semibold hover:bg-green-100 transition">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                        Kirim WhatsApp
-                                    </a>
-                                    <form action="{{ route('courier.orders.claim', $order) }}" method="POST" class="flex-1">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit"
-                                            class="w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
-                                            <i class="fa-solid fa-handshake-angle mr-2"></i>
-                                            Klaim & Proses
+                                    <form action="{{ route('courier.orders.claim', $order) }}" method="POST">
+                                        @csrf @method('PATCH')
+                                        <button type="submit" class="w-full bg-black text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-gray-800 transition active:scale-[0.98]">
+                                            Klaim Paket Ini
                                         </button>
                                     </form>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
                 @endif
             </div>
 
-            <div x-show="tab === 'tasks'" x-cloak class="space-y-4">
+            {{-- TAB: TUGAS SAYA --}}
+            <div x-show="tab === 'tasks'" x-cloak class="space-y-3">
                 @if($myTasks->isEmpty())
-                    <div class="rounded-[30px] border border-dashed border-indigo-200 p-6 text-center text-sm font-semibold text-gray-500">
-                        Belum ada penugasan aktif. Silakan klaim pesanan pertama yang muncul di tab “Tersedia”.
+                    <div class="rounded-2xl border border-dashed border-gray-300 py-12 text-center">
+                        <i class="fa-solid fa-truck-fast text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-sm text-gray-500">Anda belum mengambil tugas pengiriman.</p>
                     </div>
                 @else
-                    <div class="grid gap-4">
-                        @foreach($myTasks as $task)
-                            @php
-                                $statusBadge = ucfirst(str_replace('_', ' ', $task->item_status));
-                                $nextStatus = $courierActionLabels[$task->item_status] ?? null;
-                                $phone = preg_replace('/[^0-9]/', '', $task->shippingAddress->phone_number ?? '');
-                                $addressParts = collect([
-                                    $task->shippingAddress->full_address ?? null,
-                                    $task->shippingAddress->district->name ?? null,
-                                    $task->shippingAddress->city->name ?? null,
-                                    $task->shippingAddress->province->name ?? null,
-                                    $task->shippingAddress->postal_code ?? null,
-                                ])->filter()->toArray();
-                                $fullAddress = implode(', ', $addressParts);
-                            @endphp
-                            <div class="rounded-[30px] border border-indigo-100 shadow-xl p-5 space-y-4" data-order-id="{{ $task->id }}">
-                                <div class="flex items-center justify-between gap-3">
-                                    <div>
-                                        <p class="text-xs uppercase text-gray-400 tracking-[0.3em]">Task #{{ $task->order_number }}</p>
-                                        <h3 class="text-xl font-black text-gray-900">{{ $task->user->name }}</h3>
-                                        <p class="text-xs text-gray-500">{{ $task->user->email }}</p>
-                                    </div>
-                                    <span id="order-status-{{ $task->id }}" class="px-3 py-1 rounded-full border border-indigo-200 text-[11px] font-black uppercase tracking-[0.3em] bg-indigo-50 text-indigo-600">
+                    @foreach($myTasks as $task)
+                        @php
+                            $statusBadge = $statusLabels[$task->item_status] ?? 'Diproses';
+                            $nextStatus = $courierActionLabels[$task->item_status] ?? null;
+                            $phone = preg_replace('/[^0-9]/', '', $task->shippingAddress->phone_number ?? '');
+                            $fullAddress = collect([$task->shippingAddress->full_address ?? null, $task->shippingAddress->district->name ?? null, $task->shippingAddress->city->name ?? null, $task->shippingAddress->province->name ?? null])->filter()->implode(', ');
+                        @endphp
+
+                        {{-- Wrapper Card dengan state 'expanded' --}}
+                        <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-order-id="{{ $task->id }}">
+
+                            {{-- Card Header (Klik untuk buka/tutup) --}}
+                            <div @click="expanded = !expanded" class="p-5 bg-gray-50/50 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition-colors select-none">
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-500">ID: {{ $task->order_number }}</p>
+                                    <h3 class="font-bold text-gray-900 mt-0.5">{{ $task->shippingAddress->recipient_name ?? $task->user->name }}</h3>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span id="order-status-{{ $task->id }}" class="bg-black text-white px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest">
                                         {{ $statusBadge }}
                                     </span>
+                                    <i class="fa-solid fa-chevron-down text-gray-400 text-sm transition-transform duration-300" :class="expanded ? 'rotate-180' : ''"></i>
                                 </div>
+                            </div>
 
-                                <div class="text-sm text-gray-600 space-y-1">
-                                    <p class="font-semibold text-gray-800">Alamat Tujuan</p>
-                                    <p>{{ $fullAddress ?: 'Alamat belum tersedia' }}</p>
-                                    <p class="text-gray-400 text-xs">{{ $task->shippingAddress->recipient_name ?? '-' }} · {{ $task->shippingAddress->phone_number ?? '-' }}</p>
-                                </div>
-
-                                <div class="grid gap-4 md:grid-cols-3 text-sm text-gray-600">
-                                    <div class="rounded-2xl border border-gray-100 p-4 space-y-2">
-                                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Total Tagihan</p>
-                                        <p class="text-lg font-black text-gray-900">Rp{{ number_format($task->total_price, 0, ',', '.') }}</p>
-                                        <p class="text-xs text-gray-400 uppercase tracking-[0.3em]">Kuantitas</p>
-                                        <p class="font-bold text-gray-800">{{ $task->quantity }} barang</p>
+                            {{-- Card Body (Sembunyi by default) --}}
+                            <div x-show="expanded" x-collapse x-cloak>
+                                <div class="p-5 border-t border-gray-100">
+                                    <div class="mb-5">
+                                        <p class="text-xs font-semibold text-gray-900 mb-1">Tujuan Pengiriman</p>
+                                        <p class="text-sm text-gray-600 leading-relaxed">{{ $fullAddress }}</p>
+                                        <p class="text-sm font-medium text-gray-800 mt-2"><i class="fa-solid fa-phone text-xs text-gray-400 mr-1"></i> {{ $task->shippingAddress->phone_number ?? '-' }}</p>
                                     </div>
-                                    <div class="rounded-2xl border border-indigo-100 bg-indigo-50/80 p-4 space-y-2">
-                                        <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Status Barang</p>
-                                        <p class="text-lg font-black text-gray-900">{{ $statusLabels[$task->item_status] ?? 'Menunggu Kurir' }}</p>
-                                        <div class="flex flex-wrap gap-2">
-                                            @foreach ($statusLabels as $statusKey => $statusLabel)
-                                                <span class="rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em]
-                                                    {{ $task->item_status === $statusKey ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white text-gray-500 border-gray-100' }}">
-                                                    {{ Str::upper($statusLabel) }}
-                                                </span>
-                                            @endforeach
+
+                                    @if($task->note)
+                                        <div class="mb-5 p-3 bg-yellow-50 border border-yellow-100 rounded-lg text-sm text-yellow-800">
+                                            <span class="font-bold text-[10px] uppercase tracking-wider block mb-1">Catatan Pembeli:</span>
+                                            {{ $task->note }}
                                         </div>
-                                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Catatan Kurir</p>
-                                        <p class="text-sm text-gray-500">{{ $task->courier_note ?? 'Tidak ada catatan' }}</p>
-                                    </div>
-                                    <div class="rounded-2xl border border-gray-100 p-4 space-y-3">
-                                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Kolom Gagal</p>
-                                        @if ($task->item_status === 'gagal')
-                                            <p class="text-sm font-bold text-rose-600">Pengiriman gagal</p>
-                                            <p class="text-xs text-rose-500">{{ $task->courier_note ?? 'Laporan belum tersedia' }}</p>
-                                        @else
-                                            <p class="text-sm font-bold text-emerald-600">Tidak ada kegagalan</p>
-                                            <p class="text-xs text-gray-500">Pantauan normal, lanjutkan ke bukti pengiriman.</p>
-                                        @endif
+                                    @endif
 
-                                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Bukti Pengiriman</p>
-                                        @if ($task->delivery_proof_path)
-                                            <a href="{{ Storage::url($task->delivery_proof_path) }}" target="_blank" class="block rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
-                                                <img src="{{ Storage::url($task->delivery_proof_path) }}" alt="Bukti {{ $task->order_number }}" class="w-full h-28 object-cover object-center">
-                                            </a>
-                                            <p class="text-[10px] text-gray-400">Diupload {{ $task->updated_at->format('d M Y, H:i') }}</p>
-                                            <p class="text-sm text-gray-600">{{ $task->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
-                                        @else
-                                            <p class="text-sm text-gray-500">Belum ada bukti foto.</p>
-                                        @endif
+                                    {{-- Aksi Berdasarkan Status --}}
+                                    <div class="space-y-3 mt-6 border-t border-gray-50 pt-5">
 
-                                        @if ($task->item_status === 'dikirim')
-                                            <form action="{{ route('courier.orders.proof', $task) }}" method="POST" enctype="multipart/form-data" class="space-y-2">
-                                                @csrf
-                                                <label class="text-[10px] uppercase tracking-[0.3em] text-gray-400">Unggah Foto</label>
-                                                <input type="file" name="proof_image" accept="image/*" class="w-full text-sm text-gray-500" required>
-                                                <textarea name="note" rows="2" class="w-full border border-gray-200 rounded-2xl p-2 text-sm" placeholder="Catatan singkat (opsional)"></textarea>
-                                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-indigo-600 text-white text-sm font-bold">
-                                                    <i class="fa-solid fa-camera-retro"></i>
-                                                    Upload & Tandai Sampai
-                                                </button>
-                                            </form>
-                                        @endif
+                                        {{-- Tombol WhatsApp --}}
+                                        <a href="https://wa.me/{{ $phone }}" target="_blank"
+                                            class="w-full flex justify-center items-center gap-2 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition active:bg-gray-100">
+                                            <i class="fa-brands fa-whatsapp text-green-500 text-lg"></i> Hubungi Pembeli
+                                        </a>
 
-                                        @if ($task->item_status !== 'gagal')
-                                            <form action="{{ route('courier.orders.failure', $task) }}" method="POST" class="space-y-2">
-                                                @csrf
-                                                <label class="text-[10px] uppercase tracking-[0.3em] text-gray-400">Laporkan Gagal Pengiriman</label>
-                                                <textarea name="failure_note" rows="2" class="w-full border border-gray-200 rounded-2xl p-2 text-sm" placeholder="Jelaskan hambatan atau alasan gagal" required></textarea>
-                                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-rose-600 text-white text-sm font-bold hover:bg-rose-700 transition">
-                                                    <i class="fa-solid fa-triangle-exclamation"></i>
-                                                    Laporkan Gagal
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <div class="flex flex-col sm:flex-row gap-3">
-                                    <a href="https://wa.me/{{ $phone }}?text={{ urlencode('Halo, saya kurir Libris. Saya sedang dalam perjalanan ke pesanan ' . $task->order_number) }}"
-                                       target="_blank"
-                                       rel="noopener"
-                                       class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-green-100 bg-green-50 text-green-700 text-sm font-semibold hover:bg-green-100 transition">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                        Kirim WhatsApp
-                                    </a>
-                                    @if($task->item_status === 'diproses_kurir')
-                                        @if($nextStatus)
-                                            <button type="button"
-                                                data-update-status
-                                                data-url="{{ route('courier.orders.status', $task) }}"
-                                                data-current-status="{{ $task->item_status }}"
-                                                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
-                                                <i class="fa-solid fa-rotate-right"></i>
+                                        {{-- JIKA STATUS: DIPROSES KURIR (Siap jalan) --}}
+                                        @if($task->item_status === 'diproses_kurir' && $nextStatus)
+                                            <button type="button" data-update-status data-url="{{ route('courier.orders.status', $task) }}"
+                                                class="w-full py-3.5 rounded-xl bg-black text-white font-semibold text-sm hover:bg-gray-800 transition active:scale-[0.98]">
                                                 {{ $nextStatus }}
                                             </button>
                                         @endif
-                                    @endif
+
+                                        {{-- JIKA STATUS: DIKIRIM (Sedang di jalan, butuh bukti foto) --}}
+                                        @if($task->item_status === 'dikirim')
+                                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4">
+                                                <p class="text-xs font-bold mb-3 uppercase tracking-widest text-gray-500">Selesaikan Pengiriman</p>
+                                                <form action="{{ route('courier.orders.proof', $task) }}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                                                    @csrf
+                                                    <div>
+                                                        <input type="file" name="proof_image" accept="image/*" required
+                                                            class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800">
+                                                    </div>
+                                                    <button type="submit" class="w-full py-3 rounded-xl bg-black text-white font-semibold text-sm hover:bg-gray-800 transition active:scale-[0.98]">
+                                                        Upload Bukti & Selesai
+                                                    </button>
+                                                </form>
+                                            </div>
+
+                                            {{-- Lapor Gagal --}}
+                                            <div x-data="{ showFail: false }" class="mt-2">
+                                                <button @click="showFail = !showFail" type="button" class="w-full py-2 text-xs font-semibold text-red-500 hover:text-red-700">
+                                                    Ada Kendala Pengiriman?
+                                                </button>
+                                                <form x-show="showFail" x-collapse x-cloak action="{{ route('courier.orders.failure', $task) }}" method="POST" class="mt-2 space-y-2 p-3 border border-red-100 bg-red-50 rounded-xl">
+                                                    @csrf
+                                                    <textarea name="failure_note" rows="2" required placeholder="Alasan gagal kirim..."
+                                                        class="w-full rounded-lg border-gray-300 text-sm focus:ring-red-500 focus:border-red-500 p-2"></textarea>
+                                                    <button type="submit" class="w-full py-2 rounded-lg bg-red-600 text-white font-semibold text-xs active:scale-[0.98] transition-transform">Laporkan Gagal</button>
+                                                </form>
+                                            </div>
+                                        @endif
+
+                                        {{-- JIKA STATUS: GAGAL / SAMPAI (Hanya Tampilan View) --}}
+                                        @if(in_array($task->item_status, ['sampai', 'selesai', 'gagal']))
+                                            @if($task->delivery_proof_path)
+                                                <div class="mt-4">
+                                                    <p class="text-xs text-gray-500 mb-2">Bukti Foto:</p>
+                                                    <img src="{{ Storage::url($task->delivery_proof_path) }}" class="w-full h-32 object-cover rounded-lg border border-gray-200">
+                                                </div>
+                                            @endif
+                                            @if($task->item_status === 'gagal')
+                                                <div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-700">
+                                                    <span class="font-bold">Gagal:</span> {{ $task->courier_note }}
+                                                </div>
+                                            @endif
+                                        @endif
+
+                                    </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
                 @endif
             </div>
         </div>
@@ -340,49 +262,38 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const actionLabels = @json($courierActionLabels);
 
             document.querySelectorAll('[data-update-status]').forEach(button => {
                 button.addEventListener('click', async function () {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+                    this.disabled = true;
+
                     const url = this.dataset.url;
-                    const response = await fetch(url, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrf,
-                        },
-                    });
+                    try {
+                        const response = await fetch(url, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf,
+                            },
+                        });
 
-                    if (!response.ok) {
-                        const error = await response.json().catch(() => null);
-                        alert(error?.message ?? 'Gagal memperbarui status.');
-                        return;
-                    }
+                        if (!response.ok) throw new Error('Gagal update status');
 
-                    const data = await response.json();
-                    const orderId = this.closest('[data-order-id]').dataset.orderId;
-                    const statusEl = document.getElementById(`order-status-${orderId}`);
-                    if (statusEl) {
-                        statusEl.textContent = data.nextStatus?.replace(/_/g, ' ').toUpperCase() ?? statusEl.textContent;
-                    }
+                        const data = await response.json();
 
-                    const nextLabel = actionLabels[data.nextStatus];
-                    if (data.nextStatus === 'dikirim') {
-                        window.location.reload();
-                        return;
-                    }
-                    if (nextLabel) {
-                        button.innerHTML = `<i class="fa-solid fa-rotate-right"></i> ${nextLabel}`;
-                    } else {
-                        button.disabled = true;
-                        button.innerHTML = `<i class="fa-solid fa-check-circle"></i> Selesai`;
-                        button.classList.remove('bg-indigo-600');
-                        button.classList.add('bg-gray-200');
+                        if (data.nextStatus === 'dikirim' || data.nextStatus === 'sampai') {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        alert(error.message);
+                        this.innerHTML = originalText;
+                        this.disabled = false;
                     }
                 });
             });
         });
     </script>
 @endpush
-
 @endsection

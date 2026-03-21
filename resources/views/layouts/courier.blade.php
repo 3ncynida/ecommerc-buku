@@ -2,54 +2,62 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Libris Courier' }}</title>
+    <title>{{ $title ?? 'Libris | Portal Kurir' }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer" />
+
+    {{-- Font Inter untuk kesan minimalis --}}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
+        body { font-family: 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white text-gray-900">
-    <header class="bg-white/60 backdrop-blur border-b border-indigo-100 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div class="flex items-center gap-2">
-                <span class="text-indigo-600 font-black text-xl">Libris Kurir</span>
-                <span class="text-xs uppercase tracking-[0.4em] text-gray-400">operasional</span>
+<body class="min-h-screen bg-[#FAFAFA] text-gray-900 antialiased selection:bg-black selection:text-white">
+
+    {{-- HEADER MINIMALIS MOBILE-FIRST --}}
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+
+            {{-- Brand / Logo --}}
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 bg-black text-white rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-cube text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm leading-none tracking-tight">Libris.</h1>
+                    <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-0.5">Kurir</p>
+                </div>
             </div>
 
-            <nav class="flex flex-wrap gap-2 text-sm font-semibold text-gray-500 md:gap-4">
-                <a href="{{ route('courier.dashboard', ['tab' => 'available']) }}"
-                   class="px-4 py-2 rounded-full transition hover:bg-indigo-50 hover:text-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500">
-                   <i class="fa-solid fa-inbox mr-1"></i> Tersedia
-                </a>
-                <a href="{{ route('courier.dashboard', ['tab' => 'tasks']) }}"
-                   class="px-4 py-2 rounded-full transition hover:bg-indigo-50 hover:text-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500">
-                   <i class="fa-solid fa-truck-fast mr-1"></i> Tugas Saya
-                </a>
-            </nav>
-
-            <div class="flex items-center gap-3 justify-between text-sm">
-                <div class="text-right hidden md:block">
-                    <p class="font-semibold">{{ auth()->user()->name }}</p>
-                    <p class="text-gray-500">{{ auth()->user()->email }}</p>
+            {{-- Profil & Logout --}}
+            <div class="flex items-center gap-3">
+                {{-- Nama user disembunyikan di layar sangat kecil agar tidak memotong logo --}}
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs font-bold text-gray-900">{{ auth()->user()->name }}</p>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="inline-flex">
+
+                <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 flex">
                     @csrf
                     <button type="submit"
-                        class="px-4 py-2 rounded-full bg-rose-50 text-rose-600 font-semibold border border-rose-100 hover:bg-rose-100 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-500">
-                        <i class="fa-solid fa-right-from-bracket mr-1"></i>
-                        Logout
+                        class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-colors duration-200 active:scale-95"
+                        title="Logout">
+                        <i class="fa-solid fa-power-off text-sm"></i>
                     </button>
                 </form>
             </div>
+
         </div>
     </header>
-    <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+
+    {{-- MAIN CONTENT --}}
+    <main class="w-full">
         @yield('content')
     </main>
+
     @stack('scripts')
 </body>
 </html>
