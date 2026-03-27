@@ -3,6 +3,18 @@
 @section('content')
     <div class="bg-gray-50 min-h-screen py-12">
         <div class="max-w-5xl mx-auto px-8">
+            @php
+                $paymentBadgeClasses = [
+                    'success' => 'bg-green-100 text-green-600',
+                    'pending' => 'bg-orange-100 text-orange-600',
+                    'failed' => 'bg-red-100 text-red-600',
+                ];
+                $paymentLabels = [
+                    'success' => 'Lunas',
+                    'pending' => 'Menunggu Pembayaran',
+                    'failed' => 'Pembayaran Gagal',
+                ];
+            @endphp
             <div class="mb-10">
                 <h1 class="text-3xl font-bold text-gray-900">Pesanan Saya</h1>
                 <p class="text-gray-500">Pantau status pengiriman buku favorit Anda</p>
@@ -41,8 +53,8 @@
                                             <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y, H:i') }} WIB</p>
                                             <span
                                                 class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                                                    {{ $order->payment_status == 'success' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600' }}">
-                                                {{ $order->payment_status }}
+                                                                    {{ $paymentBadgeClasses[$order->payment_status] ?? 'bg-gray-100 text-gray-600' }}">
+                                                {{ $paymentLabels[$order->payment_status] ?? $order->payment_status }}
                                             </span>
                                         </div>
                                     </div>
@@ -53,12 +65,12 @@
                                     <p class="text-2xl font-black text-indigo-600">
                                         Rp{{ number_format($order->total_price, 0, ',', '.') }}
                                     </p>
-                                    @if($order->payment_status == 'pending')
+                                    @if(in_array($order->payment_status, ['pending', 'failed']))
                                         <button
-                                            onclick="payOrder('{{ $order->payment->snap_token ?? '' }}','{{ $order->order_number }}')"
+                                            onclick="retryPayment('{{ $order->order_number }}')"
                                             class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center gap-2">
                                             <i class="fa-solid fa-credit-card"></i>
-                                            Bayar Sekarang
+                                            {{ $order->payment_status === 'failed' ? 'Coba Bayar Lagi' : 'Bayar Sekarang' }}
                                         </button>
                                     @endif
                                 </div>
@@ -89,20 +101,38 @@
 
     {{-- Script Midtrans --}}
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
-        function payOrder(snapToken, orderId) {
-            if (!snapToken) { alert('Token pembayaran tidak ditemukan.'); return; }
-            window.snap.pay(snapToken, {
-                onSuccess: function (result) { window.location.href = "{{ url('/payment/success') }}/" + result.order_id; },
-                onPending: function (result) { alert("Menunggu pembayaran Anda!"); },
-                onError: function (result) {
-                    window.location.href = "{{ url('/payment/failure') }}/" + orderId;
-                },
-                onClose: function () {
-                    window.location.href = "{{ url('/payment/unfinish') }}/" + orderId;
+        function retryPayment(orderId) {
+            fetch("{{ route('payment.retry', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 }
-            });
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    window.snap.pay(data.snap_token, {
+                        onSuccess: function () { window.location.href = "{{ url('/payment/success') }}/" + orderId; },
+                        onPending: function () {
+                            window.location.href = "{{ url('/payment/unfinish') }}/" + orderId;
+                        },
+                        onError: function () {
+                            window.location.href = "{{ url('/payment/failure') }}/" + orderId;
+                        },
+                        onClose: function () {
+                            window.location.href = "{{ url('/payment/unfinish') }}/" + orderId;
+                        }
+                    });
+                })
+                .catch(() => alert('Gagal memulai pembayaran ulang.'));
         }
     </script>
 @endsection

@@ -36,8 +36,12 @@
                 </div>
 
                 <div class="flex flex-col gap-3">
+                    <button type="button" onclick="retryPayment('{{ $order_number }}')"
+                        class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300">
+                        Lanjutkan Pembayaran
+                    </button>
                     <a href="/orders"
-                        class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300">Cek
+                        class="w-full bg-white text-gray-700 py-4 rounded-2xl font-bold border border-gray-200 hover:bg-gray-50 transition-all duration-300">Cek
                         Status Pesanan</a>
                     <a href="/"
                         class="w-full bg-white text-gray-500 py-4 rounded-2xl font-bold border border-gray-200 hover:bg-gray-50 transition-all duration-300">Belanja
@@ -50,4 +54,33 @@
             </p>
         </div>
     </div>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    <script>
+        function retryPayment(orderId) {
+            fetch("{{ route('payment.retry', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    window.snap.pay(data.snap_token, {
+                        onSuccess: function () { window.location.href = "{{ route('payment.success', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onPending: function () { window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onError: function () { window.location.href = "{{ route('payment.failure', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onClose: function () { window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); }
+                    });
+                })
+                .catch(() => alert('Gagal melanjutkan pembayaran.'));
+        }
+    </script>
 @endsection

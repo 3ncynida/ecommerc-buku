@@ -107,6 +107,7 @@ class CustomerController extends Controller
     {
         // Mengambil semua pesanan milik user yang login, diurutkan dari yang terbaru
         $orders = Order::where('user_id', auth()->id())
+            ->with('payment')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -167,7 +168,7 @@ class CustomerController extends Controller
     public function orderShow(Order $order)
     {
         // Mengambil order milik user yang login dengan relasi buku, penulis, dan alamat
-        $order = \App\Models\Order::with(['item.author', 'shippingAddress', 'courier'])
+        $order = \App\Models\Order::with(['item.author', 'shippingAddress', 'courier', 'payment'])
             ->where('user_id', auth()->id())
             ->findOrFail($order->id);
 

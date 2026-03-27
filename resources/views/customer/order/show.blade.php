@@ -20,10 +20,28 @@
                         'success' => 'bg-green-50 text-green-600 border-green-100',
                         'failed' => 'bg-red-50 text-red-600 border-red-100',
                     ];
+                    $paymentLabels = [
+                        'pending' => 'Menunggu Pembayaran',
+                        'success' => 'Pembayaran Berhasil',
+                        'failed' => 'Pembayaran Gagal',
+                    ];
+                    $itemStatusLabels = [
+                        'menunggu_pembayaran' => 'Menunggu Pembayaran',
+                        'pembayaran_gagal' => 'Pembayaran Gagal',
+                        'menunggu_kurir' => 'Menunggu Kurir',
+                        'diproses_kurir' => 'Diproses Kurir',
+                        'dikirim' => 'Dalam Pengiriman',
+                        'sampai' => 'Sampai Tujuan',
+                        'selesai' => 'Selesai',
+                        'gagal' => 'Gagal Pengiriman',
+                    ];
+                    $paymentFailureReason = $order->payment?->raw_response['status_message']
+                        ?? $order->payment?->raw_response['transaction_status']
+                        ?? null;
                 @endphp
                 <div
                     class="px-6 py-2 rounded-full border text-xs font-black uppercase tracking-widest {{ $statusClasses[$order->payment_status] ?? 'bg-gray-100' }}">
-                    {{ $order->payment_status }}
+                    {{ $paymentLabels[$order->payment_status] ?? $order->payment_status }}
                 </div>
             </div>
 
@@ -101,10 +119,23 @@
                                     <i class="fa-solid fa-truck-fast text-lg"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-black text-gray-900 uppercase tracking-tight">{{ $order->item_status }}</p>
+                                    <p class="text-sm font-black text-gray-900 uppercase tracking-tight">{{ $itemStatusLabels[$order->item_status] ?? strtoupper(str_replace('_', ' ', $order->item_status)) }}</p>
                                     <p class="text-[10px] text-gray-400 font-medium">Diperbarui pada {{ $order->updated_at->format('d M Y, H:i') }}</p>
                                 </div>
                             </div>
+                            @if ($order->payment_status === 'failed' && $paymentFailureReason)
+                                <div class="mt-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3">
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500 mb-1">Keterangan Pembayaran</p>
+                                    <p class="text-sm text-rose-700">{{ $paymentFailureReason }}</p>
+                                </div>
+                            @endif
+                            @if (in_array($order->payment_status, ['pending', 'failed']))
+                                <button type="button" onclick="retryPayment('{{ $order->order_number }}')"
+                                    class="mt-4 w-full rounded-2xl bg-indigo-600 text-white font-bold py-3 hover:bg-indigo-700 transition">
+                                    <i class="fa-solid fa-credit-card mr-2"></i>
+                                    {{ $order->payment_status === 'failed' ? 'Coba Bayar Lagi' : 'Lanjutkan Pembayaran' }}
+                                </button>
+                            @endif
                             <div class="mt-5 border-t border-dashed border-gray-100 pt-4">
                                 <p class="text-[10px] text-gray-400 font-bold uppercase mb-2">Info Kurir</p>
                                 @if ($order->courier)
@@ -168,4 +199,33 @@
             </div>
         </div>
     </div>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    <script>
+        function retryPayment(orderId) {
+            fetch("{{ route('payment.retry', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    window.snap.pay(data.snap_token, {
+                        onSuccess: function () { window.location.href = "{{ route('payment.success', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onPending: function () { window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onError: function () { window.location.href = "{{ route('payment.failure', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onClose: function () { window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); }
+                    });
+                })
+                .catch(() => alert('Gagal memulai pembayaran.'));
+        }
+    </script>
 @endsection

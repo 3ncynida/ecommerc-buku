@@ -10,15 +10,25 @@
                     <span class="text-sm font-bold">{{ session('success') }}</span>
                 </div>
             @endif
+            @if (session('error'))
+                <div
+                    class="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center gap-3 animate-fade-in">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span class="text-sm font-bold">{{ session('error') }}</span>
+                </div>
+            @endif
             @php
                 $itemStatuses = [
+                    'menunggu_pembayaran' => 'Menunggu Pembayaran',
+                    'pembayaran_gagal' => 'Pembayaran Gagal',
                     'menunggu_kurir' => 'Menunggu Kurir',
                     'diproses_kurir' => 'Diproses',
                     'dikirim' => 'Dalam Pengiriman',
                     'sampai' => 'Sampai Tujuan',
                     'selesai' => 'Selesai',
+                    'gagal' => 'Gagal Pengiriman',
                 ];
-                $currentItemStatusLabel = $itemStatuses[$order->item_status] ?? 'Menunggu Kurir';
+                $currentItemStatusLabel = $itemStatuses[$order->item_status] ?? 'Status Tidak Dikenal';
             @endphp
 
             {{-- Header Detail --}}
@@ -40,7 +50,7 @@
             <div class="mb-8">
                 <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-6 space-y-3">
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-400 font-bold">Rangkaian Status Kurir</p>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                    <div class="grid grid-cols-1 md:grid-cols-7 gap-3">
                         @foreach($itemStatuses as $key => $label)
                             <div class="rounded-2xl border px-4 py-3 text-center text-xs font-bold uppercase tracking-[0.2em]
                                 {{ $order->item_status === $key ? 'bg-indigo-600 border-indigo-600 text-white shadow' : 'bg-white text-gray-500 border-gray-100' }}">
@@ -156,8 +166,14 @@
                         <h4 class="font-bold text-lg mb-4">Midtrans Payment Gateway</h4>
                         <div class="flex items-center gap-2 bg-indigo-800/50 rounded-xl px-4 py-2 border border-indigo-700">
                             <i class="fa-solid fa-shield-check text-indigo-300"></i>
-                            <span class="text-xs font-bold uppercase tracking-wider">Transaksi Aman</span>
+                            <span class="text-xs font-bold uppercase tracking-wider">{{ strtoupper($order->payment_status) }}</span>
                         </div>
+                        @if ($order->payment_status === 'failed')
+                            <div class="mt-4 rounded-2xl bg-rose-500/15 border border-rose-300/20 px-4 py-3">
+                                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-rose-200 mb-1">Alasan Gagal</p>
+                                <p class="text-sm text-white">{{ $order->payment?->raw_response['status_message'] ?? $order->payment?->raw_response['transaction_status'] ?? 'Tidak ada detail dari payment gateway.' }}</p>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-8 space-y-4">
@@ -174,13 +190,23 @@
                             </div>
                             <div class="inline-flex items-center justify-center rounded-full border border-indigo-100 px-3 py-1 text-xs font-bold text-indigo-600">
                                 <i class="fa-solid fa-truck-arrow-right mr-1"></i>
-                                {{ strtoupper(str_replace('_', ' ', $order->item_status ?? 'menunggu_kurir')) }}
+                                {{ $currentItemStatusLabel }}
                             </div>
                         </div>
                         <div class="text-sm text-gray-600 space-y-1">
                             <p class="font-bold text-gray-900">Catatan Kurir</p>
                             <p class="text-gray-500">{{ $order->courier_note ?? 'Tidak ada catatan tambahan.' }}</p>
                         </div>
+                        @if ($order->payment_status === 'success' && $order->item_status === 'gagal')
+                            <form action="{{ route('admin.orders.reassign', $order) }}" method="POST" class="pt-2">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit"
+                                    class="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white hover:bg-indigo-700 transition">
+                                    Tugaskan Ulang Ke Antrian Kurir
+                                </button>
+                            </form>
+                        @endif
                     </div>
                     <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-8 space-y-4">
                         <h3 class="text-sm font-black uppercase tracking-[0.3em] text-indigo-500">Bukti Foto Pengiriman</h3>

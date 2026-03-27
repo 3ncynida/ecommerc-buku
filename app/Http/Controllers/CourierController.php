@@ -32,6 +32,7 @@ class CourierController extends Controller
             'shippingAddress.district',
         ])
             ->whereNull('courier_id')
+            ->where('payment_status', 'success')
             ->where('item_status', 'menunggu_kurir')
             ->orderByDesc('created_at')
             ->get();
@@ -44,6 +45,7 @@ class CourierController extends Controller
             'shippingAddress.district',
         ])
             ->where('courier_id', Auth::id())
+            ->where('payment_status', 'success')
             ->whereIn('item_status', ['diproses_kurir', 'dikirim', 'sampai', 'gagal'])
             ->orderByDesc('updated_at')
             ->get();
@@ -53,7 +55,7 @@ class CourierController extends Controller
 
     public function claim(Order $order)
     {
-        if ($order->courier_id || $order->item_status !== 'menunggu_kurir') {
+        if ($order->payment_status !== 'success' || $order->courier_id || $order->item_status !== 'menunggu_kurir') {
             return back()->with('error', 'Pesanan ini sudah ditangani.');
         }
 
@@ -111,6 +113,23 @@ class CourierController extends Controller
         ]);
 
         return back()->with('status', 'Status gagal pengiriman berhasil dicatat.');
+    }
+
+    public function retry(Order $order)
+    {
+        if ($order->courier_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->payment_status !== 'success' || $order->item_status !== 'gagal') {
+            return back()->with('error', 'Pesanan ini tidak dapat dicoba kirim ulang.');
+        }
+
+        $order->update([
+            'item_status' => 'diproses_kurir',
+        ]);
+
+        return back()->with('status', "Pesanan #{$order->order_number} dikembalikan ke proses pengiriman.");
     }
 
     public function updateStatus(Request $request, Order $order)

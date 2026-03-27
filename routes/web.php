@@ -25,6 +25,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::patch('/orders/{order}/reassign', [OrderController::class, 'reassign'])->name('admin.orders.reassign');
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/payment/success/{orderId}', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/payment/failure/{orderId}', [PaymentController::class, 'failure'])->name('payment.failure');
     Route::get('/payment/unfinish/{orderId}', [PaymentController::class, 'unfinish'])->name('payment.unfinish');
+    Route::post('/payment/retry/{orderId}', [PaymentController::class, 'retry'])->name('payment.retry');
 
     Route::post('/wishlist/toggle', [CustomerController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::get('/wishlist', [CustomerController::class, 'wishlistIndex'])->name('wishlist.index');
@@ -70,6 +72,7 @@ Route::middleware(['auth', 'role:courier'])->prefix('courier')->group(function (
     Route::patch('/orders/{order}/status', [CourierController::class, 'updateStatus'])->name('courier.orders.status');
     Route::post('/orders/{order}/proof', [CourierController::class, 'uploadProof'])->name('courier.orders.proof');
     Route::post('/orders/{order}/failure', [CourierController::class, 'reportFailure'])->name('courier.orders.failure');
+    Route::patch('/orders/{order}/retry', [CourierController::class, 'retry'])->name('courier.orders.retry');
 });
 
 Route::middleware('auth')->group(function () {

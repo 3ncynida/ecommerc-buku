@@ -20,11 +20,24 @@
         <div class="overflow-x-auto">
             @php
                 $statusColors = [
+                    'menunggu_pembayaran' => 'bg-amber-50 text-amber-600 border-amber-100',
+                    'pembayaran_gagal' => 'bg-rose-50 text-rose-600 border-rose-100',
                     'menunggu_kurir' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
                     'diproses_kurir' => 'bg-amber-50 text-amber-600 border-amber-100',
                     'dikirim' => 'bg-blue-50 text-blue-600 border-blue-100',
                     'sampai' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                     'selesai' => 'bg-gray-100 text-gray-500 border-gray-200',
+                    'gagal' => 'bg-rose-50 text-rose-600 border-rose-100',
+                ];
+                $statusLabels = [
+                    'menunggu_pembayaran' => 'MENUNGGU PEMBAYARAN',
+                    'pembayaran_gagal' => 'PEMBAYARAN GAGAL',
+                    'menunggu_kurir' => 'MENUNGGU KURIR',
+                    'diproses_kurir' => 'DIPROSES KURIR',
+                    'dikirim' => 'DALAM PENGIRIMAN',
+                    'sampai' => 'SAMPAI TUJUAN',
+                    'selesai' => 'SELESAI',
+                    'gagal' => 'GAGAL PENGIRIMAN',
                 ];
             @endphp
             <table class="min-w-full bg-white border border-gray-300">
@@ -47,11 +60,8 @@
                             <td class="py-2 px-4 border-b">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                             <td class="py-2 px-4 border-b">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                             <td class="py-2 px-4 border-b">
-                                @php
-                                    $statusLabel = strtoupper(str_replace('_', ' ', $order->item_status));
-                                @endphp
                                 <span class="px-2 py-1 text-xs rounded-full border {{ $statusColors[$order->item_status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
-                                    {{ $statusLabel }}
+                                    {{ $statusLabels[$order->item_status] ?? strtoupper(str_replace('_', ' ', $order->item_status)) }}
                                 </span>
                             </td>
                         </tr>

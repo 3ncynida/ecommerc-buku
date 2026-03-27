@@ -177,7 +177,9 @@
                             const orderId = data.order_id; // simpan untuk callback
                             window.snap.pay(data.snap_token, {
                                 onSuccess: function (result) { window.location.href = "{{ route('payment.success', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', result.order_id); },
-                                onPending: function (result) { alert('Menunggu pembayaran...'); },
+                                onPending: function () {
+                                    window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId);
+                                },
                                 onError: function (result) {
                                     window.location.href = "{{ route('payment.failure', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId);
                                 },

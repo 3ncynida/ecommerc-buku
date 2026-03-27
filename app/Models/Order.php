@@ -34,7 +34,7 @@ class Order extends Model
 
     public function payment()
     {
-        return $this->hasOne(Payment::class, 'order_id', 'order_number');
+        return $this->hasOne(Payment::class, 'order_number', 'order_number')->latestOfMany();
     }
 
     public function courier()

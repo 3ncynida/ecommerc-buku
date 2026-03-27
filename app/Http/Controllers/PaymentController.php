@@ -14,6 +14,98 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
+    private function renderPaymentStatusPage(Order $order)
+    {
+        $payment = Payment::where('order_number', $order->order_number)->latest()->first();
+        $status = $order->payment_status ?? ($payment->status ?? 'pending');
+
+        if ($status === 'success') {
+            session()->forget('cart');
+
+            return view('customer.payment-success', [
+                'order' => $order,
+                'total' => $order->total_price,
+                'order_number' => $order->order_number,
+                'payment_method' => $order->payment_method,
+                'payment' => $payment,
+            ]);
+        }
+
+        if ($status === 'pending') {
+            return view('customer.payment-pending', [
+                'order' => $order,
+                'total' => $order->total_price,
+                'order_number' => $order->order_number,
+                'payment_method' => $order->payment_method,
+                'payment' => $payment,
+            ]);
+        }
+
+        return view('customer.payment-failed', [
+            'order' => $order,
+            'total' => $order->total_price,
+            'order_number' => $order->order_number,
+            'payment_method' => $order->payment_method,
+            'payment' => $payment,
+        ]);
+    }
+
+    private function buildAddressObject(?Address $selectedAddress): ?array
+    {
+        if (!$selectedAddress) {
+            return null;
+        }
+
+        $regionParts = [];
+        if ($selectedAddress->district) {
+            $regionParts[] = $selectedAddress->district->name;
+        }
+        if ($selectedAddress->city) {
+            $regionParts[] = $selectedAddress->city->name;
+        }
+        if ($selectedAddress->province) {
+            $regionParts[] = $selectedAddress->province->name;
+        }
+
+        return [
+            'first_name' => $selectedAddress->recipient_name,
+            'last_name' => '',
+            'address' => trim($selectedAddress->full_address . ' ' . implode(', ', array_filter($regionParts))),
+            'city' => $selectedAddress->city->name ?? '',
+            'postal_code' => $selectedAddress->postal_code ?? '',
+            'phone' => $selectedAddress->phone_number ?? '',
+            'country_code' => 'IDN',
+        ];
+    }
+
+    private function createSnapToken(string $gatewayOrderId, Order $order, array $itemDetails, string $customerName, string $customerEmail, ?Address $selectedAddress): string
+    {
+        $params = [
+            'transaction_details' => [
+                'order_id' => $gatewayOrderId,
+                'gross_amount' => (int) $order->total_price,
+            ],
+            'item_details' => $itemDetails,
+            'callbacks' => [
+                'finish' => route('payment.success', ['orderId' => $order->order_number]),
+                'unfinish' => route('payment.unfinish', ['orderId' => $order->order_number]),
+                'error' => route('payment.failure', ['orderId' => $order->order_number]),
+            ],
+            'customer_details' => [
+                'first_name' => $customerName,
+                'email' => $customerEmail,
+            ],
+        ];
+
+        $address = $this->buildAddressObject($selectedAddress);
+        if ($address) {
+            $params['customer_details']['billing_address'] = $address;
+            $params['customer_details']['shipping_address'] = $address;
+        }
+
+        return Snap::getSnapToken($params);
+    }
+
     public function __construct()
     {
         // Konfigurasi Midtrans
@@ -80,76 +172,37 @@ class PaymentController extends Controller
             \DB::transaction(function () use ($orderId, $totalAmount, $cart, $request, $itemDetails, $selectedAddress, &$snapToken) {
                 $itemId = array_key_first($cart);
 
-                Order::create([
+                $order = Order::create([
                     'order_number' => $orderId,
                     'user_id' => Auth::id(),
                     'item_id' => $itemId,
-                    'shipping_address_id' => $selectedAddress ? $selectedAddress->id : null, // Tambahkan ini
+                    'shipping_address_id' => $selectedAddress ? $selectedAddress->id : null,
                     'quantity' => array_sum(array_column($cart, 'quantity')),
                     'total_price' => $totalAmount,
                     'note' => $request->note,
                     'payment_status' => 'pending',
-                    'item_status' => 'menunggu_kurir',
+                    'item_status' => 'menunggu_pembayaran',
                 ]);
 
-                $params = [
-                    'transaction_details' => [
-                        'order_id' => $orderId,
-                        'gross_amount' => (int) $totalAmount,
-                    ],
-                    'item_details' => $itemDetails,
-                ];
-
-                // tambahkan callback agar Midtrans otomatis redirect
-                $params['callbacks'] = [
-                    'finish' => route('payment.success', ['orderId' => $orderId]),
-                    'unfinish' => route('payment.unfinish', ['orderId' => $orderId]),
-                    'error' => route('payment.failure', ['orderId' => $orderId]),
-                ];
-
-                // build customer details
-                $customer = [
-                    'first_name' => $request->name,
-                    'email' => $request->email,
-                ];
-
-                if ($selectedAddress) {
-                    $regionParts = [];
-                    if ($selectedAddress->district) {
-                        $regionParts[] = $selectedAddress->district->name;
-                    }
-                    if ($selectedAddress->city) {
-                        $regionParts[] = $selectedAddress->city->name;
-                    }
-                    if ($selectedAddress->province) {
-                        $regionParts[] = $selectedAddress->province->name;
-                    }
-                    $region = implode(', ', array_filter($regionParts));
-
-                    $addressObj = [
-                        'first_name' => $selectedAddress->recipient_name,
-                        'last_name' => '',
-                        'address' => trim($selectedAddress->full_address . ' ' . $region),
-                        'city' => $selectedAddress->city->name ?? '',
-                        'postal_code' => $selectedAddress->postal_code ?? '',
-                        'phone' => $selectedAddress->phone_number ?? '',
-                        'country_code' => 'IDN',
-                    ];
-
-                    $customer['billing_address'] = $addressObj;
-                    $customer['shipping_address'] = $addressObj;
-                }
-
-                $params['customer_details'] = $customer;
-
-                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                $snapToken = $this->createSnapToken(
+                    $order->order_number,
+                    $order,
+                    $itemDetails,
+                    $request->name,
+                    $request->email,
+                    $selectedAddress
+                );
 
                 \App\Models\Payment::create([
-                    'order_id' => $orderId,
+                    'order_id' => $order->order_number,
+                    'order_number' => $order->order_number,
                     'amount' => $totalAmount,
                     'status' => 'pending',
                     'snap_token' => $snapToken,
-                    'raw_response' => json_encode(['selected_address' => $selectedAddress ? $selectedAddress->toArray() : null]),
+                    'raw_response' => [
+                        'selected_address' => $selectedAddress ? $selectedAddress->toArray() : null,
+                        'attempt' => 'initial',
+                    ],
                 ]);
             });
 
@@ -176,50 +229,11 @@ class PaymentController extends Controller
 
     public function success($order_id)
     {
-        // 1. Cari data order berdasarkan ID atau Order Number
-        // Menggunakan findOrFail agar jika data tidak ada, otomatis kembali ke 404
         $order = Order::where('order_number', $order_id)
-            ->where('user_id', Auth::id()) // Keamanan: Pastikan milik user yang login
+            ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // Coba ambil record payment terbaru untuk order ini
-        $payment = Payment::where('order_id', $order->order_number)->latest()->first();
-
-        // Tentukan status (utamakan order->payment_status, fallback ke payment->status)
-        $status = $order->payment_status ?? ($payment->status ?? 'pending');
-
-        if ($status === 'success') {
-            // Kurangi stok item
-            $order->item->decrement('stok', $order->quantity);
-
-            // Hapus cart hanya jika benar-benar sukses
-            session()->forget('cart');
-            return view('customer.payment-success', [
-                'order' => $order,
-                'total' => $order->total_price,
-                'order_number' => $order->order_number,
-                'payment_method' => $order->payment_method,
-            ]);
-        }
-
-        if ($status === 'pending') {
-            return view('customer.payment-pending', [
-                'order' => $order,
-                'total' => $order->total_price,
-                'order_number' => $order->order_number,
-                'payment_method' => $order->payment_method,
-                'payment' => $payment,
-            ]);
-        }
-
-        // fallback: treat other statuses as failed
-        return view('customer.payment-failed', [
-            'order' => $order,
-            'total' => $order->total_price,
-            'order_number' => $order->order_number,
-            'payment_method' => $order->payment_method,
-            'payment' => $payment,
-        ]);
+        return $this->renderPaymentStatusPage($order);
     }
 
     public function finish(Request $request)
@@ -243,15 +257,7 @@ class PaymentController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        $payment = Payment::where('order_id', $order->order_number)->latest()->first();
-
-        return view('customer.payment-failed', [
-            'order' => $order,
-            'total' => $order->total_price,
-            'order_number' => $order->order_number,
-            'payment_method' => $order->payment_method,
-            'payment' => $payment,
-        ]);
+        return $this->renderPaymentStatusPage($order);
     }
 
     /**
@@ -263,14 +269,65 @@ class PaymentController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        $payment = Payment::where('order_id', $order->order_number)->latest()->first();
+        return $this->renderPaymentStatusPage($order);
+    }
 
-        return view('customer.payment-pending', [
-            'order' => $order,
-            'total' => $order->total_price,
+    public function retry($order_id)
+    {
+        $order = Order::with(['item', 'shippingAddress.province', 'shippingAddress.city', 'shippingAddress.district'])
+            ->where('order_number', $order_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        if ($order->payment_status === 'success') {
+            return response()->json(['error' => 'Pesanan ini sudah dibayar.'], 422);
+        }
+
+        if (!$order->item) {
+            return response()->json(['error' => 'Item pesanan tidak ditemukan.'], 404);
+        }
+
+        if ($order->item->stok < $order->quantity) {
+            return response()->json(['error' => 'Stok item tidak mencukupi untuk pembayaran ulang.'], 422);
+        }
+
+        $itemDetails = [[
+            'id' => $order->item->id,
+            'price' => (int) $order->item->price,
+            'quantity' => (int) $order->quantity,
+            'name' => $order->item->name,
+        ]];
+
+        $gatewayOrderId = $order->order_number . '-R' . time();
+
+        $snapToken = $this->createSnapToken(
+            $gatewayOrderId,
+            $order,
+            $itemDetails,
+            Auth::user()->name,
+            Auth::user()->email,
+            $order->shippingAddress
+        );
+
+        Payment::create([
+            'order_id' => $gatewayOrderId,
             'order_number' => $order->order_number,
-            'payment_method' => $order->payment_method,
-            'payment' => $payment,
+            'amount' => $order->total_price,
+            'status' => 'pending',
+            'snap_token' => $snapToken,
+            'raw_response' => [
+                'attempt' => 'retry',
+            ],
+        ]);
+
+        $order->update([
+            'payment_status' => 'pending',
+            'item_status' => 'menunggu_pembayaran',
+        ]);
+
+        return response()->json([
+            'snap_token' => $snapToken,
+            'order_id' => $order->order_number,
         ]);
     }
 }

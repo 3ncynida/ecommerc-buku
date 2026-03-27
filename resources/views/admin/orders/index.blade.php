@@ -39,16 +39,29 @@
                                     <td class="px-8 py-5">
                                         @php
                                             $statusColors = [
+                                                'menunggu_pembayaran' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                                'pembayaran_gagal' => 'bg-rose-50 text-rose-600 border-rose-100',
                                                 'menunggu_kurir' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
                                                 'diproses_kurir' => 'bg-amber-50 text-amber-600 border-amber-100',
                                                 'dikirim' => 'bg-blue-50 text-blue-600 border-blue-100',
                                                 'sampai' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                                 'selesai' => 'bg-gray-100 text-gray-500 border-gray-200',
+                                                'gagal' => 'bg-rose-50 text-rose-600 border-rose-100',
+                                            ];
+                                            $statusLabels = [
+                                                'menunggu_pembayaran' => 'Menunggu Pembayaran',
+                                                'pembayaran_gagal' => 'Pembayaran Gagal',
+                                                'menunggu_kurir' => 'Menunggu Kurir',
+                                                'diproses_kurir' => 'Diproses Kurir',
+                                                'dikirim' => 'Dalam Pengiriman',
+                                                'sampai' => 'Sampai Tujuan',
+                                                'selesai' => 'Selesai',
+                                                'gagal' => 'Gagal Pengiriman',
                                             ];
                                         @endphp
                                         <span
                                             class="px-3 py-1 rounded-full text-[10px] font-bold uppercase border {{ $statusColors[$order->item_status] ?? 'bg-gray-50 text-gray-600' }}">
-                                            {{ $order->item_status }}
+                                            {{ $statusLabels[$order->item_status] ?? strtoupper(str_replace('_', ' ', $order->item_status)) }}
                                         </span>
                                     </td>
                                     <td class="px-8 py-5 text-center">

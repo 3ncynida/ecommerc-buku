@@ -44,6 +44,8 @@ class PaymentCallbackController extends Controller
         }
 
         $transactionStatus = $request->transaction_status;
+        $latestPayment = Payment::where('order_number', $payment->order_number ?? $payment->order_id)->latest()->first();
+        $isLatestAttempt = $latestPayment && $latestPayment->id === $payment->id;
 
         // Update payment status
         if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
@@ -60,8 +62,8 @@ class PaymentCallbackController extends Controller
                 ]);
 
                 // Update order status
-                $order = Order::where('order_number', $request->order_id)->first();
-                if ($order) {
+                $order = Order::where('order_number', $payment->order_number ?? $request->order_id)->first();
+                if ($order && $order->payment_status !== 'success') {
                     $order->update([
                         'payment_status' => 'success',
                         'item_status' => 'menunggu_kurir'
@@ -102,12 +104,33 @@ class PaymentCallbackController extends Controller
             }
 
         } elseif ($transactionStatus == 'pending') {
-            $payment->update(['status' => 'pending']);
+            $payment->update([
+                'status' => 'pending',
+                'transaction_id' => $request->transaction_id ?? $payment->transaction_id,
+                'payment_type' => $request->payment_type ?? $payment->payment_type,
+                'raw_response' => $request->all(),
+            ]);
+            if ($isLatestAttempt) {
+                Order::where('order_number', $payment->order_number ?? $request->order_id)->update([
+                    'payment_status' => 'pending',
+                    'item_status' => 'menunggu_pembayaran',
+                ]);
+            }
             Log::info('Payment pending', ['order_id' => $request->order_id]);
 
         } elseif ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
-            $payment->update(['status' => 'failed']);
-            Order::where('order_number', $request->order_id)->update(['payment_status' => 'failed']);
+            $payment->update([
+                'status' => 'failed',
+                'transaction_id' => $request->transaction_id ?? $payment->transaction_id,
+                'payment_type' => $request->payment_type ?? $payment->payment_type,
+                'raw_response' => $request->all(),
+            ]);
+            if ($isLatestAttempt) {
+                Order::where('order_number', $payment->order_number ?? $request->order_id)->update([
+                    'payment_status' => 'failed',
+                    'item_status' => 'pembayaran_gagal',
+                ]);
+            }
             Log::info('Payment failed', ['order_id' => $request->order_id, 'reason' => $transactionStatus]);
         }
 

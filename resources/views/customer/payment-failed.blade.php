@@ -1,6 +1,11 @@
 @extends('customer.layouts.app')
 
 @section('content')
+    @php
+        $failureReason = $payment->raw_response['status_message']
+            ?? $payment->raw_response['transaction_status']
+            ?? 'Pembayaran ditolak, dibatalkan, atau kedaluwarsa.';
+    @endphp
     <div class="bg-gray-50 min-h-screen flex items-center justify-center py-20 px-4">
         <div class="max-w-md w-full text-center">
             <div
@@ -33,11 +38,19 @@
                         <span
                             class="text-indigo-600 font-extrabold text-lg">Rp{{ number_format($total ?? 0, 0, ',', '.') }}</span>
                     </div>
+                    <div class="border-t border-dashed border-gray-200 pt-3 text-left">
+                        <div class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Alasan Gagal</div>
+                        <div class="text-sm text-rose-600 font-medium">{{ $failureReason }}</div>
+                    </div>
                 </div>
 
                 <div class="flex flex-col gap-3">
+                    <button type="button" onclick="retryPayment('{{ $order_number }}')"
+                        class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300">
+                        Coba Bayar Lagi
+                    </button>
                     <a href="/orders"
-                        class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300">Cek
+                        class="w-full bg-white text-gray-700 py-4 rounded-2xl font-bold border border-gray-200 hover:bg-gray-50 transition-all duration-300">Cek
                         Status Pesanan</a>
                     <a href="/"
                         class="w-full bg-white text-gray-500 py-4 rounded-2xl font-bold border border-gray-200 hover:bg-gray-50 transition-all duration-300">Belanja
@@ -51,4 +64,33 @@
             </p>
         </div>
     </div>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    <script>
+        function retryPayment(orderId) {
+            fetch("{{ route('payment.retry', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    window.snap.pay(data.snap_token, {
+                        onSuccess: function () { window.location.href = "{{ route('payment.success', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onPending: function () { window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onError: function () { window.location.href = "{{ route('payment.failure', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); },
+                        onClose: function () { window.location.href = "{{ route('payment.unfinish', ['orderId' => 'ORDER_ID']) }}".replace('ORDER_ID', orderId); }
+                    });
+                })
+                .catch(() => alert('Gagal memulai pembayaran ulang.'));
+        }
+    </script>
 @endsection

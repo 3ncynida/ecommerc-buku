@@ -245,6 +245,13 @@
                                                 <div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-700">
                                                     <span class="font-bold">Gagal:</span> {{ $task->courier_note }}
                                                 </div>
+                                                <form action="{{ route('courier.orders.retry', $task) }}" method="POST" class="mt-3">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="w-full py-3 rounded-xl bg-black text-white font-semibold text-sm hover:bg-gray-800 transition active:scale-[0.98]">
+                                                        Coba Kirim Lagi
+                                                    </button>
+                                                </form>
                                             @endif
                                         @endif
 
