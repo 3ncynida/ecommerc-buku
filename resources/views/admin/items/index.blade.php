@@ -86,6 +86,11 @@
                                             <i class="fa-solid fa-boxes-stacked text-[18px]"></i>
                                         </button>
 
+                                        <a href="{{ route('items.show', $item->id) }}"
+                                            class="text-slate-500 hover:bg-slate-100 p-2 rounded-lg transition" title="Lihat Detail Item">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+
                                         <a href="{{ route('items.edit', $item->id) }}"
                                             class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Edit Item">
                                             <i class="fa-solid fa-pen-to-square"></i>
