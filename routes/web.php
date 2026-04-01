@@ -63,6 +63,10 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/wishlist/toggle', [CustomerController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::get('/wishlist', [CustomerController::class, 'wishlistIndex'])->name('wishlist.index');
 
+    // Route Review Buku
+    Route::post('/book/{item}/review', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
+
     // Rute untuk Midtrans
     Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');
     Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');

@@ -42,7 +42,11 @@ class CustomerController extends Controller
 
     public function show(Item $item)
     {
+        // Muat relasi author dan ulasan beserta pengguna yang mengulas
+        $item->load(['author', 'reviews.user']);
+
         // Ambil ID kategori yang dimiliki buku ini
+        $item->load(['author', 'reviews.user']);
         $categoryIds = $item->categories->pluck('id');
 
         // Cari buku lain yang memiliki setidaknya satu kategori yang sama
@@ -53,7 +57,10 @@ class CustomerController extends Controller
             ->take(5)
             ->get();
 
-        return view('customer.indexShow', compact('item', 'relatedBooks'));
+        $canReview = $item->wasPurchasedBy(auth()->id());
+        $existingReview = $item->reviews->where('user_id', auth()->id())->first();
+
+        return view('customer.indexShow', compact('item', 'relatedBooks', 'canReview', 'existingReview'));
     }
 
     // category controller

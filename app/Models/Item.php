@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\Order;
 
 class Item extends Model
 {
@@ -60,6 +61,34 @@ class Item extends Model
         // Cek apakah ada data di tabel wishlists yang menghubungkan user ini dengan item ini
         return \App\Models\Wishlist::where('user_id', auth()->id())
             ->where('item_id', $this->id)
+            ->exists();
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?? 0;
+    }
+
+    public function getReviewCountAttribute()
+    {
+        return $this->reviews()->count();
+    }
+
+    public function wasPurchasedBy(?int $userId): bool
+    {
+        if (! $userId) {
+            return false;
+        }
+
+        return Order::where('user_id', $userId)
+            ->where('item_id', $this->id)
+            ->where('payment_status', 'success')
+            ->whereNotIn('item_status', ['dibatalkan', 'gagal', 'pembayaran_gagal'])
             ->exists();
     }
 }

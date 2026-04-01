@@ -42,6 +42,17 @@
                         </a>
                         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mt-1">{{ $item->name }}</h1>
                         
+                        {{-- Bintang & Rating --}}
+                        <div class="flex items-center gap-3 mt-3">
+                            <div class="flex text-amber-400 text-[15px]">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="fa-solid fa-star {{ $i <= round($item->average_rating) ? '' : 'text-slate-200' }}"></i>
+                                @endfor
+                            </div>
+                            <span class="text-[14px] font-black text-slate-800">{{ number_format($item->average_rating, 1) }}</span>
+                            <span class="text-[13px] font-medium text-slate-400 relative top-[1px]">(&bull; {{ $item->review_count }} Ulasan)</span>
+                        </div>
+                        
                         {{-- LIST BANYAK KATEGORI / GENRE --}}
                         <div class="flex flex-wrap gap-2 mt-4">
                             @foreach ($item->categories as $category)
@@ -181,12 +192,142 @@
                 </div>
             </div>
 
+            {{-- Ulasan Pembeli Section --}}
+            <div class="mt-20 pt-16 border-t border-slate-100">
+                <div class="flex flex-col md:flex-row gap-12">
+                    
+                    {{-- Rekap & Form Review --}}
+                    <div class="md:w-1/3">
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-2">Ulasan Pembeli</h2>
+                        
+                        {{-- Ringkasan Besar --}}
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="text-6xl font-black text-slate-900">{{ number_format($item->average_rating, 1) }}</span>
+                            <div>
+                                <div class="flex text-amber-400 text-lg mb-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fa-solid fa-star {{ $i <= round($item->average_rating) ? '' : 'text-slate-200' }}"></i>
+                                    @endfor
+                                </div>
+                                <p class="text-[13px] font-medium text-slate-500">Berdasarkan {{ $item->review_count }} ulasan</p>
+                            </div>
+                        </div>
+
+                        {{-- Alert Session --}}
+                        @if(session('error'))
+                            <div class="bg-rose-50 text-rose-600 p-4 rounded-xl text-sm font-medium mb-6">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                        @if(session('success'))
+                            <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl text-sm font-medium mb-6">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        {{-- Form Review Logic --}}
+                        @auth
+                            @if($canReview)
+                                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                    <h4 class="font-bold text-slate-900 mb-4">{{ $existingReview ? 'Ubah Ulasan Anda' : 'Tulis Ulasan Anda' }}</h4>
+                                    <form action="{{ route('reviews.store', $item->id) }}" method="POST">
+                                        @csrf
+                                        
+                                        <div class="mb-4">
+                                            <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">Beri Bintang</label>
+                                            <div class="flex gap-2">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <label class="cursor-pointer">
+                                                        <input type="radio" name="rating" value="{{ $i }}" class="peer sr-only" required {{ ($existingReview?->rating == $i) ? 'checked' : '' }}>
+                                                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-300 peer-checked:bg-amber-50 peer-checked:border-amber-400 peer-checked:text-amber-400 hover:bg-slate-100 transition-all">
+                                                            <i class="fa-solid fa-star"></i>
+                                                        </div>
+                                                    </label>
+                                                @endfor
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">Ceritakan Pengalamanmu</label>
+                                            <textarea name="comment" rows="3" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-[13px] font-medium" placeholder="Bagaimana isi bukunya? (Opsional)">{{ $existingReview?->comment ?? '' }}</textarea>
+                                        </div>
+
+                                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-[13px] {{ $existingReview ? 'mb-2' : '' }}">
+                                            {{ $existingReview ? 'Perbarui Ulasan' : 'Kirim Ulasan' }}
+                                        </button>
+                                    </form>
+
+                                    @if($existingReview)
+                                    <form action="{{ route('reviews.destroy', $existingReview->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus ulasan Anda secara permanen?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold py-2.5 rounded-xl transition text-[13px]">
+                                            Hapus Ulasan
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-center">
+                                    <h4 class="font-bold text-slate-900 mb-1 text-sm"><i class="fa-solid fa-lock text-slate-400 mr-2"></i>  Ulasan Terkunci</h4>
+                                    <p class="text-[12px] text-slate-500 font-medium">Hanya Pembeli Terverifikasi yang bisa mengulas buku ini.</p>
+                                </div>
+                            @endif
+                        @else
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-center">
+                                <p class="text-[12px] text-slate-600 font-medium mb-3">Ingin mengulas buku ini?</p>
+                                <a href="{{ route('login') }}" class="inline-block bg-white border border-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-xl hover:bg-slate-100 transition text-[12px]">
+                                    Login Sekarang
+                                </a>
+                            </div>
+                        @endauth
+                    </div>
+
+                    {{-- List Ulasan --}}
+                    <div class="md:w-2/3">
+                        @if($item->reviews->isEmpty())
+                            <div class="h-full flex flex-col items-center justify-center text-center p-12 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                                <i class="fa-regular fa-comment-dots text-4xl text-slate-300 mb-4"></i>
+                                <h4 class="font-bold text-slate-700 mb-1">Belum Ada Ulasan</h4>
+                                <p class="text-sm font-medium text-slate-500">Jadilah yang pertama me-review buku ini!</p>
+                            </div>
+                        @else
+                            <div class="space-y-6">
+                                @foreach($item->reviews->sortByDesc('created_at') as $review)
+                                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex gap-5">
+                                        <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center font-black text-lg shrink-0">
+                                            {{ substr($review->user->name, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-3 mb-1">
+                                                <h5 class="font-bold text-slate-900 text-[14px]">{{ $review->user->name }}</h5>
+                                                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                    <i class="fa-solid fa-circle-check"></i> Pembeli
+                                                </span>
+                                            </div>
+                                            <div class="flex text-amber-400 text-[12px] mb-3">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fa-solid fa-star {{ $i <= $review->rating ? '' : 'text-slate-200' }}"></i>
+                                                @endfor
+                                                <span class="text-slate-400 ml-3">{{ $review->created_at->diffForHumans() }}</span>
+                                            </div>
+                                            @if($review->comment)
+                                                <p class="text-[14px] font-medium text-slate-600 leading-relaxed">{{ $review->comment }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             {{-- Produk Terkait (Berdasarkan Kategori yang Sama) --}}
             @if($relatedBooks->count() > 0)
                 <div class="mt-24">
                     <div class="flex justify-between items-end mb-8">
                         <h2 class="text-2xl font-bold text-gray-900">Buku Terkait</h2>
-                        <span class="w-20 h-1 bg-indigo-600 rounded-full"></span>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         @foreach ($relatedBooks as $related)
