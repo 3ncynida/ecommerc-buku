@@ -1,56 +1,81 @@
 @extends('admin.admin-layout')
-@section('title', 'Tambah Author Baru')
+@section('title', 'Tambah Penulis Baru')
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="max-w-3xl mx-auto">
+    
+    {{-- Back Link --}}
     <div class="mb-6">
-        <a href="{{ route('authors.index') }}" class="text-gray-500 hover:text-emerald-600 flex items-center text-sm transition">
-            <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Author
+        <a href="{{ route('authors.index') }}" class="inline-flex items-center gap-2 text-[13px] font-bold text-slate-500 hover:text-indigo-600 transition-colors bg-white px-4 py-2 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] border border-slate-100">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Penulis
         </a>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="p-6 border-b border-gray-100">
-            <h3 class="font-bold text-gray-800 text-xl">Tambah Author</h3>
-            <p class="text-sm text-gray-500">Daftarkan author atau penyedia item baru di sini.</p>
+    {{-- Main Form Card --}}
+    <div class="bg-white rounded-[24px] shadow-sm border border-slate-200/60 overflow-hidden">
+        
+        {{-- Header --}}
+        <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50/50">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 shadow-inner">
+                    <i class="fa-solid fa-user-plus text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Tambah Penulis</h3>
+                    <p class="text-[13px] font-medium text-slate-500 mt-1">Lengkapi profil penulis atau kontributor buku di bawah ini.</p>
+                </div>
+            </div>
         </div>
 
-        <form action="{{ route('authors.store') }}" method="POST" class="p-6 space-y-6">
+        {{-- Form Body --}}
+        <form action="{{ route('authors.store') }}" method="POST">
             @csrf
             
-            <div>
-                <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap Author</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                        <i class="fa-solid fa-user"></i>
-                    </span>
-                    <input type="text" name="name" id="name" 
-                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition @error('name') border-red-500 @enderror"
-                        placeholder="Masukkan nama author..." 
-                        value="{{ old('name') }}" required>
+            <div class="p-6 md:p-8 space-y-6">
+                {{-- Input Name --}}
+                <div class="space-y-2">
+                    <label for="name" class="block text-[13px] font-bold text-slate-700">Nama Lengkap Penulis <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <input type="text" name="name" id="name" 
+                            class="block w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-700 text-[14px] @error('name') border-rose-300 bg-rose-50 focus:ring-rose-500/20 focus:border-rose-500 @enderror"
+                            placeholder="Contoh: Andrea Hirata, Tere Liye..." 
+                            value="{{ old('name') }}" required autocomplete="off">
+                    </div>
+                    @error('name')
+                        <p class="text-[12px] font-bold text-rose-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                        </p>
+                    @enderror
                 </div>
 
-                @error('name')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                {{-- Input Bio --}}
+                <div class="space-y-2">
+                    <label for="bio" class="block text-[13px] font-bold text-slate-700">Biografi Singkat</label>
+                    <textarea name="bio" id="bio" rows="4"
+                        class="block w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-700 text-[14px] @error('bio') border-rose-300 bg-rose-50 focus:ring-rose-500/20 focus:border-rose-500 @enderror"
+                        placeholder="Masukkan biodata atau latar belakang penulis...">{{ old('bio') }}</textarea>
+                    @error('bio')
+                        <p class="text-[12px] font-bold text-rose-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
             </div>
 
-            <div>
-                <label for="bio" class="block text-sm font-semibold text-gray-700 mb-2">Bio Author</label>
-                <textarea name="bio" id="bio" 
-                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition @error('bio') border-red-500 @enderror"
-                    placeholder="Masukkan bio author..." rows="4">{{ old('bio') }}</textarea>
-                @error('bio')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="flex justify-end pt-4 border-t border-gray-50 mt-6">
-                <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md shadow-emerald-100">
-                    <i class="fa-solid fa-check mr-2"></i> Daftarkan Author
+            {{-- Footer / Actions --}}
+            <div class="p-6 md:p-8 border-t border-slate-100 bg-slate-50/30 flex items-center justify-end gap-3">
+                <a href="{{ route('authors.index') }}" class="px-5 py-2.5 rounded-xl text-[13px] font-bold text-slate-600 hover:bg-slate-200 bg-slate-100 transition-colors">
+                    Batal
+                </a>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Daftarkan
                 </button>
             </div>
         </form>
+
     </div>
 </div>
 @endsection
