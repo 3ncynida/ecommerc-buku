@@ -140,42 +140,49 @@
                                         </p>
 
                                         {{-- Menampilkan Alamat Lengkap & Wilayah --}}
-                                        <p class="text-sm text-gray-600 leading-relaxed">
-                                            {{ $order->shippingAddress->full_address }}<br>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    {{ $order->shippingAddress->full_address }}<br>
 
-                                            {{-- Pastikan memanggil ->name agar tidak muncul JSON --}}
-                                            {{ $order->shippingAddress->district->name ?? '' }},
-                                            {{ $order->shippingAddress->city->name ?? '' }},
-                                            {{ $order->shippingAddress->province->name ?? '' }}
+                                    {{-- Pastikan memanggil ->name agar tidak muncul JSON --}}
+                                    {{ $order->shippingAddress->district->name ?? '' }},
+                                    {{ $order->shippingAddress->city->name ?? '' }},
+                                    {{ $order->shippingAddress->province->name ?? '' }}
 
-                                            <br>
-                                            <span class="font-bold">Kode Pos:
-                                                {{ $order->shippingAddress->postal_code }}</span>
+                                    <br>
+                                    <span class="font-bold">Kode Pos:
+                                        {{ $order->shippingAddress->postal_code }}</span>
+                                </p>
+
+                                @if(optional($deliveryEstimate)->hasValue())
+                                    <div class="mt-4 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 mb-1">
+                                            Estimasi Sampai
                                         </p>
-                                    @else
-                                        <p class="text-sm text-gray-400 italic">Data alamat tidak tersedia.</p>
-                                    @endif
+                                        <p class="text-sm font-bold text-gray-900">
+                                            {{ $deliveryEstimate->formattedDuration() }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Jarak sekitar {{ $deliveryEstimate->formattedDistance() }} dari {{ config('store.address') }}
+                                        </p>
+                                        @if($eta = $deliveryEstimate->arrivalAt())
+                                            <p class="text-xs text-gray-400 mt-1">
+                                                Perkiraan tiba {{ $eta->format('d F Y, H:i') }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                @endif
+                            @else
+                                <p class="text-sm text-gray-400 italic">Data alamat tidak tersedia.</p>
+                            @endif
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Status Pembayaran --}}
-                    <div class="bg-indigo-900 rounded-[30px] p-8 text-white shadow-xl shadow-indigo-100">
-                        <p class="text-[10px] font-bold text-indigo-300 uppercase mb-2">Metode Pembayaran</p>
-                        <h4 class="font-bold text-lg mb-4">Midtrans Payment Gateway</h4>
-                        <div class="flex items-center gap-2 bg-indigo-800/50 rounded-xl px-4 py-2 border border-indigo-700">
-                            <i class="fa-solid fa-shield-check text-indigo-300"></i>
-                            <span class="text-xs font-bold uppercase tracking-wider">{{ strtoupper($order->payment_status) }}</span>
-                        </div>
-                        @if ($order->payment_status === 'failed')
-                            <div class="mt-4 rounded-2xl bg-rose-500/15 border border-rose-300/20 px-4 py-3">
-                                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-rose-200 mb-1">Alasan Gagal</p>
-                                <p class="text-sm text-white">{{ $order->payment?->raw_response['status_message'] ?? $order->payment?->raw_response['transaction_status'] ?? 'Tidak ada detail dari payment gateway.' }}</p>
-                            </div>
-                        @endif
                     </div>
+                </div>
 
+                <div class="lg:col-span-2 grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div class="bg-white rounded-[30px] border border-gray-100 shadow-sm p-8 space-y-4">
                         <div class="flex items-start justify-between gap-3">
                             <div>
@@ -221,6 +228,21 @@
                             </div>
                         @endif
                     </div>
+                </div>
+
+                <div class="bg-indigo-900 rounded-[30px] p-8 text-white shadow-xl shadow-indigo-100">
+                    <p class="text-[10px] font-bold text-indigo-300 uppercase mb-2">Metode Pembayaran</p>
+                    <h4 class="font-bold text-lg mb-4">Midtrans Payment Gateway</h4>
+                    <div class="flex items-center gap-2 bg-indigo-800/50 rounded-xl px-4 py-2 border border-indigo-700">
+                        <i class="fa-solid fa-shield-check text-indigo-300"></i>
+                        <span class="text-xs font-bold uppercase tracking-wider">{{ strtoupper($order->payment_status) }}</span>
+                    </div>
+                    @if ($order->payment_status === 'failed')
+                        <div class="mt-4 rounded-2xl bg-rose-500/15 border border-rose-300/20 px-4 py-3">
+                            <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-rose-200 mb-1">Alasan Gagal</p>
+                            <p class="text-sm text-white">{{ $order->payment?->raw_response['status_message'] ?? $order->payment?->raw_response['transaction_status'] ?? 'Tidak ada detail dari payment gateway.' }}</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -8,17 +8,31 @@
                     'success' => 'bg-green-100 text-green-600',
                     'pending' => 'bg-orange-100 text-orange-600',
                     'failed' => 'bg-red-100 text-red-600',
+                    'cancelled' => 'bg-gray-100 text-gray-600',
                 ];
                 $paymentLabels = [
                     'success' => 'Lunas',
                     'pending' => 'Menunggu Pembayaran',
                     'failed' => 'Pembayaran Gagal',
+                    'cancelled' => 'Dibatalkan',
                 ];
             @endphp
             <div class="mb-10">
                 <h1 class="text-3xl font-bold text-gray-900">Pesanan Saya</h1>
                 <p class="text-gray-500">Pantau status pengiriman buku favorit Anda</p>
             </div>
+
+            @if(session('status'))
+                <div class="mb-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-6 py-4 text-emerald-700 font-bold">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 rounded-2xl border border-rose-100 bg-rose-50 px-6 py-4 text-rose-700 font-bold">
+                    {{ session('error') }}
+                </div>
+            @endif
 
             @if($orders->isEmpty())
                 {{-- Tampilan Kosong --}}
@@ -61,17 +75,26 @@
                                 </div>
 
                                 {{-- Sisi Kanan: Harga & Aksi Utama --}}
-                                <div class="flex flex-col items-end gap-2">
+                                <div class="flex flex-col items-end gap-3">
                                     <p class="text-2xl font-black text-indigo-600">
                                         Rp{{ number_format($order->total_price, 0, ',', '.') }}
                                     </p>
                                     @if(in_array($order->payment_status, ['pending', 'failed']))
-                                        <button
-                                            onclick="retryPayment('{{ $order->order_number }}')"
-                                            class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center gap-2">
-                                            <i class="fa-solid fa-credit-card"></i>
-                                            {{ $order->payment_status === 'failed' ? 'Coba Bayar Lagi' : 'Bayar Sekarang' }}
-                                        </button>
+                                        <div class="flex flex-col gap-2 w-full">
+                                            <button
+                                                onclick="retryPayment('{{ $order->order_number }}')"
+                                                class="w-full bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center justify-center gap-2">
+                                                <i class="fa-solid fa-credit-card"></i>
+                                                {{ $order->payment_status === 'failed' ? 'Coba Bayar Lagi' : 'Bayar Sekarang' }}
+                                            </button>
+                                            <form action="{{ route('orders.cancel', $order) }}" method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="w-full border border-gray-200 rounded-xl text-sm font-bold px-6 py-2.5 text-gray-600 hover:bg-gray-50 transition">
+                                                    Batalkan Pesanan
+                                                </button>
+                                            </form>
+                                        </div>
                                     @endif
                                 </div>
                             </div>

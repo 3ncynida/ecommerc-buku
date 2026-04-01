@@ -14,9 +14,9 @@ return [
     |
     */
 
-    'postmark' => [
-        'key' => env('POSTMARK_API_KEY'),
-    ],
+'postmark' => [
+    'key' => env('POSTMARK_API_KEY'),
+],
 
     'resend' => [
         'key' => env('RESEND_API_KEY'),
@@ -36,10 +36,15 @@ return [
     ],
 
     // config/services.php
-    'midtrans' => [
-        'server_key' => env('MIDTRANS_SERVER_KEY'),
-        'client_key' => env('MIDTRANS_CLIENT_KEY'),
-        'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
-    ],
+'midtrans' => [
+    'server_key' => env('MIDTRANS_SERVER_KEY'),
+    'client_key' => env('MIDTRANS_CLIENT_KEY'),
+    'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+],
+
+'geocoding' => [
+    'google_api_key' => env('GOOGLE_MAPS_API_KEY'),
+    'timeout' => env('GEOCODING_TIMEOUT', 5),
+],
 
 ];

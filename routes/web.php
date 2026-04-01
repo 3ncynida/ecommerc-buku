@@ -44,6 +44,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // routes/web.php
     Route::get('/orders/{order:order_number}', [CustomerController::class, 'orderShow'])
         ->name('orders.show');
+    Route::post('/orders/{order:order_number}/cancel', [CustomerController::class, 'cancel'])
+        ->name('orders.cancel');
     Route::post('/orders/{order:order_number}/confirm-delivery', [CustomerController::class, 'confirmDelivery'])
         ->name('orders.confirm');
     Route::get('/index', [PaymentController::class, 'index'])->name('payment.index');

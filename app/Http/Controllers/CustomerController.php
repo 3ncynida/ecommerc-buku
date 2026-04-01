@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Models\Item;
-use App\Models\Category;
 use App\Models\Author;
+use App\Models\Category;
+use App\Models\Item;
 use App\Models\Order;
 use App\Models\Wishlist;
-use Illuminate\Support\Facades\DB;
+use App\Services\DeliveryEstimator;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -165,14 +165,45 @@ class CustomerController extends Controller
     }
 
     // order controller
-    public function orderShow(Order $order)
+    public function orderShow(Order $order, DeliveryEstimator $estimator)
     {
         // Mengambil order milik user yang login dengan relasi buku, penulis, dan alamat
-        $order = \App\Models\Order::with(['item.author', 'shippingAddress', 'courier', 'payment'])
+        $order = \App\Models\Order::with([
+            'item.author',
+            'shippingAddress.province',
+            'shippingAddress.city',
+            'shippingAddress.district',
+            'courier',
+            'payment',
+        ])
             ->where('user_id', auth()->id())
             ->findOrFail($order->id);
 
-        return view('customer.order.show', compact('order'));
+        $deliveryEstimate = $estimator->estimate($order->shippingAddress);
+
+        return view('customer.order.show', compact('order', 'deliveryEstimate'));
+    }
+
+    public function cancel(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if (! in_array($order->payment_status, ['pending', 'failed'])) {
+            return back()->with('error', 'Pesanan ini tidak dapat dibatalkan setelah dibayar atau diproses.');
+        }
+
+        if (! in_array($order->item_status, ['menunggu_pembayaran', 'pembayaran_gagal'])) {
+            return back()->with('error', 'Pesanan ini sudah dalam proses pengiriman.');
+        }
+
+        $order->update([
+            'payment_status' => 'cancelled',
+            'item_status' => 'dibatalkan',
+        ]);
+
+        return back()->with('status', 'Pesanan berhasil dibatalkan.');
     }
 
     public function confirmDelivery(Request $request, Order $order)

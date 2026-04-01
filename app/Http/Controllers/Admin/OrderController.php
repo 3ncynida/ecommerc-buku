@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Order;
+use App\Services\DeliveryEstimator;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -15,12 +15,14 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('orders'));
     }
 
-    public function show($id)
+    public function show($id, DeliveryEstimator $estimator)
     {
         // Cari order berdasarkan ID, termasuk relasi user dan item
         $order = Order::with('user', 'item.author', 'payment', 'courier', 'shippingAddress.province', 'shippingAddress.city', 'shippingAddress.district')->findOrFail($id);
 
-        return view('admin.orders.show', compact('order'));
+        $deliveryEstimate = $estimator->estimate($order->shippingAddress);
+
+        return view('admin.orders.show', compact('order', 'deliveryEstimate'));
     }
 
     public function reassign(Order $order)

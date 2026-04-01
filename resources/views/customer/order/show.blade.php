@@ -19,11 +19,13 @@
                         'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
                         'success' => 'bg-green-50 text-green-600 border-green-100',
                         'failed' => 'bg-red-50 text-red-600 border-red-100',
+                        'cancelled' => 'bg-gray-100 text-gray-600 border-gray-200',
                     ];
                     $paymentLabels = [
                         'pending' => 'Menunggu Pembayaran',
                         'success' => 'Pembayaran Berhasil',
                         'failed' => 'Pembayaran Gagal',
+                        'cancelled' => 'Dibatalkan',
                     ];
                     $itemStatusLabels = [
                         'menunggu_pembayaran' => 'Menunggu Pembayaran',
@@ -34,6 +36,7 @@
                         'sampai' => 'Sampai Tujuan',
                         'selesai' => 'Selesai',
                         'gagal' => 'Gagal Pengiriman',
+                        'dibatalkan' => 'Dibatalkan',
                     ];
                     $paymentFailureReason = $order->payment?->raw_response['status_message']
                         ?? $order->payment?->raw_response['transaction_status']
@@ -44,6 +47,28 @@
                     {{ $paymentLabels[$order->payment_status] ?? $order->payment_status }}
                 </div>
             </div>
+
+            @if(session('status'))
+                <div class="mb-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-6 py-4 text-emerald-700 font-bold">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 rounded-2xl border border-rose-100 bg-rose-50 px-6 py-4 text-rose-700 font-bold">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if(in_array($order->payment_status, ['pending', 'failed']))
+                <form action="{{ route('orders.cancel', $order) }}" method="POST" class="flex justify-end mb-4">
+                    @csrf
+                    <button type="submit"
+                        class="px-5 py-2 rounded-full border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-100 transition">
+                        Batalkan Pesanan
+                    </button>
+                </form>
+            @endif
 
             <div class="grid grid-cols-1 gap-8">
                 {{-- 1. Informasi Produk --}}
@@ -106,6 +131,25 @@
                                 <br>
                                 <span class="font-bold text-gray-900">Kode Pos: {{ $order->shippingAddress->postal_code }}</span>
                             </p>
+
+                            @if(optional($deliveryEstimate)->hasValue())
+                                <div class="mt-4 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 mb-1">
+                                        Estimasi Sampai
+                                    </p>
+                                    <p class="text-sm font-bold text-gray-900">
+                                        {{ $deliveryEstimate->formattedDuration() }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Jarak sekitar {{ $deliveryEstimate->formattedDistance() }} dari {{ config('store.address') }}
+                                    </p>
+                                    @if($eta = $deliveryEstimate->arrivalAt())
+                                        <p class="text-xs text-gray-400 mt-1">
+                                            Perkiraan tiba {{ $eta->format('d F Y, H:i') }}
+                                        </p>
+                                    @endif
+                                </div>
+                            @endif
                         @else
                             <p class="text-sm text-gray-400 italic">Data alamat tidak tersedia.</p>
                         @endif
