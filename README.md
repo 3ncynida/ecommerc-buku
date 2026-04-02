@@ -40,8 +40,8 @@ Pastikan PC/Laptop sudah memiliki yang berikut ini:
 1. Tarik (Clone) proyek dari repositori Git menggunakan command prompt Anda:
    ```bash
    # Ganti URL menggunakan link repository asli nantinya
-   git clone https://github.com/USERNAME/libris-ecommerce.git
-   cd libris-ecommerce
+   git clone https://github.com/3ncynida/ecommerc-buku.git
+   cd ecommerc-buku
    ```
 2. Instal library PHP *(Backend)* dan Javascript *(Frontend)*:
    ```bash
