@@ -120,7 +120,7 @@
                                         </p>
                                         <p class="flex items-start gap-2">
                                             <i class="fa-solid fa-box mt-1 text-gray-300 w-4"></i>
-                                            <span>{{ $order->quantity }}x {{ $order->item->name ?? 'Produk' }}</span>
+                                            <span>{{ $order->items->sum('quantity') }} Item(s) ({{ $order->items->first()?->item->name ?? 'Produk' }} @if($order->items->count() > 1) dkk @endif)</span>
                                         </p>
                                     </div>
 

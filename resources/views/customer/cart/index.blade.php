@@ -74,17 +74,30 @@
                 <div class="lg:w-1/3">
                     <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                         <h3 class="text-xl font-bold mb-6">Ringkasan Pesanan</h3>
+                        
+                        <div class="space-y-4 mb-6 pb-6 border-b border-gray-100 max-h-64 overflow-y-auto pr-2">
+                            @foreach($cart as $id => $details)
+                                <div class="flex justify-between items-start text-sm">
+                                    <div class="pr-2">
+                                        <span class="font-bold text-gray-800 line-clamp-2">
+                                            {{ $details['name'] }} 
+                                            <span class="text-xs font-medium text-gray-500 ml-1 whitespace-nowrap">{{ $details['quantity'] }}x</span>
+                                        </span>
+                                    </div>
+                                    <div class="text-right shrink-0 mt-0.5">
+                                        <span class="font-bold text-gray-700">Rp{{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
                         <div class="space-y-4 mb-6">
-                            <div class="flex justify-between text-gray-600">
-                                <span>Subtotal</span>
-                                <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            <div class="flex justify-between text-gray-600 text-sm">
+                                <span>Subtotal Belanja</span>
+                                <span class="font-semibold">Rp {{ number_format($total, 0, ',', '.') }}</span>
                             </div>
-                            <div class="flex justify-between text-gray-600">
-                                <span>Biaya Pengiriman</span>
-                                <span class="text-green-500 font-medium">Gratis</span>
-                            </div>
-                            <div class="border-t pt-4 flex justify-between text-xl font-bold text-gray-900">
-                                <span>Total</span>
+                            <div class="border-t border-dashed border-gray-200 pt-4 flex justify-between text-xl font-bold text-gray-900">
+                                <span>Total Tagihan</span>
                                 <span class="text-indigo-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
                             </div>
                         </div>

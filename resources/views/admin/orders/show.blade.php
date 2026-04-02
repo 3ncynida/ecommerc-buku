@@ -80,35 +80,36 @@
                     <h3 class="font-black text-[15px] uppercase tracking-wider">Item Pembelian</h3>
                 </div>
                 
-                <div class="p-8">
-                    <div class="flex flex-col sm:flex-row gap-6">
+                <div class="p-8 flex flex-col gap-6">
+                    @foreach($order->items as $orderItem)
+                    <div class="flex flex-col sm:flex-row gap-6 {{ !$loop->last ? 'pb-6 border-b border-dashed border-slate-200' : '' }}">
                         <div class="w-32 rounded-2xl overflow-hidden shrink-0 border border-slate-200 shadow-sm bg-slate-50 aspect-[3/4] relative group">
-                            <img src="{{ asset('storage/' . $order->item->image) }}" class="absolute inset-0 w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $orderItem->item->image) }}" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                         <div class="flex-1 flex flex-col justify-between">
                             <div>
-                                <h4 class="font-black text-slate-900 text-xl leading-tight mb-1">{{ $order->item->name }}</h4>
+                                <h4 class="font-black text-slate-900 text-xl leading-tight mb-1">{{ $orderItem->item->name }}</h4>
                                 <p class="text-[12px] text-slate-500 font-bold uppercase tracking-widest mb-4">
-                                    <i class="fa-solid fa-feather-pointed mr-1 opacity-50"></i> {{ $order->item->author->name }}
+                                    <i class="fa-solid fa-feather-pointed mr-1 opacity-50"></i> {{ $orderItem->item->author->name }}
                                 </p>
                                 
                                 <div class="flex flex-wrap items-center gap-6 mt-2">
                                     <div class="bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-100">
                                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Jumlah</p>
-                                        <p class="font-black text-slate-800 text-[15px]"><i class="fa-solid fa-cubes text-slate-300 mr-1.5 text-[12px]"></i> {{ $order->quantity }} Unit</p>
+                                        <p class="font-black text-slate-800 text-[15px]"><i class="fa-solid fa-cubes text-slate-300 mr-1.5 text-[12px]"></i> {{ $orderItem->quantity }} Unit</p>
                                     </div>
                                     <div class="bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-100">
                                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Harga Satuan</p>
-                                        <p class="font-black text-slate-800 text-[15px]">Rp {{ number_format($order->item->price, 0, ',', '.') }}</p>
+                                        <p class="font-black text-slate-800 text-[15px]">Rp {{ number_format($orderItem->price, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="mt-6 sm:mt-0 text-right sm:border-t-0 border-t border-slate-100 pt-6 sm:pt-0">
-                                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Total Tagihan Pemesan</p>
-                                <p class="font-black text-indigo-600 text-3xl tracking-tight">Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
-                            </div>
                         </div>
+                    </div>
+                    @endforeach
+                    <div class="mt-6 sm:mt-0 text-right sm:border-t-0 border-t border-slate-100 pt-6 sm:pt-0">
+                        <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Total Tagihan Pemesan</p>
+                        <p class="font-black text-indigo-600 text-3xl tracking-tight">Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
@@ -261,6 +262,9 @@
                                             <i class="fa-regular fa-calendar-check mr-1"></i> Max Tiba: {{ $eta->format('d M y, H:i') }}
                                         </p>
                                     @endif
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-slate-100 text-sm font-semibold text-slate-800">
+                                    Ongkos Kirim: Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}
                                 </div>
                             @endif
                         @else

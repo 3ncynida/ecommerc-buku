@@ -204,6 +204,11 @@ class ItemController extends Controller
 
     public function destroy(Item $item)
     {
+        // Cek apakah item sedang terkait dengan sebuah order
+        if (\App\Models\OrderItem::where('item_id', $item->id)->exists()) {
+            return back()->with('error', 'Item tidak dapat dihapus karena tercatat dalam riwayat pesanan (Order).');
+        }
+
         if ($item->image) {
             Storage::disk('public')->delete($item->image);
         }

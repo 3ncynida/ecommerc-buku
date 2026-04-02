@@ -86,7 +86,9 @@ class Item extends Model
         }
 
         return Order::where('user_id', $userId)
-            ->where('item_id', $this->id)
+            ->whereHas('items', function ($query) {
+                $query->where('item_id', $this->id);
+            })
             ->where('payment_status', 'success')
             ->whereNotIn('item_status', ['dibatalkan', 'gagal', 'pembayaran_gagal'])
             ->exists();

@@ -71,46 +71,49 @@
             @endif
 
             <div class="grid grid-cols-1 gap-8">
-                {{-- 1. Informasi Produk --}}
                 <div class="bg-white rounded-[30px] shadow-sm border border-gray-100 p-8">
                     <h2 class="text-sm font-black uppercase tracking-tighter text-gray-400 mb-6">Produk yang Dibeli</h2>
 
-                    <div class="flex flex-col md:flex-row gap-6">
-                        <div class="w-24 h-32 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shrink-0">
-                            <img src="{{ asset('storage/' . $order->item->image) }}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-[10px] font-bold text-indigo-600 uppercase mb-1">{{ $order->item->author->name }}</p>
-                            <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $order->item->name }}</h3>
-
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Harga</p>
-                                    <p class="text-sm font-bold text-gray-900">Rp{{ number_format($order->item->price, 0, ',', '.') }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Jumlah</p>
-                                    <p class="text-sm font-bold text-gray-900">{{ $order->quantity }}x</p>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Subtotal</p>
-                                    <p class="text-sm font-black text-indigo-600">Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
-                                </div>
+                    <div class="flex flex-col gap-6">
+                        @foreach($order->items as $orderItem)
+                        <div class="flex flex-col md:flex-row gap-6 {{ !$loop->last ? 'pb-6 border-b border-dashed border-gray-100' : '' }}">
+                            <div class="w-24 h-32 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shrink-0">
+                                <img src="{{ asset('storage/' . $orderItem->item->image) }}" class="w-full h-full object-cover">
                             </div>
+                            <div class="flex-1">
+                                <p class="text-[10px] font-bold text-indigo-600 uppercase mb-1">{{ $orderItem->item->author->name }}</p>
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $orderItem->item->name }}</h3>
 
-                            {{-- TAMBAHAN: BAGIAN CATATAN PEMBELI --}}
-                            <div class="mt-6 pt-6 border-t border-dashed border-gray-100">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-2 flex items-center gap-2">
-                                    <i class="fa-regular fa-note-sticky text-indigo-500"></i> Catatan Anda
-                                </p>
-                                @if($order->note)
-                                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 italic leading-relaxed border border-gray-100">
-                                        "{{ $order->note }}"
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div>
+                                        <p class="text-[10px] text-gray-400 font-bold uppercase">Harga Satuan</p>
+                                        <p class="text-sm font-bold text-gray-900">Rp{{ number_format($orderItem->price, 0, ',', '.') }}</p>
                                     </div>
-                                @else
-                                    <p class="text-sm text-gray-400 italic">Tidak ada catatan untuk pesanan ini.</p>
-                                @endif
+                                    <div>
+                                        <p class="text-[10px] text-gray-400 font-bold uppercase">Jumlah</p>
+                                        <p class="text-sm font-bold text-gray-900">{{ $orderItem->quantity }}x</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] text-gray-400 font-bold uppercase">Subtotal Item</p>
+                                        <p class="text-sm font-black text-indigo-600">Rp{{ number_format($orderItem->price * $orderItem->quantity, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                        @endforeach
+
+                        {{-- TAMBAHAN: BAGIAN CATATAN PEMBELI --}}
+                        <div class="mt-2 pt-2">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-2 flex items-center gap-2">
+                                <i class="fa-regular fa-note-sticky text-indigo-500"></i> Catatan Anda
+                            </p>
+                            @if($order->note)
+                                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 italic leading-relaxed border border-gray-100">
+                                    "{{ $order->note }}"
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-400 italic">Tidak ada catatan untuk pesanan ini.</p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -238,6 +241,9 @@
                                 <p class="text-sm font-bold">Midtrans Secure Payment</p>
                             </div>
                         </div>
+                    </div>
+                    <div class="mt-4 text-sm text-white/70">
+                        Ongkos Kirim: Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}
                     </div>
                 </div>
             </div>

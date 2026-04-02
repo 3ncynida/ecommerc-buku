@@ -28,11 +28,34 @@
                         <span class="text-gray-400 font-medium">Metode Pembayaran</span>
                         <span class="text-gray-900 font-bold uppercase">{{ $payment_method ?? 'N/A' }}</span>
                     </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400 font-medium">Biaya Pengiriman</span>
+                        <span class="text-gray-900 font-bold">Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}</span>
+                    </div>
                     <div class="border-t border-dashed border-gray-200 pt-3 flex justify-between items-center">
                         <span class="text-gray-900 font-bold">Total Bayar</span>
                         <span
-                            class="text-indigo-600 font-extrabold text-lg">Rp{{ number_format($total ?? 0, 0, ',', '.') }}</span>
+                            class="text-indigo-600 font-extrabold text-lg">Rp{{ number_format($order->total_price ?? $total ?? 0, 0, ',', '.') }}</span>
                     </div>
+                </div>
+
+                <div class="bg-indigo-50 rounded-3xl mb-8 border border-indigo-100 p-6 text-left space-y-3 shadow-sm">
+                    <p class="text-xs font-black uppercase tracking-[0.3em] text-indigo-500 text-left">Estimasi Sampai</p>
+                    @if(optional($deliveryEstimate)->hasValue())
+                        <p class="text-xl font-black text-gray-900">{{ $deliveryEstimate->formattedDuration() }}</p>
+                        <p class="text-sm text-gray-500">
+                            Jarak sekitar {{ $deliveryEstimate->formattedDistance() }} dari {{ config('store.address') }}
+                        </p>
+                        @if($eta = $deliveryEstimate->arrivalAt())
+                            <p class="text-xs text-gray-400">Perkiraan tiba {{ $eta->format('d F Y, H:i') }}</p>
+                        @endif
+                    @elseif($shippingMeta['distance'] ?? null)
+                        <p class="text-sm text-gray-500">
+                            Jarak sekitar {{ number_format($shippingMeta['distance'], 1, ',', '.') }} km
+                        </p>
+                    @else
+                        <p class="text-sm text-gray-500">Estimasi belum tersedia</p>
+                    @endif
                 </div>
 
                 <div class="flex flex-col gap-3">

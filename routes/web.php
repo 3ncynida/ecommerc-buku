@@ -12,6 +12,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\CourierController;
+use App\Http\Controllers\ShippingController;
 
 Route::get('/', [CustomerController::class, 'home'])->name('home');
 Route::get('/category', [CustomerController::class, 'category'])->name('category.index');
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/payment/failure/{orderId}', [PaymentController::class, 'failure'])->name('payment.failure');
     Route::get('/payment/unfinish/{orderId}', [PaymentController::class, 'unfinish'])->name('payment.unfinish');
     Route::post('/payment/retry/{orderId}', [PaymentController::class, 'retry'])->name('payment.retry');
+    Route::get('/shipping/estimate', [ShippingController::class, 'estimate'])->name('shipping.estimate');
 
     Route::post('/wishlist/toggle', [CustomerController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::get('/wishlist', [CustomerController::class, 'wishlistIndex'])->name('wishlist.index');

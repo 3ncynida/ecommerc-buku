@@ -34,7 +34,7 @@ class AdminOrderController extends Controller
             });
 
         // Mengambil transaksi terbaru (limit 10)
-        $orders = Order::with(['item', 'user'])->latest()->limit(10)->get();
+        $orders = \App\Models\Order::with(['items.item', 'user'])->latest()->limit(10)->get();
 
         return view('admin.dashboard.index', compact(
             'orders',

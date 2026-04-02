@@ -26,7 +26,7 @@ class CourierController extends Controller
     {
         $availableOrders = Order::with([
             'user',
-            'item',
+            'items.item',
             'shippingAddress.province',
             'shippingAddress.city',
             'shippingAddress.district',
@@ -39,7 +39,7 @@ class CourierController extends Controller
 
         $myTasks = Order::with([
             'user',
-            'item',
+            'items.item',
             'shippingAddress.province',
             'shippingAddress.city',
             'shippingAddress.district',

@@ -11,10 +11,9 @@ class Order extends Model
         'order_number',
         'user_id',
         'courier_id',
-        'item_id',
         'shipping_address_id',
-        'quantity',
         'total_price',
+        'shipping_fee',
         'note',
         'item_status',
         'payment_status',
@@ -22,9 +21,9 @@ class Order extends Model
         'delivery_proof_path',
     ];
 
-    public function item()
+    public function items()
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->hasMany(OrderItem::class, 'order_id');
     }
 
     public function user()

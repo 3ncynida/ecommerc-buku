@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Services\ShippingCalculator;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -117,7 +118,14 @@ class CartController extends Controller
             }
         }
 
-        $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
-        return view('customer.cart.checkout', compact('cart', 'total'));
+        $subtotal = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
+
+        $shippingCalculator = app(ShippingCalculator::class);
+        $shippingDetails = $shippingCalculator->forAddress($address);
+        $shippingCost = $shippingDetails['cost'];
+        $shippingEstimate = $shippingDetails['estimate'];
+        $grandTotal = $subtotal + $shippingCost;
+
+        return view('customer.cart.checkout', compact('cart', 'subtotal', 'shippingCost', 'shippingEstimate', 'grandTotal'));
     }
 }

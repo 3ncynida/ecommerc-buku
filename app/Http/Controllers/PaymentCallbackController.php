@@ -85,12 +85,14 @@ class PaymentCallbackController extends Controller
 
                     // === 2. KURANGI STOK ===
                     try {
-                        if ($order->item_id && $order->quantity) {
-                            $item = Item::find($order->item_id);
-                            if ($item) {
-                                $newStock = max(0, (int) $item->stok - (int) $order->quantity);
-                                $item->update(['stok' => $newStock]);
-                                Log::info('Stock decremented', ['item_id' => $item->id, 'decreased_by' => $order->quantity, 'new_stock' => $newStock]);
+                        if ($order->items) {
+                            foreach ($order->items as $orderItem) {
+                                $item = $orderItem->item;
+                                if ($item) {
+                                    $newStock = max(0, (int) $item->stok - (int) $orderItem->quantity);
+                                    $item->update(['stok' => $newStock]);
+                                    Log::info('Stock decremented', ['item_id' => $item->id, 'decreased_by' => $orderItem->quantity, 'new_stock' => $newStock]);
+                                }
                             }
                         }
                     } catch (\Exception $e) {

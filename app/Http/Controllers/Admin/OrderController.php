@@ -11,14 +11,14 @@ class OrderController extends Controller
     public function index()
     {
         // Mengambil data order beserta data itemnya (Eager Loading)
-        $orders = Order::with('user', 'item.author', 'payment', 'courier')->latest()->paginate(10);
+        $orders = Order::with('user', 'items.item.author', 'payment', 'courier')->latest()->paginate(10);
         return view('admin.orders.index', compact('orders'));
     }
 
     public function show($id, DeliveryEstimator $estimator)
     {
         // Cari order berdasarkan ID, termasuk relasi user dan item
-        $order = Order::with('user', 'item.author', 'payment', 'courier', 'shippingAddress.province', 'shippingAddress.city', 'shippingAddress.district')->findOrFail($id);
+        $order = Order::with('user', 'items.item.author', 'payment', 'courier', 'shippingAddress.province', 'shippingAddress.city', 'shippingAddress.district')->findOrFail($id);
 
         $deliveryEstimate = $estimator->estimate($order->shippingAddress);
 

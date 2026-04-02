@@ -168,14 +168,17 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-xs font-mono text-indigo-500 font-bold mb-1">#{{ $order->order_number }}</div>
-                                <div class="text-sm font-bold text-gray-800 line-clamp-1">{{ $order->item->name }}</div>
+                                <div class="text-sm font-bold text-gray-800 line-clamp-1">
+                                    {{ $order->items->first()?->item->name ?? 'Produk' }} 
+                                    @if($order->items->count() > 1) dkk @endif
+                                </div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm font-black text-gray-900">
                                     Rp {{ number_format($order->total_price, 0, ',', '.') }}
                                 </div>
                                 <div class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
-                                    {{ $order->quantity }} Item
+                                    {{ $order->items->sum('quantity') }} Item
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center">

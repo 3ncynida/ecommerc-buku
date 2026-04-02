@@ -78,12 +78,10 @@
 
                     @php
                         $cart = session('cart', []);
-                        $total = 0;
                     @endphp
 
                     @forelse($cart as $id => $item)
-                        @php $lineTotal = ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
-                        $total += $lineTotal; @endphp
+                        @php $lineTotal = ($item['price'] ?? 0) * ($item['quantity'] ?? 1); @endphp
                         <div class="flex items-center gap-4 py-4 border-b last:border-b-0">
                             <img src="{{ asset('storage/' . ($item['image'] ?? 'default.jpg')) }}"
                                 alt="{{ $item['name'] ?? 'Item' }}" class="w-16 h-20 object-cover rounded-md">
@@ -101,7 +99,7 @@
 
                     <div class="mt-6 flex justify-between items-center">
                         <div class="text-sm text-gray-600">Total Pesanan</div>
-                        <div class="font-bold">Rp{{ number_format($total, 0, ',', '.') }}</div>
+                        <div class="font-bold">Rp{{ number_format($subtotal, 0, ',', '.') }}</div>
                     </div>
                     <div class="mt-6">
                         <label for="order-note" class="block text-sm font-semibold text-gray-700 mb-1">Catatan untuk penjual (opsional)</label>
@@ -122,17 +120,30 @@
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
                             <div>Total Harga ({{ count($cart) }} Barang)</div>
-                            <div>Rp{{ number_format($total, 0, ',', '.') }}</div>
+                            <div>Rp{{ number_format($subtotal, 0, ',', '.') }}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                Ongkos Kirim
+                                <div id="shipping-info-text" class="text-xs text-gray-500">
+                                    @if($shippingEstimate)
+                                        {{ $shippingEstimate->formattedDuration() }} • {{ $shippingEstimate->formattedDistance() }}
+                                    @else
+                                        Estimasi belum tersedia
+                                    @endif
+                                </div>
+                            </div>
+                            <div id="shipping-cost-value">Rp{{ number_format($shippingCost, 0, ',', '.') }}</div>
                         </div>
                     </div>
 
                     <div class="mt-4 border-t pt-4 flex justify-between items-center">
                         <div class="text-lg font-semibold">Total Belanja</div>
-                        <div class="text-xl font-bold">Rp{{ number_format($total, 0, ',', '.') }}</div>
+                        <div class="text-xl font-bold" id="grand-total-value">Rp{{ number_format($grandTotal, 0, ',', '.') }}</div>
                     </div>
 
                     <button id="pay-button"
-                        class="mt-4 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" {{ $total <= 0 ? 'disabled' : '' }}>
+                        class="mt-4 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" {{ $grandTotal <= 0 ? 'disabled' : '' }}>
                         Bayar
                     </button>
                 </div>
@@ -248,6 +259,44 @@ function selectAddress(addr, regionInfo) {
     
     // Tutup modal
     document.getElementById('modalPilihAlamat').classList.add('hidden');
+    fetch("{{ route('shipping.estimate') }}?address_id=" + encodeURIComponent(addr.id))
+        .then(res => res.json())
+        .then(data => {
+            updateShippingSummary(data.cost, data.formatted_distance, data.formatted_duration);
+        })
+        .catch(() => {
+            updateShippingSummary(null, null, null);
+        });
 }
+</script>
+<script>
+    const subtotalAmount = {{ $subtotal }};
+    const shippingCostElement = document.getElementById('shipping-cost-value');
+    const grandTotalElement = document.getElementById('grand-total-value');
+    const shippingInfoText = document.getElementById('shipping-info-text');
+
+    function formatRupiah(value) {
+        const num = Number(value) || 0;
+        return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(num).replace(/\\./g, '.');
+    }
+
+    function updateShippingSummary(cost, formattedDistance, formattedDuration) {
+        const shipping = Number(cost) || 0;
+        if (shippingCostElement) {
+            shippingCostElement.textContent = `Rp${formatRupiah(shipping)}`;
+        }
+        if (grandTotalElement) {
+            grandTotalElement.textContent = `Rp${formatRupiah(subtotalAmount + shipping)}`;
+        }
+        if (shippingInfoText) {
+            if (formattedDuration || formattedDistance) {
+                const durationText = formattedDuration ? formattedDuration : '';
+                const distanceText = formattedDistance ? ` • ${formattedDistance}` : '';
+                shippingInfoText.textContent = `${durationText}${distanceText}`;
+            } else {
+                shippingInfoText.textContent = 'Estimasi belum tersedia';
+            }
+        }
+    }
 </script>
 @endsection

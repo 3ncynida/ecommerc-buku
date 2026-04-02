@@ -16,7 +16,9 @@ Terima kasih telah menyelesaikan pembayaran. Berikut ringkasan faktur pesanan An
 @component('mail::table')
 | Buku | Jumlah | Harga Satuan | Subtotal |
 | --- | :---: | ---: | ---: |
-| {{ optional($order->item)->name ?? 'Produk tidak ditemukan' }} | {{ $order->quantity }} | Rp {{ number_format(optional($order->item)->price ?? 0, 0, ',', '.') }} | Rp {{ number_format($order->total_price, 0, ',', '.') }} |
+@foreach($order->items as $orderItem)
+| {{ optional($orderItem->item)->name ?? 'Produk tidak ditemukan' }} | {{ $orderItem->quantity }} | Rp {{ number_format($orderItem->price ?? 0, 0, ',', '.') }} | Rp {{ number_format($orderItem->price * $orderItem->quantity, 0, ',', '.') }} |
+@endforeach
 @endcomponent
 
 **Total Pembayaran:** Rp {{ number_format($order->total_price, 0, ',', '.') }}

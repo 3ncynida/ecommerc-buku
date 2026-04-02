@@ -20,7 +20,7 @@ class CustomerController extends Controller
         // Mengambil buku beserta data author-nya sekaligus agar ringan
         $featuredBooks = Item::with('author')->latest()->take(8)->get();
         $categories = Category::all()->take(4);
-        $bestSellerIds = Order::select('item_id', DB::raw('SUM(quantity) as sold_qty'))
+        $bestSellerIds = \App\Models\OrderItem::select('item_id', DB::raw('SUM(quantity) as sold_qty'))
             ->groupBy('item_id')
             ->orderByDesc('sold_qty')
             ->limit(4)
@@ -176,7 +176,7 @@ class CustomerController extends Controller
     {
         // Mengambil order milik user yang login dengan relasi buku, penulis, dan alamat
         $order = \App\Models\Order::with([
-            'item.author',
+            'items.item.author',
             'shippingAddress.province',
             'shippingAddress.city',
             'shippingAddress.district',
