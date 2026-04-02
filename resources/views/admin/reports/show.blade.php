@@ -67,7 +67,10 @@
                                 <span class="font-bold text-slate-700 text-[13px]">{{ $order->user->name }}</span>
                             </td>
                             <td class="px-5 py-3 max-w-[200px] truncate">
-                                <span class="text-[13px] font-medium text-slate-600">{{ $order->item->name }}</span>
+                                <span class="text-[13px] font-medium text-slate-600">
+                                    {{ $order->items->first()?->item->name ?? 'Produk' }} 
+                                    @if($order->items->count() > 1) dkk @endif
+                                </span>
                             </td>
                             <td class="px-5 py-3">
                                 <span class="text-[13px] font-medium text-slate-500">{{ $order->created_at->format('d/m/Y H:i') }}</span>

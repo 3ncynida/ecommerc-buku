@@ -37,9 +37,10 @@ class ReportController extends Controller
         $aov = $completedOrders > 0 ? $totalRevenue / $completedOrders : 0;
         $failedOrders = (clone $query)->where('payment_status', 'failed')->count();
 
-        $topBooks = (clone $query)
-            ->where('payment_status', 'success')
-            ->select('item_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(total_price) as total_revenue'))
+        $orderIds = (clone $query)->where('payment_status', 'success')->pluck('id');
+        
+        $topBooks = \App\Models\OrderItem::whereIn('order_id', $orderIds)
+            ->select('item_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(quantity * price) as total_revenue'))
             ->groupBy('item_id')
             ->orderByDesc('total_sold')
             ->take(5)
@@ -63,7 +64,7 @@ class ReportController extends Controller
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
 
-        $orders = Order::with('item', 'user')
+        $orders = Order::with('items.item', 'user')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
