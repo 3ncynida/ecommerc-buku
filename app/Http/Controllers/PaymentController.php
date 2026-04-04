@@ -193,6 +193,11 @@ class PaymentController extends Controller
             if (!$selectedAddress && Auth::check()) {
                 $selectedAddress = Auth::user()->addresses()->where('is_default', true)->with(['province', 'city', 'district'])->first();
             }
+            if (! $selectedAddress) {
+                return response()->json([
+                    'error' => 'Silakan pilih alamat pengiriman terlebih dahulu.',
+                ], 422);
+            }
 
             $shippingCalculator = app(ShippingCalculator::class);
             $shippingData = $shippingCalculator->forAddress($selectedAddress);

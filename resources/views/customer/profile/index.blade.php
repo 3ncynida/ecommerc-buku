@@ -111,6 +111,12 @@
 
 
                 @if(auth()->user()->role === 'customer')
+                                @if($errors->any())
+                                    <div class="bg-red-100 text-red-800 p-4 rounded-2xl mb-6 text-sm font-medium">
+                                        <div class="font-bold mb-1">Periksa kembali data Anda:</div>
+                                        <div>{{ $errors->first() }}</div>
+                                    </div>
+                                @endif
                                 {{-- Section: Daftar Alamat --}}
                                 <section class="space-y-6">
                                     <div class="flex items-center justify-between px-2">
@@ -387,6 +393,8 @@
             document.getElementById(id).classList.toggle('hidden');
         }
 
+        const apiBaseUrl = @json(url('/api'));
+
         // Cascading dropdown untuk modal tambah alamat
         document.getElementById('province')?.addEventListener('change', function () {
             let provinceId = this.value;
@@ -395,7 +403,7 @@
             cityDropdown.disabled = true;
             cityDropdown.innerHTML = '<option value="">Memuat...</option>';
 
-            fetch(`/api/cities/${provinceId}`)
+            fetch(`${apiBaseUrl}/cities/${provinceId}`)
                 .then(res => res.json())
                 .then(data => {
                     cityDropdown.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
@@ -413,7 +421,7 @@
             districtDropdown.disabled = true;
             districtDropdown.innerHTML = '<option value="">Memuat...</option>';
 
-            fetch(`/api/districts/${cityId}`)
+            fetch(`${apiBaseUrl}/districts/${cityId}`)
                 .then(res => res.json())
                 .then(data => {
                     districtDropdown.innerHTML = '<option value="">Pilih Kecamatan</option>';
@@ -433,7 +441,7 @@
 
                 cityDropdown.innerHTML = '<option value="">Memuat...</option>';
 
-                fetch(`/api/cities/${provinceId}`)
+                fetch(`${apiBaseUrl}/cities/${provinceId}`)
                     .then(res => res.json())
                     .then(data => {
                         cityDropdown.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
@@ -452,7 +460,7 @@
 
                 districtDropdown.innerHTML = '<option value="">Memuat...</option>';
 
-                fetch(`/api/districts/${cityId}`)
+                fetch(`${apiBaseUrl}/districts/${cityId}`)
                     .then(res => res.json())
                     .then(data => {
                         districtDropdown.innerHTML = '<option value="">Pilih Kecamatan</option>';

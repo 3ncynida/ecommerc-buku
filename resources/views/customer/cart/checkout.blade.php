@@ -62,6 +62,9 @@
                         </div>
                         <input type="hidden" name="address_id" id="input_address_id" value="{{ $address->id }}">
                     @else
+                        <div class="bg-red-100 text-red-800 p-4 rounded mb-4 text-sm">
+                            Silakan pilih atau tambahkan alamat terlebih dahulu sebelum melanjutkan pembayaran.
+                        </div>
                         <div class="text-center py-4">
                             <div class="text-sm text-gray-500 mb-4">Belum ada alamat yang terdaftar.</div>
                             <a href="/profile"
@@ -143,7 +146,7 @@
                     </div>
 
                     <button id="pay-button"
-                        class="mt-4 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" {{ $grandTotal <= 0 ? 'disabled' : '' }}>
+                        class="mt-4 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" {{ $grandTotal <= 0 || !$address ? 'disabled' : '' }}>
                         Bayar
                     </button>
                 </div>
