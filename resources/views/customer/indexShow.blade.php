@@ -80,7 +80,13 @@
         <span class="fav-text">{{ $item->isFavorited()}} Favorit</span>
     </button>
 
-    <button class="flex items-center text-gray-500 hover:text-indigo-600 transition">
+    <button
+        id="share-button"
+        type="button"
+        data-title="{{ $item->name }}"
+        data-text="Cek buku ini: {{ $item->name }}"
+        data-url="{{ url()->current() }}"
+        class="flex items-center text-gray-500 hover:text-indigo-600 transition">
         <i class="fa-solid fa-share-nodes mr-2 text-xl"></i> Bagikan
     </button>
 </div>
@@ -421,5 +427,39 @@
         alert('Terjadi kesalahan, coba lagi nanti.');
     });
 }
+
+        (function () {
+            const shareButton = document.getElementById('share-button');
+            if (!shareButton) return;
+
+            shareButton.addEventListener('click', async () => {
+                const title = shareButton.dataset.title || document.title;
+                const text = shareButton.dataset.text || '';
+                const url = shareButton.dataset.url || window.location.href;
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title, text, url });
+                        return;
+                    } catch (err) {
+                        if (err && err.name !== 'AbortError') {
+                            console.error('Share failed:', err);
+                        }
+                    }
+                }
+
+                try {
+                    if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(url);
+                        alert('Link berhasil disalin.');
+                    } else {
+                        prompt('Salin link berikut:', url);
+                    }
+                } catch (err) {
+                    console.error('Copy failed:', err);
+                    prompt('Salin link berikut:', url);
+                }
+            });
+        })();
     </script>
 @endsection
