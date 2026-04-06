@@ -153,28 +153,28 @@
                         <label class="block text-sm font-bold text-gray-700 mb-2">Ganti Gambar (Opsional)</label>
                         <div class="flex flex-col md:flex-row gap-6 items-start">
                             <div class="flex-shrink-0">
-                                <p class="text-xs text-gray-500 mb-2 italic">Gambar saat ini:</p>
+                                <p class="text-xs text-gray-500 mb-2 italic transition-colors" id="preview-title">Gambar saat ini:</p>
                                 @if ($item->image)
-                                    <img src="{{ asset('storage/' . $item->image) }}"
-                                        class="w-32 h-32 object-cover rounded-lg border-4 border-white shadow-md">
+                                    <img id="current-image-preview" src="{{ asset('storage/' . $item->image) }}"
+                                        class="w-32 h-32 object-cover rounded-lg border-4 border-white shadow-md transition-all duration-300">
                                 @else
-                                    <div
+                                    <img id="current-image-preview" src="#" alt="Preview" class="hidden w-32 h-32 object-cover rounded-lg border-4 border-white shadow-md transition-all duration-300">
+                                    <div id="no-image-placeholder"
                                         class="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
                                         No Image</div>
                                 @endif
                             </div>
 
                             <div class="w-full">
-                                <div
-                                    class="mt-6 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition cursor-pointer bg-gray-50">
+                                <div onclick="document.getElementById('file-upload').click()"
+                                    class="mt-6 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition cursor-pointer bg-gray-50 group">
                                     <div class="space-y-1 text-center">
-                                        <i class="fa-solid fa-image text-2xl text-gray-400 mb-2"></i>
-                                        <div class="flex text-sm text-gray-600">
-                                            <label for="file-upload"
-                                                class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500">
-                                                <span>Klik untuk ganti gambar</span>
-                                                <input id="file-upload" name="image" type="file" class="sr-only">
-                                            </label>
+                                        <i class="fa-solid fa-image text-2xl text-gray-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                                        <div class="flex justify-center text-sm text-gray-600">
+                                            <span class="relative bg-white rounded-md font-medium text-indigo-600 group-hover:text-indigo-500 cursor-pointer">
+                                                Klik untuk ganti gambar
+                                            </span>
+                                            <input id="file-upload" name="image" type="file" accept="image/*" class="sr-only" onchange="previewUpdatedImage(event)">
                                         </div>
                                         <p class="text-xs text-gray-500 italic">Biarkan kosong jika tidak ingin mengubah
                                             gambar</p>
@@ -238,5 +238,31 @@
             }
         });
     });
+
+    function previewUpdatedImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewImg = document.getElementById('current-image-preview');
+                const noImagePlaceholder = document.getElementById('no-image-placeholder');
+                const previewTitle = document.getElementById('preview-title');
+                
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('hidden');
+                
+                if (noImagePlaceholder) {
+                    noImagePlaceholder.classList.add('hidden');
+                }
+                
+                if (previewTitle) {
+                    previewTitle.innerText = "Pratinjau gambar baru:";
+                    previewTitle.classList.remove('text-gray-500');
+                    previewTitle.classList.add('text-indigo-600', 'font-semibold');
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
 </script>
 @endsection

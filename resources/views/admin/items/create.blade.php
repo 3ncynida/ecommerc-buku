@@ -176,18 +176,25 @@
 
                     <div class="md:col-span-2">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Sampul / Gambar Produk</label>
-                        <div
-                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition cursor-pointer bg-gray-50">
-                            <div class="space-y-1 text-center">
+                        <div id="upload-wrapper" onclick="document.getElementById('file-upload').click()"
+                            class="relative mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition cursor-pointer bg-gray-50 group hover:shadow-sm overflow-hidden">
+                            
+                            <div id="upload-content" class="space-y-1 text-center">
                                 <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-2"></i>
-                                <div class="flex text-sm text-gray-600">
-                                    <label for="file-upload"
-                                        class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500">
-                                        <span>Upload file gambar</span>
-                                        <input id="file-upload" name="image" type="file" class="sr-only">
-                                    </label>
+                                <div class="flex justify-center text-sm text-gray-600">
+                                    <span class="relative bg-white rounded-md font-medium text-indigo-600 group-hover:text-indigo-500">
+                                        Upload file gambar
+                                    </span>
+                                    <input id="file-upload" name="image" type="file" accept="image/*" class="sr-only">
                                 </div>
                                 <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                            </div>
+
+                            <!-- Image Preview Area -->
+                            <img id="image-preview" src="#" alt="Preview" class="hidden w-full max-h-48 object-contain rounded-md" />
+                            <div id="preview-overlay" class="hidden absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                                <i class="fa-solid fa-pen-to-square text-white text-2xl mb-1"></i>
+                                <span class="text-white font-medium text-sm">Ganti Gambar</span>
                             </div>
                         </div>
                     </div>
@@ -207,9 +214,28 @@
     </div>
 
     <script>
-        document.getElementById('file-upload').onchange = function () {
-            const fileName = this.files[0].name;
-            alert('File terpilih: ' + fileName);
+        document.getElementById('file-upload').onchange = function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Sembunyikan instruksi upload
+                    document.getElementById('upload-content').classList.add('hidden');
+                    
+                    // Tampilkan gambar dan overlay
+                    const preview = document.getElementById('image-preview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    
+                    document.getElementById('preview-overlay').classList.remove('hidden');
+                    
+                    // Ubah padding pada wrapper
+                    const wrapper = document.getElementById('upload-wrapper');
+                    wrapper.classList.remove('pt-5', 'pb-6', 'px-6');
+                    wrapper.classList.add('p-2');
+                }
+                reader.readAsDataURL(file);
+            }
         };
     </script>
 @endsection
