@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libris Admin Workspace</title>
     <!-- Basic CSP -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 http://localhost:5173 https://cdn.jsdelivr.net; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173;">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 http://localhost:5173 https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173;">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Alpine JS -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
     <style>
         body { font-family: 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Style for NProgress Minimal Loading */
+        #nprogress .bar { background: #4f46e5 !important; height: 3px !important; }
+        #nprogress .peg { box-shadow: 0 0 10px #4f46e5, 0 0 5px #4f46e5 !important; }
+        #nprogress .spinner-icon { border-top-color: #4f46e5 !important; border-left-color: #4f46e5 !important; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased font-sans overflow-hidden" x-data="{ sidebarOpen: true }">
@@ -170,7 +175,7 @@
                                                 <span class="text-[10px] font-bold text-slate-400 shrink-0 flex items-center gap-1 group-hover:text-indigo-400 transition-colors"><i class="fa-regular fa-clock"></i> {{ $notification->created_at->diffForHumans() }}</span>
                                             </div>
                                             <div class="mt-1 flex items-center justify-between">
-                                                <p class="text-xs font-medium text-slate-500 w-full truncate pr-4">Ada pesanan bayar baru masuk nih!</p>
+                                                <p class="text-xs font-medium text-slate-500 w-full truncate pr-4">Ada pesanan baru masuk nih!</p>
                                             </div>
                                             <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 border border-emerald-100/50">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -301,5 +306,45 @@
         </main>
     </div>
 
+    <!-- NProgress Minimal Loading Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+    <style>
+        #nprogress .bar { height: 4px !important; z-index: 999999 !important; }
+        #nprogress .spinner { z-index: 999999 !important; top: 18px !important; right: 18px !important; }
+        #nprogress .spinner-icon { width: 22px !important; height: 22px !important; border-width: 3px !important; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            NProgress.configure({ showSpinner: true, trickleSpeed: 100, minimum: 0.1 });
+
+            // start loading when navigating away
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:') || this.target === '_blank' || e.defaultPrevented) {
+                        return;
+                    }
+                    NProgress.start();
+                });
+            });
+
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    if (!e.defaultPrevented) {
+                        NProgress.start();
+                    }
+                });
+            });
+
+            window.addEventListener('beforeunload', function () {
+                NProgress.start();
+            });
+
+            // Stop loading when page is fully loaded
+            window.addEventListener('load', function () {
+                NProgress.done();
+            });
+        });
+    </script>
 </body>
 </html>
