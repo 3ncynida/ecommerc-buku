@@ -139,13 +139,19 @@
                                 </td>
                                 <td class="px-8 py-4">
                                     <p class="font-bold text-slate-800 text-sm">{{ $order->user->name ?? '-' }}</p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5 truncate max-w-[200px] leading-tight">{{ $order->item->name ?? '-' }}</p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5 truncate max-w-[200px] leading-tight">
+                                        @if($order->items->count() > 1)
+                                            {{ $order->items->first()->item->name ?? '-' }} dan {{ $order->items->count() - 1 }} item lainnya
+                                        @else
+                                            {{ $order->items->first()->item->name ?? '-' }}
+                                        @endif
+                                    </p>
                                 </td>
                                 <td class="px-8 py-4">
                                     <p class="text-sm font-black text-slate-800">
                                         Rp{{ number_format($order->total_price, 0, ',', '.') }}
                                     </p>
-                                    <p class="text-[10px] font-bold text-slate-400 mt-0.5">{{ $order->quantity }} Produk</p>
+                                    <p class="text-[10px] font-bold text-slate-400 mt-0.5">{{ $order->items->sum('quantity') }} Produk</p>
                                 </td>
                                 <td class="px-8 py-4">
                                     <span class="px-3 py-1.5 rounded-xl text-[10px] font-black tracking-wider uppercase border {{ $statusColors[$order->item_status] ?? 'bg-slate-50 text-slate-600 border-slate-200' }} flex items-center justify-center w-max gap-1.5 shadow-sm">

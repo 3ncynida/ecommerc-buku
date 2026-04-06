@@ -57,7 +57,7 @@ class CourierController extends Controller
             ->count();
         $successRate = $totalAssigned > 0 ? round(($completed / $totalAssigned) * 100) : 0;
 
-        $orders = Order::with(['user', 'item'])
+        $orders = Order::with(['user', 'items.item'])
             ->where('courier_id', $courier->id)
             ->orderByDesc('updated_at')
             ->paginate(10);
