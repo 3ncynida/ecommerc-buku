@@ -191,6 +191,17 @@ class CustomerController extends Controller
         return view('customer.order.show', compact('order', 'deliveryEstimate'));
     }
 
+    public function invoice(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $order->load(['user', 'items.item', 'shippingAddress.province', 'shippingAddress.city', 'shippingAddress.district', 'payment']);
+        
+        return view('customer.order.invoice', compact('order'));
+    }
+
     public function cancel(Order $order)
     {
         if ($order->user_id !== auth()->id()) {

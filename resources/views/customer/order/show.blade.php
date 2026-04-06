@@ -43,9 +43,17 @@
                         ?? $order->payment?->raw_response['transaction_status']
                         ?? null;
                 @endphp
-                <div
-                    class="px-6 py-2 rounded-full border text-xs font-black uppercase tracking-widest {{ $statusClasses[$order->payment_status] ?? 'bg-gray-100' }}">
-                    {{ $paymentLabels[$order->payment_status] ?? $order->payment_status }}
+                <div class="flex flex-col md:flex-row items-end md:items-center gap-3">
+                    <div class="px-6 py-2 rounded-full border text-xs font-black uppercase tracking-widest {{ $statusClasses[$order->payment_status] ?? 'bg-gray-100' }}">
+                        {{ $paymentLabels[$order->payment_status] ?? $order->payment_status }}
+                    </div>
+                    @if(in_array($order->payment_status, ['success']))
+                    <a href="{{ route('orders.invoice', $order->order_number) }}" target="_blank"
+                        class="px-4 py-2.5 bg-indigo-600 border border-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest text-white hover:bg-indigo-700 hover:border-indigo-700 transition flex items-center gap-2 group shadow-sm">
+                        <i class="fa-solid fa-print group-hover:-translate-y-0.5 transition-transform text-xs"></i>
+                        Cetak Invoice
+                    </a>
+                    @endif
                 </div>
             </div>
 

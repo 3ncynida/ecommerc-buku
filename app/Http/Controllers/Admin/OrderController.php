@@ -25,6 +25,12 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order', 'deliveryEstimate'));
     }
 
+    public function invoice(Order $order)
+    {
+        $order->load(['user', 'items.item', 'shippingAddress.province', 'shippingAddress.city', 'shippingAddress.district', 'payment']);
+        return view('admin.orders.invoice', compact('order'));
+    }
+
     public function reassign(Order $order)
     {
         if ($order->payment_status !== 'success' || $order->item_status !== 'gagal') {

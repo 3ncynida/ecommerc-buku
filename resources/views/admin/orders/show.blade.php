@@ -21,6 +21,11 @@
                 <i class="fa-solid fa-wallet text-slate-400"></i>
                 <span class="uppercase tracking-wider">{{ $order->payment_status }}</span>
             </span>
+            <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank"
+                class="px-4 py-2 bg-indigo-600 border border-indigo-600 rounded-xl text-[13px] font-bold text-white hover:bg-indigo-700 hover:border-indigo-700 transition shadow-sm flex items-center gap-2 group">
+                <i class="fa-solid fa-print group-hover:-translate-y-0.5 transition-transform"></i>
+                <span class="uppercase tracking-wider">Cetak Invoice</span>
+            </a>
         </div>
     </div>
 

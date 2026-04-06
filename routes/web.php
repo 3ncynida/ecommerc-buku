@@ -26,6 +26,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminOrderController::class, 'index'])->name('admin.dashboard.index');
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('admin.orders.invoice');
     Route::patch('/orders/{order}/reassign', [OrderController::class, 'reassign'])->name('admin.orders.reassign');
     Route::patch('/orders/{order}/prepare', [OrderController::class, 'prepareForCourier'])->name('admin.orders.prepare');
     Route::post('/notifications/clear', [OrderController::class, 'clearNotifications'])->name('admin.notifications.clear');
@@ -47,6 +48,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // routes/web.php
     Route::get('/orders/{order:order_number}', [CustomerController::class, 'orderShow'])
         ->name('orders.show');
+    Route::get('/orders/{order:order_number}/invoice', [CustomerController::class, 'invoice'])
+        ->name('orders.invoice');
     Route::post('/orders/{order:order_number}/cancel', [CustomerController::class, 'cancel'])
         ->name('orders.cancel');
     Route::post('/orders/{order:order_number}/confirm-delivery', [CustomerController::class, 'confirmDelivery'])
