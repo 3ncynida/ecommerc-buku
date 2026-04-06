@@ -10,10 +10,14 @@
             <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <h3 class="font-bold text-gray-800">Daftar Item</h3>
 
-                <div class="flex items-center gap-3">
-                    <form method="GET" action="{{ route('items.index') }}">
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <form method="GET" action="{{ route('items.index') }}" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-60">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama buku / penulis..." class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        </div>
                         <select name="category_id" onchange="this.form.submit()"
-                            class="border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5">
+                            class="border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:w-40 p-2.5">
                             <option value="">Semua Kategori</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -24,8 +28,8 @@
                     </form>
 
                     <a href="{{ route('items.create') }}"
-                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center shadow-md">
-                        <span class="mr-1">+</span> Tambah Item
+                        class="bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center shadow-md w-full sm:w-auto justify-center">
+                        <span class="mr-1"><i class="fa-solid fa-plus text-xs"></i></span> Tambah Item
                     </a>
                 </div>
             </div>

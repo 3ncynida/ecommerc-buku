@@ -24,6 +24,12 @@ class ItemController extends Controller
                     $q->where('categories.id', $request->category_id);
                 });
             })
+            ->when($request->search, function ($query) use ($request) {
+                $query->where('name', 'like', "%{$request->search}%")
+                      ->orWhereHas('author', function ($q) use ($request) {
+                          $q->where('name', 'like', "%{$request->search}%");
+                      });
+            })
             ->latest()
             ->paginate(10); // Menggunakan pagination (10 data per halaman)
 
