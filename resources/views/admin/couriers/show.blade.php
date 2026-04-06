@@ -4,6 +4,7 @@
 @section('content')
 @php
     $statusColors = [
+        'sedang_dikemas' => 'bg-purple-50 text-purple-700 border-purple-200',
         'menunggu_kurir' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
         'diproses_kurir' => 'bg-amber-50 text-amber-700 border-amber-200',
         'dikirim' => 'bg-blue-50 text-blue-700 border-blue-200',

@@ -14,7 +14,7 @@ class AdminOrderController extends Controller
         $totalOrders = Order::count();
         $pendingOrders = Order::where('payment_status', 'pending')->count();
         $shippingOrders = Order::where('payment_status', 'success')
-            ->whereIn('item_status', ['menunggu_kurir', 'diproses_kurir', 'dikirim', 'sampai'])
+            ->whereIn('item_status', ['sedang_dikemas', 'menunggu_kurir', 'diproses_kurir', 'dikirim', 'sampai'])
             ->count();
 
         // Data Tambahan

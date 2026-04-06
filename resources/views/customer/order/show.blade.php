@@ -30,6 +30,7 @@
                     $itemStatusLabels = [
                         'menunggu_pembayaran' => 'Menunggu Pembayaran',
                         'pembayaran_gagal' => 'Pembayaran Gagal',
+                        'sedang_dikemas' => 'Sedang Dikemas',
                         'menunggu_kurir' => 'Menunggu Kurir',
                         'diproses_kurir' => 'Diproses Kurir',
                         'dikirim' => 'Dalam Pengiriman',

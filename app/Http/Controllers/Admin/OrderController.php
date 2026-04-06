@@ -38,4 +38,17 @@ class OrderController extends Controller
 
         return back()->with('success', "Pesanan #{$order->order_number} dikembalikan ke antrian kurir.");
     }
+
+    public function prepareForCourier(Order $order)
+    {
+        if ($order->payment_status !== 'success' || $order->item_status !== 'sedang_dikemas') {
+            return back()->with('error', 'Pesanan belum selesai dikemas.');
+        }
+
+        $order->update([
+            'item_status' => 'menunggu_kurir',
+        ]);
+
+        return back()->with('success', "Pesanan #{$order->order_number} siap menunggu kurir.");
+    }
 }

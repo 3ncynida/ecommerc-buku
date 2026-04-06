@@ -41,6 +41,7 @@
         $itemStatuses = [
             'menunggu_pembayaran' => ['label' => 'Menunggu Pembayaran', 'icon' => 'fa-wallet'],
             'pembayaran_gagal' => ['label' => 'Pembayaran Gagal', 'icon' => 'fa-xmark-circle'],
+            'sedang_dikemas' => ['label' => 'Sedang Dikemas', 'icon' => 'fa-box-open'],
             'menunggu_kurir' => ['label' => 'Menunggu Kurir', 'icon' => 'fa-boxes-packing'],
             'diproses_kurir' => ['label' => 'Diproses', 'icon' => 'fa-people-carry-box'],
             'dikirim' => ['label' => 'Sedang Dikirim', 'icon' => 'fa-truck-fast'],
@@ -145,6 +146,18 @@
                                     <p class="text-[11px] font-medium text-slate-500 mt-0.5">Sistem sedang mencari kurir terdekat.</p>
                                 </div>
                             </div>
+                        @endif
+
+                        @if ($order->item_status === 'sedang_dikemas' && $order->payment_status === 'success')
+                            <form action="{{ route('admin.orders.prepare', $order) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit"
+                                    class="w-full mt-4 rounded-2xl border border-indigo-200 bg-indigo-50 text-indigo-700 font-bold py-3 hover:bg-indigo-100 transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-box-open"></i>
+                                    Tandai Siap Kurir
+                                </button>
+                            </form>
                         @endif
 
                         <div class="mt-4 pt-4 border-t border-slate-100">

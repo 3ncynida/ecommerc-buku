@@ -8,6 +8,7 @@
         $statusStyles = [
             'menunggu_pembayaran' => 'bg-amber-50 text-amber-600 border-amber-100',
             'pembayaran_gagal' => 'bg-rose-50 text-rose-600 border-rose-100',
+            'sedang_dikemas' => 'bg-purple-50 text-purple-600 border-purple-100',
             'menunggu_kurir' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
             'diproses_kurir' => 'bg-amber-50 text-amber-600 border-amber-100',
             'dikirim' => 'bg-blue-50 text-blue-600 border-blue-100',
@@ -18,6 +19,7 @@
         $statusLabels = [
             'menunggu_pembayaran' => 'Menunggu Pembayaran',
             'pembayaran_gagal' => 'Pembayaran Gagal',
+            'sedang_dikemas' => 'Sedang Dikemas',
             'menunggu_kurir' => 'Menunggu Kurir',
             'diproses_kurir' => 'Diproses Kurir',
             'dikirim' => 'Dalam Pengiriman',
@@ -107,6 +109,10 @@
             <div class="relative z-10">
                 <h3 class="font-bold text-xl mb-4 text-indigo-100">Ringkasan Logistik</h3>
                 <div class="space-y-4">
+                    <div class="flex justify-between items-center bg-indigo-800/50 p-3 rounded-xl">
+                        <span class="text-sm font-medium">Sedang Dikemas</span>
+                        <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $logisticOrders->where('item_status', 'sedang_dikemas')->count() }}</span>
+                    </div>
                     <div class="flex justify-between items-center bg-indigo-800/50 p-3 rounded-xl">
                         <span class="text-sm font-medium">Menunggu Kurir</span>
                         <span class="px-2.5 py-1 bg-white/10 rounded-lg font-bold">{{ $logisticOrders->where('item_status', 'menunggu_kurir')->count() }}</span>
