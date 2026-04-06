@@ -29,16 +29,16 @@
                     <ul class="max-h-72 overflow-y-auto" data-home-search-list></ul>
                 </div>
             </div>
-            <div class="flex space-x-4">
+            <div class="flex flex-col sm:flex-row gap-4">
                 <a href="{{ route('category.list') }}"
-                    class="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-indigo-200 hover:scale-105 transition">Mulai
+                    class="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-indigo-200 hover:scale-105 transition text-center">Mulai
                     Belanja</a>
                 <a href="{{ route('category.index') }}"
-                    class="border border-gray-300 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition">Lihat
+                    class="border border-gray-300 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition text-center">Lihat
                     Katalog</a>
             </div>
         </div>
-        <div class="md:w-1/2 mt-12 md:mt-0 relative flex justify-center">
+        <div class="md:w-1/2 mt-12 md:mt-0 relative hidden md:flex justify-center">
             <div class="w-72 h-96 bg-indigo-200 rounded-2xl absolute -rotate-6 z-0"></div>
             <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400"
                 alt="Featured Book"
@@ -47,7 +47,7 @@
     </header>
 
     <section class="max-w-7xl mx-auto px-8 py-20">
-        <div class="flex justify-between items-end mb-10">
+        <div class="flex flex-col md:flex-row justify-between md:items-end mb-10 gap-4">
             <div>
                 <h2 class="text-3xl font-bold">Kategori Terpopuler</h2>
                 <p class="text-gray-500">Cari buku berdasarkan minat Anda</p>
@@ -77,9 +77,9 @@
                 <p class="text-gray-500">Pilihan favorit pembaca minggu ini</p>
             </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="flex gap-6 overflow-x-auto pb-10 pt-4 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             @forelse($bestSellers as $book)
-                <div class="group">
+                <div class="group shrink-0 w-[240px] md:w-[280px] snap-start">
                     <div class="relative overflow-hidden rounded-xl aspect-[3/4] bg-gray-100 mb-4 shadow-sm">
                         @if($book->image)
                             <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->name }}"
@@ -162,9 +162,9 @@
                 <h2 class="text-3xl font-bold text-gray-800">Koleksi Buku Terbaru</h2>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="flex gap-6 overflow-x-auto pb-10 pt-4 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 @forelse($featuredBooks as $book)
-                    <div class="group">
+                    <div class="group shrink-0 w-[240px] md:w-[280px] snap-start">
                         <div class="relative overflow-hidden rounded-xl aspect-[3/4] bg-gray-100 mb-4 shadow-sm">
                             @if($book->image)
                                 <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->title }}"

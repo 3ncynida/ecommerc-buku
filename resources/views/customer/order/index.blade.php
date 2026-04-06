@@ -75,19 +75,19 @@
                                 </div>
 
                                 {{-- Sisi Kanan: Harga & Aksi Utama --}}
-                                <div class="flex flex-col items-end gap-3">
+                                <div class="flex flex-col items-start md:items-end gap-3 w-full md:w-auto mt-4 md:mt-0">
                                     <p class="text-2xl font-black text-indigo-600">
                                         Rp{{ number_format($order->total_price, 0, ',', '.') }}
                                     </p>
                                     @if(in_array($order->payment_status, ['pending', 'failed']))
-                                        <div class="flex flex-col gap-2 w-full">
+                                        <div class="flex flex-col sm:flex-row md:flex-col gap-2 w-full">
                                             <button
                                                 onclick="retryPayment('{{ $order->order_number }}')"
                                                 class="w-full bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center justify-center gap-2">
                                                 <i class="fa-solid fa-credit-card"></i>
                                                 {{ $order->payment_status === 'failed' ? 'Coba Bayar Lagi' : 'Bayar Sekarang' }}
                                             </button>
-                                            <form action="{{ route('orders.cancel', $order) }}" method="POST">
+                                            <form action="{{ route('orders.cancel', $order) }}" method="POST" class="w-full">
                                                 @csrf
                                                 <button type="submit"
                                                     class="w-full border border-gray-200 rounded-xl text-sm font-bold px-6 py-2.5 text-gray-600 hover:bg-gray-50 transition">

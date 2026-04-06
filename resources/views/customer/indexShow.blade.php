@@ -164,7 +164,7 @@
                     <div class="sticky bottom-6 mt-12 md:relative md:bottom-0">
                         @auth
                             @if($item->stok > 0)
-                                <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex gap-4 add-to-cart-form">
+                                <form action="{{ route('cart.add', $item->id) }}" method="POST" class="flex flex-col sm:flex-row gap-4 add-to-cart-form">
                                     @csrf
                                     <div class="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden shrink-0">
                                         <button type="button" onclick="changeQuantity(this, -1)"
@@ -186,7 +186,7 @@
                                 </div>
                             @endif
                         @else
-                            <div class="flex gap-4">
+                            <div class="flex flex-col sm:flex-row gap-4">
                                 <a href="{{ route('login') }}"
                                     class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3">
                                     <i class="fa-solid fa-right-to-bracket text-xl"></i>

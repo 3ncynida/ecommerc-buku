@@ -282,7 +282,7 @@
         </div>
     </div>
     <div class="max-w-7xl mx-auto px-8 mt-12 mb-20">
-        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm flex items-center justify-between">
+        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center">
                     <i class="fa-solid fa-right-from-bracket text-red-500 text-xl"></i>
