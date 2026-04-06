@@ -28,6 +28,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::patch('/orders/{order}/reassign', [OrderController::class, 'reassign'])->name('admin.orders.reassign');
     Route::patch('/orders/{order}/prepare', [OrderController::class, 'prepareForCourier'])->name('admin.orders.prepare');
+    Route::post('/notifications/clear', [OrderController::class, 'clearNotifications'])->name('admin.notifications.clear');
     Route::resource('categories', CategoryController::class);
     Route::resource('authors', AuthorController::class);
     Route::resource('items', ItemController::class);

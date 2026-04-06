@@ -51,4 +51,10 @@ class OrderController extends Controller
 
         return back()->with('success', "Pesanan #{$order->order_number} siap menunggu kurir.");
     }
+
+    public function clearNotifications()
+    {
+        cache()->put('admin_cleared_notifications_at_' . auth()->id(), now());
+        return back();
+    }
 }
