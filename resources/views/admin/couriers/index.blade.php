@@ -13,8 +13,12 @@
             <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Manajemen Kurir</h1>
             <p class="text-slate-500 mt-2 text-sm md:text-base max-w-xl">Kelola data kurir pengiriman, pantau performa, dan riwayat tugas mereka.</p>
         </div>
-        <div>
-            <a href="{{ route('couriers.create') }}" class="group relative inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white transition-all duration-300 bg-indigo-600 rounded-2xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 active:scale-[0.98]">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <form action="{{ route('couriers.index') }}" method="GET" class="relative w-full sm:w-auto">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kurir..." class="w-full sm:w-64 pl-10 pr-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none bg-white shadow-sm transition">
+                <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            </form>
+            <a href="{{ route('couriers.create') }}" class="group relative inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white transition-all duration-300 bg-indigo-600 rounded-2xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 w-full sm:w-auto">
                 <i class="fa-solid fa-plus mr-2 transition-transform group-hover:rotate-90"></i>
                 Tambah Kurir Baru
             </a>

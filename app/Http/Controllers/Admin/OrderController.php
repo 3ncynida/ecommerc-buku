@@ -6,12 +6,23 @@ use App\Models\Order;
 use App\Services\DeliveryEstimator;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Http\Request;
+
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Mengambil data order beserta data itemnya (Eager Loading)
-        $orders = Order::with('user', 'items.item.author', 'payment', 'courier')->latest()->paginate(10);
+        $orders = Order::with('user', 'items.item.author', 'payment', 'courier')
+            ->when($request->search, function ($query) use ($request) {
+                $query->where('order_number', 'like', "%{$request->search}%")
+                      ->orWhereHas('user', function ($q) use ($request) {
+                          $q->where('name', 'like', "%{$request->search}%");
+                      });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
         return view('admin.orders.index', compact('orders'));
     }
 

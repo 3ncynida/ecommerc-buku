@@ -15,9 +15,18 @@ class CourierController extends Controller
         return User::where('role', 'courier')->findOrFail($id);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $couriers = User::where('role', 'courier')->latest()->paginate(10);
+        $couriers = User::where('role', 'courier')
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'like', "%{$request->search}%")
+                      ->orWhere('email', 'like', "%{$request->search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.couriers.index', compact('couriers'));
     }

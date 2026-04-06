@@ -8,9 +8,11 @@ use App\Models\Author;
 
 class AuthorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $authors = Author::latest()->paginate(10);
+        $authors = Author::when($request->search, function ($query) use ($request) {
+            $query->where('name', 'like', "%{$request->search}%");
+        })->latest()->paginate(10)->withQueryString();
         return view('admin.authors.index', compact('authors'));
     }
 
