@@ -11,92 +11,135 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-900">
+<body class="bg-slate-50 font-sans text-gray-900 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+    </style>
 
     @include('layouts.navigation')
 
-    <header class="max-w-7xl mx-auto px-8 py-16 flex flex-col md:flex-row items-center">
-        <div class="md:w-1/2 space-y-6">
-            <span class="bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-sm font-semibold">Rilis Terbaru
-                2026</span>
-            <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">Temukan Jendela <br><span
-                    class="text-indigo-600">Dunia Anda</span> Disini.</h1>
-            <p class="text-gray-500 text-lg max-w-md">Jelajahi ribuan koleksi buku dari penulis terbaik dunia dengan
-                harga yang bersahabat dan pengiriman kilat.</p>
+    <div class="relative overflow-hidden bg-gradient-to-br from-indigo-50/90 via-purple-50/80 to-white/90 backdrop-blur-xl border-b border-indigo-100">
+        <!-- Decorative blobs -->
+        <div class="absolute top-0 -left-4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob z-0"></div>
+        <div class="absolute top-0 -right-4 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 z-0"></div>
+        <div class="absolute -bottom-8 left-40 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000 z-0"></div>
+
+
+
+        <header class="relative max-w-7xl mx-auto px-8 py-20 lg:py-28 flex flex-col md:flex-row items-center z-10">
+            <div class="md:w-1/2 space-y-8 relative z-10">
+                <div class="inline-flex items-center gap-2 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full text-sm font-bold text-indigo-700 shadow-sm border border-indigo-100">
+                    <span class="flex w-2.5 h-2.5 bg-indigo-600 rounded-full animate-pulse"></span>
+                    Rilis Terbaru 2026
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-800 to-gray-900 leading-[1.1] tracking-tight">
+                    Temukan Jendela <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Dunia Anda</span> Disini.
+                </h1>
+                <p class="text-gray-600 text-lg md:text-xl max-w-lg leading-relaxed font-medium">
+                    Jelajahi ribuan koleksi buku dari penulis terbaik dunia dengan harga yang bersahabat dan pengiriman kilat.
+                </p>
             <div class="relative max-w-md">
                 <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-20"
                     data-home-search-results>
                     <ul class="max-h-72 overflow-y-auto" data-home-search-list></ul>
                 </div>
             </div>
-            <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
                 <a href="{{ route('category.list') }}"
-                    class="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-indigo-200 hover:scale-105 transition text-center">Mulai
-                    Belanja</a>
+                    class="relative overflow-hidden group bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-indigo-200/50 hover:shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-1 text-center">
+                    <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
+                    <span class="relative z-10 flex items-center justify-center gap-2">Mulai Belanja <i class="fa-solid fa-arrow-right text-sm"></i></span>
+                </a>
                 <a href="{{ route('category.index') }}"
-                    class="border border-gray-300 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition text-center">Lihat
-                    Katalog</a>
+                    class="bg-white/50 backdrop-blur-sm border-2 border-gray-200/60 px-8 py-4 rounded-xl font-bold text-gray-700 hover:bg-white hover:border-indigo-200 hover:text-indigo-600 shadow-sm transition-all duration-300 hover:-translate-y-1 text-center">
+                    Lihat Katalog
+                </a>
             </div>
         </div>
-        <div class="md:w-1/2 mt-12 md:mt-0 relative hidden md:flex justify-center">
-            <div class="w-72 h-96 bg-indigo-200 rounded-2xl absolute -rotate-6 z-0"></div>
-            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400"
-                alt="Featured Book"
-                class="w-72 h-96 object-cover rounded-2xl shadow-2xl z-10 relative rotate-3 hover:rotate-0 transition duration-500">
+        <div class="md:w-1/2 mt-12 md:mt-0 relative hidden md:flex justify-end pr-10">
+            <!-- Decorative Cards Setup -->
+            <div class="relative w-[320px] h-[420px]">
+                <div class="absolute inset-0 bg-gradient-to-tr from-indigo-400 to-purple-400 rounded-3xl transform rotate-6 translate-x-4 translate-y-4 opacity-50 blur-lg"></div>
+                <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-purple-500 rounded-3xl transform rotate-3 z-0 transition-transform duration-500 hover:rotate-6"></div>
+                <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400"
+                    alt="Featured Book"
+                    class="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl z-10 transform -rotate-3 hover:rotate-0 transition-all duration-500 hover:scale-[1.02] border-4 border-white/20">
+            </div>
         </div>
-    </header>
+        </header>
+    </div> <!-- End Hero Wrap -->
 
-    <section class="max-w-7xl mx-auto px-8 py-20">
-        <div class="flex flex-col md:flex-row justify-between md:items-end mb-10 gap-4">
+    <section class="w-full bg-indigo-50/50 border-t border-indigo-100">
+        <div class="relative max-w-7xl mx-auto px-8 py-24">
+            <div class="flex flex-col md:flex-row justify-between md:items-end mb-12 gap-4">
             <div>
-                <h2 class="text-3xl font-bold">Kategori Terpopuler</h2>
-                <p class="text-gray-500">Cari buku berdasarkan minat Anda</p>
+                <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Kategori <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Terpopuler</span></h2>
+                <p class="text-gray-500 text-lg">Jelajahi karya terbaik berdasarkan minat Anda</p>
             </div>
-            <a href="{{ route('category.list') }}" class="text-indigo-600 font-semibold hover:underline">Lihat Semua</a>
+            <a href="{{ route('category.list') }}" class="group flex items-center gap-2 text-indigo-600 font-bold hover:text-purple-700 transition">
+                Lihat Semua Kategori <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+            </a>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
             @foreach($categories as $cat)
-                <a href="/category/{{ $cat->slug }}" class="block">
-                    <div
-                        class="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group text-center">
-                        <div
-                            class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-600 transition">
-                            <i class="fa-solid fa-book-open text-indigo-600 group-hover:text-white transition text-xl"></i>
+                <a href="/category/{{ $cat->slug }}" class="group block h-full">
+                    <div class="relative bg-white p-8 rounded-3xl border border-gray-100/50 shadow-sm hover:shadow-2xl hover:shadow-indigo-100/50 transition-all duration-500 cursor-pointer h-full overflow-hidden transform hover:-translate-y-2">
+                        <!-- BG Decoration -->
+                        <div class="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out z-0"></div>
+                        
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="w-20 h-20 bg-gradient-to-tr from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:from-indigo-600 group-hover:to-purple-600 transition-colors duration-500 shadow-inner group-hover:shadow-indigo-500/30 transform group-hover:rotate-3">
+                                <i class="fa-solid fa-book-open text-indigo-600 group-hover:text-white transition-colors duration-500 text-3xl"></i>
+                            </div>
+                            <h3 class="font-extrabold text-xl text-gray-800 group-hover:text-indigo-700 transition-colors">{{ $cat->name }}</h3>
+                            <div class="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                <span class="text-sm font-bold text-indigo-600 flex items-center gap-1">Eksplorasi <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                            </div>
                         </div>
-                        <h3 class="font-bold text-lg">{{ $cat->name }}</h3>
                     </div>
                 </a>
             @endforeach
+            </div>
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-8 pb-20">
-        <div class="flex justify-between items-end mb-10">
+    <section class="w-full bg-amber-50 border-t border-amber-100">
+        <div class="max-w-7xl mx-auto px-8 py-24 relative">
+            <div class="flex justify-between items-end mb-12">
             <div>
-                <h2 class="text-3xl font-bold">Buku Terlaris</h2>
-                <p class="text-gray-500">Pilihan favorit pembaca minggu ini</p>
+                <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Buku <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">Terlaris</span></h2>
+                <p class="text-gray-500 text-lg">Pilihan favorit pembaca minggu ini</p>
             </div>
         </div>
         <div class="flex gap-6 overflow-x-auto pb-10 pt-4 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             @forelse($bestSellers as $book)
                 <div class="group shrink-0 w-[240px] md:w-[280px] snap-start">
-                    <div class="relative overflow-hidden rounded-xl aspect-[3/4] bg-gray-100 mb-4 shadow-sm">
+                    <div class="relative overflow-hidden rounded-[2rem] aspect-[3/4.2] bg-gray-50 mb-5 shadow-sm group-hover:shadow-xl transition-all duration-500 border border-gray-100/50">
                         @if($book->image)
                             <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->name }}"
-                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out">
                         @else
                             <img src="https://via.placeholder.com/300x400?text=No+Image" alt="No Image"
-                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out">
                         @endif
 
-                        <div
-                            class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                            Terlaris
+                        <div class="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg border border-white/20 uppercase tracking-widest z-10 backdrop-blur-sm">
+                            <i class="fa-solid fa-fire mr-1"></i> Terlaris
                         </div>
 
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
+                        <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/90 via-indigo-900/40 to-transparent
                                                opacity-0 group-hover:opacity-100 transition-all duration-300
-                                               flex items-center justify-center gap-4">
+                                               flex items-center justify-center gap-4 backdrop-blur-[2px]">
 
                             @if($book->stok <= 0)
                                 <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -135,16 +178,18 @@
                         </div>
                     </div>
 
-                    <h3 class="font-bold text-lg leading-tight mb-1 text-gray-900 group-hover:text-indigo-600 transition">
-                        {{ $book->name }}
-                    </h3>
-                    <p class="text-gray-500 text-sm mb-2">{{ $book->author->name ?? 'Penulis Anonim' }}</p>
+                    <div class="px-2">
+                        <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{{ $book->author->name ?? 'Penulis Anonim' }}</p>
+                        <h3 class="font-extrabold text-lg leading-tight mb-3 text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 h-12">
+                            {{ $book->name }}
+                        </h3>
 
-                    <div class="flex justify-between items-center">
-                        <p class="text-indigo-600 font-bold text-lg">
-                            Rp {{ number_format($book->price, 0, ',', '.') }}
-                        </p>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-md font-medium">Tersedia</span>
+                        <div class="flex justify-between items-end">
+                            <p class="text-indigo-600 font-black text-xl">
+                                Rp {{ number_format($book->price, 0, ',', '.') }}
+                            </p>
+                            <span class="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-md font-black uppercase tracking-wider">Tersedia</span>
+                        </div>
                     </div>
                 </div>
             @empty
@@ -153,30 +198,37 @@
                     <p class="text-gray-500 italic">Belum ada data penjualan untuk ditampilkan.</p>
                 </div>
             @endforelse
+            </div>
         </div>
     </section>
 
-    <section class="bg-white py-20">
+    <section class="w-full bg-gradient-to-b from-emerald-50 to-teal-50 py-24 border-t border-emerald-100">
         <div class="max-w-7xl mx-auto px-8">
-            <div class="flex justify-between items-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-800">Koleksi Buku Terbaru</h2>
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Koleksi <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">Terbaru</span></h2>
+                    <p class="text-gray-500 text-lg">Karya segar yang baru saja tiba di rak kami</p>
+                </div>
             </div>
 
             <div class="flex gap-6 overflow-x-auto pb-10 pt-4 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 @forelse($featuredBooks as $book)
                     <div class="group shrink-0 w-[240px] md:w-[280px] snap-start">
-                        <div class="relative overflow-hidden rounded-xl aspect-[3/4] bg-gray-100 mb-4 shadow-sm">
+                        <div class="relative overflow-hidden rounded-[2rem] aspect-[3/4.2] bg-gray-50 mb-5 shadow-sm group-hover:shadow-xl transition-all duration-500 border border-gray-100/50">
+                            <div class="absolute top-4 left-4 bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg border border-white/20 uppercase tracking-widest z-10 backdrop-blur-sm">
+                                Baru
+                            </div>
                             @if($book->image)
                                 <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->title }}"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                    class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out">
                             @else
                                 <img src="https://via.placeholder.com/300x400?text=No+Image" alt="No Image"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                    class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out">
                             @endif
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent
                                                    opacity-0 group-hover:opacity-100 transition-all duration-300
-                                                   flex items-center justify-center gap-4">
+                                                   flex items-center justify-center gap-4 backdrop-blur-[2px]">
 
                                 @if($book->stok <= 0)
                                     <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -216,18 +268,18 @@
 
                         </div>
 
-                        <h3
-                            class="font-bold text-lg leading-tight mb-1 text-gray-900 group-hover:text-indigo-600 transition">
-                            {{ $book->name }}
-                        </h3>
-                        <p class="text-gray-500 text-sm mb-2">{{ $book->author->name ?? 'Penulis Anonim' }}</p>
+                        <div class="px-2">
+                            <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">{{ $book->author->name ?? 'Penulis Anonim' }}</p>
+                            <h3 class="font-extrabold text-lg leading-tight mb-3 text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 h-12">
+                                {{ $book->name }}
+                            </h3>
 
-                        <div class="flex justify-between items-center">
-                            <p class="text-indigo-600 font-bold text-lg">
-                                Rp {{ number_format($book->price, 0, ',', '.') }}
-                            </p>
-                            <span
-                                class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-md font-medium">Tersedia</span>
+                            <div class="flex justify-between items-end">
+                                <p class="text-indigo-600 font-black text-xl">
+                                    Rp {{ number_format($book->price, 0, ',', '.') }}
+                                </p>
+                                <span class="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-md font-black uppercase tracking-wider">Tersedia</span>
+                            </div>
                         </div>
                     </div>
                 @empty
