@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Libris</title>
@@ -16,7 +17,7 @@
             {{-- Bagian Kiri (Branding & Ilustrasi) --}}
             <div class="hidden md:flex flex-col items-center justify-between w-1/2 p-12 bg-white relative">
                 <div class="flex items-center gap-3 w-full justify-center mt-4">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">L</div>
+                    <x-application-logo class="w-10 h-10 text-indigo-600 drop-shadow-md" />
                     <span class="text-2xl font-black text-slate-800 tracking-tight">Libris.com</span>
                 </div>
 

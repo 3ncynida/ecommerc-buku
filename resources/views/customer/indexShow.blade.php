@@ -1,7 +1,7 @@
 @extends('customer.layouts.app')
 
 @section('content')
-    <div class="bg-slate-50 min-h-screen relative overflow-hidden">
+    <div class="bg-gradient-to-br from-indigo-50/80 via-purple-50/40 to-slate-50 min-h-screen relative overflow-hidden">
         <!-- Decorative blobs -->
         <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -z-10 animate-blob"></div>
         <div class="absolute top-40 left-0 w-[400px] h-[400px] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -z-10 animate-blob animation-delay-2000"></div>

@@ -6,7 +6,10 @@
 
 <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        <a href="{{ route('home') }}" class="text-[22px] font-bold text-indigo-600 shrink-0">Libris.</a>
+        <a href="{{ route('home') }}" class="flex items-center gap-2 text-[22px] font-black text-indigo-600 shrink-0 hover:opacity-80 transition-opacity">
+            <x-application-logo class="w-8 h-8 text-indigo-600" />
+            Libris.
+        </a>
 
         <div class="flex items-center gap-3">
 

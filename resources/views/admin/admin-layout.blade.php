@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libris Admin Workspace</title>
@@ -34,7 +35,7 @@
             <div class="h-16 flex items-center px-6 border-b border-slate-100">
                 <div class="flex items-center gap-3 w-full overflow-hidden">
                     <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-indigo-600/20">
-                        <i class="fa-solid fa-book-open text-sm"></i>
+                        <x-application-logo class="w-6 h-6" />
                     </div>
                     <span class="font-black text-lg text-slate-900 tracking-tight whitespace-nowrap transition-opacity duration-300" 
                         :class="sidebarOpen ? 'opacity-100' : 'opacity-0'">Libris <span class="text-indigo-600">OS</span></span>

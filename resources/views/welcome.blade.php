@@ -2,6 +2,7 @@
 <html lang="id">
 
 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -291,7 +292,10 @@
     <footer class="bg-gray-900 text-white pt-20 pb-10">
         <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12 mb-10">
             <div class="space-y-4">
-                <h2 class="text-2xl font-bold italic">Libris.</h2>
+                <h2 class="flex items-center gap-2 text-2xl font-black italic">
+                    <x-application-logo class="w-8 h-8 text-indigo-500" />
+                    Libris.
+                </h2>
                 <p class="text-gray-400">Toko buku online terpercaya yang menyediakan berbagai macam literatur untuk
                     mencerahkan masa depan bangsa.</p>
             </div>
