@@ -55,14 +55,10 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                <a href="{{ route('category.list') }}"
+                <a href="{{ route('category.index') }}"
                     class="relative overflow-hidden group bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-indigo-200/50 hover:shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-1 text-center">
                     <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
                     <span class="relative z-10 flex items-center justify-center gap-2">Mulai Belanja <i class="fa-solid fa-arrow-right text-sm"></i></span>
-                </a>
-                <a href="{{ route('category.index') }}"
-                    class="bg-white/50 backdrop-blur-sm border-2 border-gray-200/60 px-8 py-4 rounded-xl font-bold text-gray-700 hover:bg-white hover:border-indigo-200 hover:text-indigo-600 shadow-sm transition-all duration-300 hover:-translate-y-1 text-center">
-                    Lihat Katalog
                 </a>
             </div>
         </div>
