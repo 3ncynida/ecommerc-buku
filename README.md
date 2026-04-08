@@ -77,6 +77,24 @@ Pastikan PC/Laptop sudah memiliki yang berikut ini:
    MAIL_PASSWORD=your_mailtrap_pass
    ```
 
+### 5.1. Konfigurasi Login Google OAuth
+
+Untuk mengaktifkan tombol **Masuk dengan Google** di halaman login, ikuti langkah berikut:
+
+1. Kunjungi **Google Cloud Console** dan pilih atau buat proyek baru.
+2. Masuk ke **APIs & Services > OAuth consent screen**, isi informasi aplikasi (nama, email support, logo opsional), pilih tipe pengguna (misal _External_), lalu simpan & publikasikan.
+3. Buka **APIs & Services > Credentials** > **Create Credentials > OAuth client ID**, pilih **Web application**, dan tambahkan `Authorized redirect URI`:
+   ```
+   http://localhost:8000/oauth/google/callback
+   ```
+4. Setelah credential dibuat, salin **Client ID** dan **Client Secret** lalu tempel ke `.env`:
+   ```env
+   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-client-secret
+   GOOGLE_REDIRECT_URI=http://localhost:8000/oauth/google/callback
+   ```
+5. Sistem akan otomatis membuat akun baru untuk email Google yang belum ada, menggunakan kata sandi acak yang bisa diubah pengguna nanti lewat profil.
+
 ### 3. Instalasi Ke Dalam Pusat Data (Database Structure)
 Penting! Aktifkan Application Key internal laravel, migrasikan sistemnya dan inject seeder dasar.
 ```bash

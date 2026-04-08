@@ -80,6 +80,18 @@
                         Masuk
                     </button>
 
+                    <div class="mt-5 flex items-center gap-3">
+                        <span class="flex-1 h-px bg-slate-200"></span>
+                        <span class="text-[11px] text-slate-400 uppercase tracking-widest">atau</span>
+                        <span class="flex-1 h-px bg-slate-200"></span>
+                    </div>
+
+                    <a href="{{ route('login.google') }}" class="mt-4 inline-flex items-center justify-center gap-3 w-full border border-slate-200 rounded-2xl py-3.5 font-bold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition-all">
+                        <i class="fa-brands fa-google text-lg"></i>
+                        Masuk dengan Google
+                    </a>
+                    <p class="text-[11px] text-slate-400 mt-2 text-center">Akun baru otomatis dibuat dengan kata sandi acak (dapat diubah nanti).</p>
+
                     {{-- Daftar Link --}}
                     <div class="mt-8 text-center pt-4">
                         <p class="text-[12px] font-medium text-slate-500">Belum punya akun? 

@@ -26,6 +26,8 @@ class User extends Authenticatable
         'district_id',
         'village_id',
         'role',
+        'google_id',
+        'google_avatar',
     ];
 
     /**
