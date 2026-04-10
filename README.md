@@ -112,7 +112,7 @@ php artisan storage:link
 Kompilasi selubung gaya `Tailwind` kemudian nyalakan server pengembangan Anda perlahan.
 Harus dipahami, demi mendukung perlintasan data di kerangka belakang (*Queue*), siapkan > 1 tab CLI.
 
-```bash
+```bash 
 # Lakukan Build untuk mengompilasi Vite & AlpineJs
 npm run build
 ```
