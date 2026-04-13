@@ -23,6 +23,8 @@ Terima kasih telah menyelesaikan pembayaran. Berikut ringkasan faktur pesanan An
 
 **Total Pembayaran:** Rp {{ number_format($order->total_price, 0, ',', '.') }}
 
+**Biaya Admin:** Rp {{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}
+
 @if($shippingAddress)
 @component('mail::panel')
 **Alamat Pengiriman**  

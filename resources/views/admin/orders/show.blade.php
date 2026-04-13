@@ -281,10 +281,13 @@
                                         </p>
                                     @endif
                                 </div>
-                                <div class="mt-4 pt-4 border-t border-slate-100 text-sm font-semibold text-slate-800">
-                                    Ongkos Kirim: Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}
-                                </div>
                             @endif
+                            <div class="mt-4 pt-4 border-t border-slate-100 text-sm font-semibold text-slate-800">
+                                Ongkos Kirim: Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}
+                            </div>
+                            <div class="mt-2 text-sm font-semibold text-slate-800">
+                                Biaya Admin: Rp{{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}
+                            </div>
                         @else
                             <div class="py-4 text-center">
                                 <p class="text-[12px] font-bold text-slate-400 italic">Data Alamat Hilang / Terhapus.</p>

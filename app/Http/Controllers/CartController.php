@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Order;
 use App\Services\ShippingCalculator;
 use Illuminate\Http\Request;
 
@@ -124,8 +125,9 @@ class CartController extends Controller
         $shippingDetails = $shippingCalculator->forAddress($address);
         $shippingCost = $shippingDetails['cost'];
         $shippingEstimate = $shippingDetails['estimate'];
-        $grandTotal = $subtotal + $shippingCost;
+        $adminFee = Order::FIXED_ADMIN_FEE;
+        $grandTotal = $subtotal + $shippingCost + $adminFee;
 
-        return view('customer.cart.checkout', compact('cart', 'subtotal', 'shippingCost', 'shippingEstimate', 'grandTotal'));
+        return view('customer.cart.checkout', compact('cart', 'subtotal', 'shippingCost', 'shippingEstimate', 'adminFee', 'grandTotal'));
     }
 }

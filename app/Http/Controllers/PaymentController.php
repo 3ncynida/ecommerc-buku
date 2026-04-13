@@ -202,6 +202,7 @@ class PaymentController extends Controller
             $shippingCalculator = app(ShippingCalculator::class);
             $shippingData = $shippingCalculator->forAddress($selectedAddress);
             $shippingFee = $shippingData['cost'];
+            $adminFee = Order::FIXED_ADMIN_FEE;
 
             $orderItemDetails = $itemDetails;
             if ($shippingFee > 0) {
@@ -212,23 +213,19 @@ class PaymentController extends Controller
                     'name' => 'Ongkos Kirim',
                 ];
             }
+            $orderItemDetails[] = [
+                'id' => 'admin-fee',
+                'price' => $adminFee,
+                'quantity' => 1,
+                'name' => 'Biaya Admin',
+            ];
 
-            $orderItemDetails = $itemDetails;
-            if ($shippingFee > 0) {
-                $orderItemDetails[] = [
-                    'id' => 'shipping',
-                    'price' => (int) round($shippingFee),
-                    'quantity' => 1,
-                    'name' => 'Ongkos Kirim',
-                ];
-            }
-
-            \DB::transaction(function () use ($orderId, $totalAmount, $cart, $request, $orderItemDetails, $selectedAddress, $shippingFee, $shippingData, &$snapToken) {
+            \DB::transaction(function () use ($orderId, $totalAmount, $cart, $request, $orderItemDetails, $selectedAddress, $shippingFee, $shippingData, $adminFee, &$snapToken) {
                 $order = Order::create([
                     'order_number' => $orderId,
                     'user_id' => Auth::id(),
                     'shipping_address_id' => $selectedAddress ? $selectedAddress->id : null,
-                    'total_price' => $totalAmount + $shippingFee,
+                    'total_price' => $totalAmount + $shippingFee + $adminFee,
                     'shipping_fee' => $shippingFee,
                     'note' => $request->note,
                     'payment_status' => 'pending',
@@ -256,11 +253,12 @@ class PaymentController extends Controller
                 \App\Models\Payment::create([
                     'order_id' => $order->order_number,
                     'order_number' => $order->order_number,
-                    'amount' => $totalAmount + $shippingFee,
+                    'amount' => $totalAmount + $shippingFee + $adminFee,
                     'status' => 'pending',
                     'snap_token' => $snapToken,
                     'raw_response' => [
                         'selected_address' => $selectedAddress ? $selectedAddress->toArray() : null,
+                        'admin_fee' => $adminFee,
                         'shipping' => [
                             'cost' => $shippingFee,
                             'distance' => $shippingData['distance'],
@@ -368,6 +366,14 @@ class PaymentController extends Controller
             ];
         }
 
+        $adminFee = $order->admin_fee ?: Order::FIXED_ADMIN_FEE;
+        $itemDetails[] = [
+            'id' => 'admin-fee',
+            'price' => $adminFee,
+            'quantity' => 1,
+            'name' => 'Biaya Admin',
+        ];
+
         $gatewayOrderId = $order->order_number . '-R' . time();
 
         $snapToken = $this->createSnapToken(
@@ -386,6 +392,7 @@ class PaymentController extends Controller
             'status' => 'pending',
             'snap_token' => $snapToken,
             'raw_response' => [
+                'admin_fee' => $adminFee,
                 'attempt' => 'retry',
             ],
         ]);

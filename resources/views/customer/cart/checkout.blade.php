@@ -138,6 +138,10 @@
                             </div>
                             <div id="shipping-cost-value">Rp{{ number_format($shippingCost, 0, ',', '.') }}</div>
                         </div>
+                        <div class="flex justify-between">
+                            <div>Biaya Admin</div>
+                            <div id="admin-fee-value">Rp{{ number_format($adminFee, 0, ',', '.') }}</div>
+                        </div>
                     </div>
 
                     <div class="mt-4 border-t pt-4 flex justify-between items-center">
@@ -277,6 +281,7 @@ function selectAddress(addr, regionInfo) {
     const shippingCostElement = document.getElementById('shipping-cost-value');
     const grandTotalElement = document.getElementById('grand-total-value');
     const shippingInfoText = document.getElementById('shipping-info-text');
+    const adminFeeAmount = {{ $adminFee }};
 
     function formatRupiah(value) {
         const num = Number(value) || 0;
@@ -289,7 +294,7 @@ function selectAddress(addr, regionInfo) {
             shippingCostElement.textContent = `Rp${formatRupiah(shipping)}`;
         }
         if (grandTotalElement) {
-            grandTotalElement.textContent = `Rp${formatRupiah(subtotalAmount + shipping)}`;
+            grandTotalElement.textContent = `Rp${formatRupiah(subtotalAmount + shipping + adminFeeAmount)}`;
         }
         if (shippingInfoText) {
             if (formattedDuration || formattedDistance) {

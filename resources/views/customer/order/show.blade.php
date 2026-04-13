@@ -254,6 +254,9 @@
                     <div class="mt-4 text-sm text-white/70">
                         Ongkos Kirim: Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}
                     </div>
+                    <div class="mt-1 text-sm text-white/70">
+                        Biaya Admin: Rp{{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}
+                    </div>
                 </div>
             </div>
         </div>

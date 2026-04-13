@@ -35,6 +35,10 @@
                     <span class="text-gray-400 font-medium">Biaya Pengiriman</span>
                     <span class="text-gray-900 font-bold">Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}</span>
                 </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400 font-medium">Biaya Admin</span>
+                    <span class="text-gray-900 font-bold">Rp{{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}</span>
+                </div>
                 <div class="border-t border-dashed border-gray-200 pt-3 flex justify-between items-center">
                     <span class="text-gray-900 font-bold">Total Bayar</span>
                     <span class="text-indigo-600 font-extrabold text-lg">Rp{{ number_format($order->total_price ?? $total ?? 0, 0, ',', '.') }}</span>

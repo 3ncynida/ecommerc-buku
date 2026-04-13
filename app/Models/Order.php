@@ -7,6 +7,8 @@ use App\Models\User;
 
 class Order extends Model
 {
+    public const FIXED_ADMIN_FEE = 1000;
+
     protected $fillable = [
         'order_number',
         'user_id',
@@ -48,5 +50,27 @@ class Order extends Model
     {
         // Pastikan nama model alamat Anda adalah 'Address'
         return $this->belongsTo(Address::class, 'shipping_address_id');
+    }
+
+    public function getAdminFeeAttribute(): int
+    {
+        $payment = $this->relationLoaded('payment')
+            ? $this->payment
+            : $this->payment()->latest()->first();
+
+        $adminFee = (int) data_get($payment?->raw_response, 'admin_fee', 0);
+        if ($adminFee > 0) {
+            return $adminFee;
+        }
+
+        $items = $this->relationLoaded('items')
+            ? $this->items
+            : $this->items()->get();
+
+        $itemSubtotal = (int) round($items->sum(fn ($item) => $item->price * $item->quantity));
+        $shippingFee = (int) round($this->shipping_fee ?? 0);
+        $derivedAdminFee = (int) round(($this->total_price ?? 0) - $itemSubtotal - $shippingFee);
+
+        return max(0, $derivedAdminFee);
     }
 }

@@ -109,6 +109,10 @@
                 <span class="font-medium">Ongkos Kirim</span>
                 <span class="font-bold tracking-wide">Rp{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}</span>
             </div>
+            <div class="flex justify-between py-1.5 text-[11px] text-slate-600 border-b border-slate-200 mb-2 font-sans">
+                <span class="font-medium">Biaya Admin</span>
+                <span class="font-bold tracking-wide">Rp{{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}</span>
+            </div>
             <div class="flex justify-between py-2 text-[14px] font-black text-indigo-700 bg-indigo-50/50 rounded-lg px-3 border border-indigo-100">
                 <span>Total</span>
                 <span>Rp{{ number_format($order->total_price, 0, ',', '.') }}</span>

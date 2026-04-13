@@ -11,6 +11,22 @@ use App\Notifications\PaymentSuccessNotification;
 
 class PaymentCallbackController extends Controller
 {
+    private function mergedRawResponse(Payment $payment, array $payload): array
+    {
+        $existing = $payment->raw_response;
+
+        if (is_string($existing)) {
+            $decoded = json_decode($existing, true);
+            $existing = is_array($decoded) ? $decoded : [];
+        }
+
+        if (! is_array($existing)) {
+            $existing = [];
+        }
+
+        return array_replace_recursive($existing, $payload);
+    }
+
     public function receive(Request $request)
     {
         $serverKey = config('services.midtrans.server_key');
@@ -58,7 +74,7 @@ class PaymentCallbackController extends Controller
                     'status' => 'success',
                     'transaction_id' => $request->transaction_id,
                     'payment_type' => $request->payment_type ?? null,
-                    'raw_response' => json_encode($request->all()),
+                    'raw_response' => $this->mergedRawResponse($payment, $request->all()),
                 ]);
 
                 // Update order status
@@ -110,7 +126,7 @@ class PaymentCallbackController extends Controller
                 'status' => 'pending',
                 'transaction_id' => $request->transaction_id ?? $payment->transaction_id,
                 'payment_type' => $request->payment_type ?? $payment->payment_type,
-                'raw_response' => $request->all(),
+                'raw_response' => $this->mergedRawResponse($payment, $request->all()),
             ]);
             if ($isLatestAttempt) {
                 Order::where('order_number', $payment->order_number ?? $request->order_id)->update([
@@ -125,7 +141,7 @@ class PaymentCallbackController extends Controller
                 'status' => 'failed',
                 'transaction_id' => $request->transaction_id ?? $payment->transaction_id,
                 'payment_type' => $request->payment_type ?? $payment->payment_type,
-                'raw_response' => $request->all(),
+                'raw_response' => $this->mergedRawResponse($payment, $request->all()),
             ]);
             if ($isLatestAttempt) {
                 Order::where('order_number', $payment->order_number ?? $request->order_id)->update([
